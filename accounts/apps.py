@@ -6,10 +6,10 @@ from django.apps import AppConfig
 
 
 class AccountsConfig(AppConfig):
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = 'accounts'
-    verbose_name = 'Accounts & Identity'
-    
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "accounts"
+    verbose_name = "Accounts & Identity"
+
     def ready(self):
         # Import signals here when needed
         pass

@@ -57,7 +57,7 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 # -- Custom User Model --
 # Constitution Section 6.2: Identity Anchor
 # Must be set BEFORE running migrations
-AUTH_USER_MODEL = 'accounts.Employee'
+AUTH_USER_MODEL = "accounts.Employee"
 
 # -- Middleware --
 MIDDLEWARE = [

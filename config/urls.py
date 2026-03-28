@@ -16,13 +16,10 @@ from django.views.generic.base import RedirectView, TemplateView
 urlpatterns = [
     # Admin
     path("admin/", admin.site.urls),
-    
-    # Accounts / Authentication
-    path("accounts/", include("accounts.urls")),
-    
+    # Accounts / Authentication (with namespace)
+    path("accounts/", include("accounts.urls", namespace="accounts")),
     # Root redirect to dashboard
     path("", RedirectView.as_view(url="/accounts/dashboard/", permanent=False)),
-    
     # Health Check (for monitoring)
     path("health/", TemplateView.as_view(template_name="health.html"), name="health"),
 ]
