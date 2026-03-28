@@ -11,19 +11,20 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
-from django.views.generic.base import TemplateView
+from django.views.generic.base import RedirectView, TemplateView
 
 urlpatterns = [
     # Admin
     path("admin/", admin.site.urls),
+    
+    # Accounts / Authentication
+    path("accounts/", include("accounts.urls")),
+    
+    # Root redirect to dashboard
+    path("", RedirectView.as_view(url="/accounts/dashboard/", permanent=False)),
+    
     # Health Check (for monitoring)
     path("health/", TemplateView.as_view(template_name="health.html"), name="health"),
-    # Core URLs will be added as apps are developed
-    # path('', include('core.urls')),
-    # path('accounts/', include('accounts.urls')),
-    # path('inventory/', include('inventory.urls')),
-    # path('sales/', include('sales.urls')),
-    # path('purchasing/', include('purchasing.urls')),
 ]
 
 # -- Static & Media Files (Development) --
