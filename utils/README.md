@@ -5,12 +5,43 @@ This directory contains official project utility scripts as defined in the Const
 ## Available Scripts
 
 ### 1. git_task_commit.sh
-Atomic task-based commit script.
+Atomic task-based commit script with **Multi-Message Format** (Constitution Section 9.3).
+
+**Usage:**
 ```bash
 git add path/to/file
-./utils/git_task_commit.sh "Your task description"
+./utils/git_task_commit.sh "Title" "Description"
 ```
-Commits staged changes only. Requires an initialized Git repository.
+
+**Examples:**
+```bash
+# Phase work
+./utils/git_task_commit.sh "phase-2: Employee Model" "Added AbstractBaseUser with email authentication"
+
+# Bug fix
+./utils/git_task_commit.sh "Fix: Navigation bug" "Changed to namespaced URLs accounts:dashboard"
+
+# Feature
+./utils/git_task_commit.sh "Feature: Open redirect protection" "Added Django's url_has_allowed_host_and_scheme validator"
+
+# Documentation
+./utils/git_task_commit.sh "Docs: Update README" "Added installation instructions for Docker"
+```
+
+**Title Prefixes:**
+- `phase-X:` - Phase-related features (phase-1:, phase-2:, etc.)
+- `Fix:` - Bug fixes
+- `Feature:` - New features
+- `Refactor:` - Code refactoring
+- `Docs:` - Documentation updates
+- `Test:` - Test additions or modifications
+
+**Rules:**
+- Both Title and Description are **mandatory**
+- Title should be concise (under 72 characters)
+- Description explains WHAT and WHY (not HOW)
+- Commits staged changes only
+- Requires an initialized Git repository
 
 ### 2. env_factory.sh
 Virtual environment management.

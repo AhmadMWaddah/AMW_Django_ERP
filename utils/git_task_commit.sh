@@ -1,19 +1,19 @@
 #!/bin/bash
 
 # -- Git Task Commit Script --
-# AMW Django ERP - Atomic Task-Based Committing
-# 
-# Usage: ./utils/git_task_commit.sh "Task description"
-# Example: ./utils/git_task_commit.sh "Create env_factory.sh utility script"
+# AMW Django ERP - Atomic Task-Based Committing with Multi-Message Format
 #
-# This script ensures atomic commits aligned with project tasks.
+# Usage: ./utils/git_task_commit.sh "Title" "Description"
+# Example: ./utils/git_task_commit.sh "phase-2: Add auth views" "Implemented login, logout, and dashboard"
+#
+# This script ensures atomic commits with proper two-part messages for audit clarity.
+# Constitution Section 9.3: Multi-Message Commit Format
 
 set -e
 
 # -- Configuration --
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
-BRANCH_PREFIX="phase-1"
 
 # -- Colors for Output --
 RED='\033[0;31m'
@@ -42,14 +42,28 @@ print_info() {
 }
 
 # -- Validation --
-if [ $# -eq 0 ]; then
-    print_error "No task description provided"
-    echo "Usage: $0 \"Task description\""
-    echo "Example: $0 \"Create env_factory.sh utility script\""
+if [ $# -lt 2 ]; then
+    print_error "Both Title and Description are required"
+    echo ""
+    echo "Usage: $0 \"Title\" \"Description\""
+    echo ""
+    echo "Examples:"
+    echo "  $0 \"phase-2: Employee Model\" \"Added AbstractBaseUser with email auth\""
+    echo "  $0 \"Fix: Navigation bug\" \"Changed to namespaced URLs accounts:dashboard\""
+    echo "  $0 \"Feature: Open redirect protection\" \"Added Django's url_has_allowed_host_and_scheme\""
+    echo ""
+    echo "Title Prefixes:"
+    echo "  phase-X:  - Phase-related features (phase-1:, phase-2:, etc.)"
+    echo "  Fix:      - Bug fixes"
+    echo "  Feature:  - New features"
+    echo "  Refactor: - Code refactoring"
+    echo "  Docs:     - Documentation updates"
+    echo "  Test:     - Test additions or modifications"
     exit 1
 fi
 
-TASK_DESCRIPTION="$1"
+COMMIT_TITLE="$1"
+COMMIT_DESCRIPTION="$2"
 
 # -- Navigate to Project Root --
 cd "$PROJECT_ROOT"
@@ -87,28 +101,32 @@ echo "$STAGED_STATUS"
 echo ""
 
 # -- Create Commit Message --
-# Format: [Phase-X] Task description
-COMMIT_MESSAGE="[$CURRENT_BRANCH] $TASK_DESCRIPTION"
+# Format: [branch] Title + Description (Multi-Message)
+COMMIT_MESSAGE_TITLE="[$CURRENT_BRANCH] $COMMIT_TITLE"
 
 # -- Confirm Commit --
 print_header "Commit Preview"
 echo "Branch: $CURRENT_BRANCH"
-echo "Commit message: $COMMIT_MESSAGE"
+echo "Commit title: $COMMIT_MESSAGE_TITLE"
+echo "Commit description: $COMMIT_DESCRIPTION"
 echo ""
 echo "Files to commit:"
 git diff --cached --stat
 echo ""
 
-# -- Add All Changes and Commit --
+# -- Create Commit with Multi-Message Format --
 print_header "Creating Commit"
 
-git commit -m "$COMMIT_MESSAGE"
+git commit -m "$COMMIT_MESSAGE_TITLE" -m "$COMMIT_DESCRIPTION"
 
 if [ $? -eq 0 ]; then
     print_success "Commit created successfully"
     echo ""
     echo "Commit details:"
     git log -1 --stat
+    echo ""
+    echo "Commit message preview:"
+    git log -1 --format="%s%n%b" | head -10
 else
     print_error "Commit failed"
     exit 1
@@ -118,4 +136,4 @@ fi
 print_header "Repository Status"
 git status
 
-print_success "Task commit completed for: $TASK_DESCRIPTION"
+print_success "Task commit completed: $COMMIT_TITLE"

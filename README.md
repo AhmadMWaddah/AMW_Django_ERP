@@ -133,16 +133,26 @@ Official project utility scripts are located in the `utils/` directory. For deta
 
 ### Utility Scripts
 
+**Git Commits (Multi-Message Format - Constitution Section 9.3):**
 ```bash
-# Git commits (atomic, task-based)
 git add path/to/file
-./utils/git_task_commit.sh "Your task description"
+./utils/git_task_commit.sh "Title" "Description"
 
-# Environment management
-./utils/env_factory.sh setup
-./utils/env_factory.sh init-git
+# Examples:
+./utils/git_task_commit.sh "phase-2: Employee Model" "Added AbstractBaseUser with email auth"
+./utils/git_task_commit.sh "Fix: Navigation bug" "Changed to namespaced URLs accounts:dashboard"
+./utils/git_task_commit.sh "Feature: Open redirect protection" "Added Django's url_has_allowed_host_and_scheme"
+```
 
-# Testing
+**Environment Management:**
+```bash
+./utils/env_factory.sh setup          # Bootstrap git + venv + dependencies
+./utils/env_factory.sh init-git       # Initialize git repository
+./utils/env_factory.sh create         # Create virtual environment
+./utils/env_factory.sh install        # Install dependencies
+```
+
+**Testing:**
 ./utils/test_suite_runner.sh          # Run all tests
 ./utils/test_suite_runner.sh unit     # Unit tests only
 ./utils/test_suite_runner.sh coverage # With coverage

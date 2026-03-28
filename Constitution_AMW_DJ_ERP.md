@@ -266,11 +266,43 @@ Recommended branch style:
 - `phase-4`
 - `fix-fix_name`
 
-### 9.3 Commits
+### 9.3 Commits - Multi-Message Format
 
-- Commit by atomic task or a small set of tightly related tasks.
-- Commit messages should clearly state the task and reason.
-- Large mixed commits are discouraged.
+**MANDATORY:** All commits MUST use the two-part commit format for audit clarity.
+
+**Format:**
+```bash
+git commit -m "[branch-prefix] Title" -m "Detailed description"
+```
+
+**Title Prefixes:**
+- `phase-X:` - For phase-related features (e.g., `phase-2:`, `phase-3:`)
+- `Fix:` - For bug fixes
+- `Feature:` - For new features
+- `Refactor:` - For code refactoring
+- `Docs:` - For documentation updates
+- `Test:` - For test additions or modifications
+
+**Examples:**
+```bash
+# Phase work
+git commit -m "phase-2: Employee Model Implementation" -m "Added AbstractBaseUser extension with email authentication"
+
+# Bug fix
+git commit -m "Fix: Navigation bug in auth views" -m "Changed bare URLs to namespaced accounts:dashboard"
+
+# Feature
+git commit -m "Feature: Open redirect protection" -m "Added Django's url_has_allowed_host_and_scheme validator"
+
+# Using utility script
+./utils/git_task_commit.sh "phase-2: Add authentication views" "Implemented login, logout, and dashboard views"
+```
+
+**Rules:**
+- Title should be concise (under 72 characters)
+- Description should explain WHAT and WHY (not HOW)
+- Both title and description are mandatory
+- Use the utility script `utils/git_task_commit.sh` for consistency
 
 ### 9.4 Merge Rule
 
