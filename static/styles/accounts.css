@@ -67,26 +67,27 @@
     font-size: 14px;
 }
 
+/* Input styling from screenshot - clean with placeholder text visible */
 .accounts-form-group input {
     width: 100%;
-    padding: 14px 16px;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
+    padding: 12px 14px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
     font-size: 14px;
-    transition: all 0.3s ease;
-    background: #fafafa;
+    transition: border-color 0.2s ease;
+    background: white;
     box-sizing: border-box;
 }
 
 .accounts-form-group input:focus {
     outline: none;
-    border-color: #7f4f24;
-    background: white;
-    box-shadow: 0 0 0 3px rgba(127, 79, 36, 0.1);
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.1);
 }
 
 .accounts-form-group input::placeholder {
-    color: #bbb;
+    color: #999;
+    font-size: 13px;
 }
 
 .accounts-error-message {
