@@ -1,0 +1,43 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% block title %}Login | AMW Django ERP{% endblock %}
+{% block body_class %}auth-page{% endblock %}
+
+{% block extra_styles %}
+    <link rel="stylesheet" href="{% static 'styles/accounts-auth.css' %}">
+{% endblock %}
+
+{% block page %}
+    <main class="auth-page__stage">
+        <section class="auth-card" aria-labelledby="login-title">
+            <header class="auth-card__header">
+                <p class="auth-card__eyebrow">AMW Django ERP</p>
+                <h1 id="login-title">Sign in to your account</h1>
+                <p class="auth-card__lead">Use your employee email and password to continue.</p>
+            </header>
+
+            {% if error_message %}
+                <div class="auth-alert auth-alert--error" role="alert">
+                    {{ error_message }}
+                </div>
+            {% endif %}
+
+            <form method="post" action="{% url 'accounts:login' %}" class="auth-form">
+                {% csrf_token %}
+                {% if next %}
+                    <input type="hidden" name="next" value="{{ next }}">
+                {% endif %}
+
+                {% include "_snipps_/_input_.html" with field_id="email" label="Email Address" input_type="email" name="email" placeholder="you@example.com" autocomplete="email" required=True autofocus=True %}
+                {% include "_snipps_/_input_.html" with field_id="password" label="Password" input_type="password" name="password" placeholder="••••••••" autocomplete="current-password" required=True %}
+
+                <button type="submit" class="auth-form__submit">Sign In</button>
+            </form>
+
+            <footer class="auth-card__footer">
+                <p>Admin access only</p>
+            </footer>
+        </section>
+    </main>
+{% endblock %}

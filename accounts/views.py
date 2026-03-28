@@ -62,7 +62,7 @@ def login_view(request):
     # Preserve next parameter for GET requests
     next_url = request.GET.get("next", "")
 
-    return render(request, "accounts/login.html", {"error_message": error_message, "next": next_url})
+    return render(request, "accounts/pages/login.html", {"error_message": error_message, "next": next_url})
 
 
 @login_required
@@ -85,7 +85,7 @@ def logout_view(request):
 def dashboard_view(request):
     """
     Simple dashboard view - requires authentication.
-    
-    Template: accounts/dashboard.html (centralized in templates/)
+
+    Template: accounts/pages/dashboard.html (centralized in templates/)
     """
-    return render(request, "accounts/dashboard.html")
+    return render(request, "accounts/pages/dashboard.html")

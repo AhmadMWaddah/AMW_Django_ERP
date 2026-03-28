@@ -1,0 +1,9 @@
+{% extends "layouts/base.html" %}
+
+{% block body_class %}dashboard-shell{% endblock %}
+
+{% block page %}
+    <div class="dashboard-shell">
+        {% block dashboard_content %}{% endblock %}
+    </div>
+{% endblock %}

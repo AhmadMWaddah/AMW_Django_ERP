@@ -1,0 +1,15 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}Dashboard | AMW Django ERP{% endblock %}
+
+{% block dashboard_content %}
+    <main class="dashboard-panel">
+        <h1>Welcome, {{ user.get_full_name }}!</h1>
+        <p>Email: {{ user.email }}</p>
+
+        <form method="post" action="{% url 'accounts:logout' %}">
+            {% csrf_token %}
+            <button type="submit">Logout</button>
+        </form>
+    </main>
+{% endblock %}

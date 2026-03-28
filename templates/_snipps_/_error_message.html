@@ -1,0 +1,14 @@
+{# -- AMW Django ERP - Error Message Snippet -- #}
+{# Constitution Section 7.2: Template Hierarchy - Global Atoms #}
+{#
+  Usage:
+    {% if error_message %}
+      {% include '_snipps_/_error_message.html' with message=error_message %}
+    {% endif %}
+#}
+
+{% if message %}
+<div class="accounts-error-message">
+    {{ message }}
+</div>
+{% endif %}
