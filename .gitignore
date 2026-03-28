@@ -1,0 +1,96 @@
+# -- AMW Django ERP - Git Ignore File --
+# https://github.com/github/gitignore/blob/main/Python.gitignore
+
+# -- Python --
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# -- Virtual Environments --
+.env_amw_dj_erp/
+.venv/
+venv/
+ENV/
+env/
+
+# -- Django --
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+/media
+/staticfiles
+/static
+
+# -- Environment Variables --
+.env
+.env.local
+.env.*.local
+
+# -- IDE --
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# -- Testing --
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+.nox/
+
+# -- Celery --
+celerybeat-schedule
+celerybeat.pid
+
+# -- Documentation --
+*.md
+!README.md
+!Constitution_AMW_DJ_ERP.md
+
+# -- Backup Files --
+*.bak
+*.tmp
+*.temp
+
+# -- Node (if needed later) --
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# -- PyCharm --
+.iml
+
+# -- Project Specific --
+note.txt
+PROJECT_STATUS.md
+ScreenShots/
+.qwen/
+logs/
+
+# -- Docker --
+__pycache__/
+*.pyc
+*.pyo
+*.pyd

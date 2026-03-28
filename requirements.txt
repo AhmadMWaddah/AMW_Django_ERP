@@ -1,0 +1,40 @@
+# -- AMW Django ERP - Requirements --
+# Core Django Framework
+Django>=4.2,<5.0
+django-environ>=0.11.2
+
+# Database
+psycopg2-binary>=2.9.9
+
+# Async Tasks
+celery>=5.3.4
+redis>=5.0.1
+
+# Web Server (Production)
+gunicorn>=21.2.0
+whitenoise>=6.6.0
+
+# Testing
+pytest>=7.4.3
+pytest-django>=4.7.0
+pytest-cov>=4.1.0
+pytest-xdist>=3.5.0
+factory-boy>=3.3.0
+faker>=21.0.0
+
+# Code Quality
+ruff>=0.1.9
+black>=23.12.1
+isort>=5.13.2
+
+# Django Debug Toolbar (Development)
+django-debug-toolbar>=4.2.0
+
+# HTMX Support
+django-htmx>=1.17.2
+
+# Security
+python-dotenv>=1.0.0
+
+# Utilities
+Pillow>=10.2.0

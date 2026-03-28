@@ -1,0 +1,128 @@
+# -- AMW Django ERP - Docker Compose Configuration --
+# Phase 2: Infrastructure & Core Identity
+#
+# Services:
+#   - PostgreSQL: Primary database
+#   - Redis: Cache and Celery broker
+#
+# Usage:
+#   docker-compose up -d              # Start services
+#   docker-compose down               # Stop services
+#   docker-compose ps                 # Check status
+#   docker-compose logs -f            # View logs
+
+services:
+  # -- PostgreSQL Database --
+  postgres:
+    image: postgres:15-alpine
+    container_name: amw_erp_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: amw_django_erp
+      POSTGRES_USER: amw_erp_user
+      POSTGRES_PASSWORD: amw_erp_password_dev
+      POSTGRES_INITDB_ARGS: "-E UTF-8"
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U amw_erp_user -d amw_django_erp"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - amw_erp_network
+
+  # -- Redis Cache / Message Broker --
+  redis:
+    image: redis:7-alpine
+    container_name: amw_erp_redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - amw_erp_network
+
+  # -- Django Web Application (Development) --
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: amw_erp_web
+    restart: unless-stopped
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8010"
+    ports:
+      - "8010:8010"
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    environment:
+      - DB_HOST=postgres
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - amw_erp_network
+
+  # -- Celery Worker --
+  celery_worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: amw_erp_celery_worker
+    restart: unless-stopped
+    command: celery -A config worker --loglevel=info
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    environment:
+      - DB_HOST=postgres
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - redis
+      - web
+    networks:
+      - amw_erp_network
+
+  # -- Celery Beat (Scheduled Tasks) --
+  celery_beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: amw_erp_celery_beat
+    restart: unless-stopped
+    command: celery -A config beat --loglevel=info
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      - redis
+    networks:
+      - amw_erp_network
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  amw_erp_network:
+    driver: bridge
