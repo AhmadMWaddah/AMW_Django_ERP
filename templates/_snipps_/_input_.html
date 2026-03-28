@@ -1,19 +1,16 @@
 {# -- AMW Django ERP - Input Field Snippet -- #}
 {# Constitution Section 7.2: Template Hierarchy - Global Atoms #}
-{#
-  Usage:
-    {% include '_snipps_/_input_.html' with type="email" name="email" label="Email Address" placeholder="you@example.com" required=True autofocus=True %}
-    {% include '_snipps_/_input_.html' with type="password" name="password" label="Password" placeholder="••••••••" required=True %}
-#}
+{# Expected context keys: field_id, label, input_type, name, placeholder, autocomplete, required, autofocus #}
 
 <div class="accounts-form-group">
-    <label for="{{ name }}">{{ label }}</label>
-    <input 
-        type="{{ type }}" 
-        id="{{ name }}" 
-        name="{{ name }}" 
-        {% if required %}required{% endif %}
-        {% if autofocus %}autofocus{% endif %}
+    <label for="{{ field_id|default:name }}">{{ label }}</label>
+    <input
+        type="{{ input_type|default:'text' }}"
+        id="{{ field_id|default:name }}"
+        name="{{ name }}"
+        {% if required|default:False %}required{% endif %}
+        {% if autofocus|default:False %}autofocus{% endif %}
+        {% if autocomplete|default:'' %}autocomplete="{{ autocomplete }}"{% endif %}
         placeholder="{{ placeholder|default:'' }}"
     >
 </div>

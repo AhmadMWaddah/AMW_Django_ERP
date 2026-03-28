@@ -30,7 +30,7 @@
                 {% endif %}
 
                 {% include "_snipps_/_input_.html" with field_id="email" label="Email Address" input_type="email" name="email" placeholder="you@example.com" autocomplete="email" required=True autofocus=True %}
-                {% include "_snipps_/_input_.html" with field_id="password" label="Password" input_type="password" name="password" placeholder="••••••••" autocomplete="current-password" required=True %}
+                {% include "_snipps_/_input_.html" with field_id="password" label="Password" input_type="password" name="password" placeholder="••••••••" autocomplete="current-password" required=True autofocus=False %}
 
                 <button type="submit" class="auth-form__submit">Sign In</button>
             </form>

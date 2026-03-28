@@ -38,7 +38,6 @@ db.sqlite3
 db.sqlite3-journal
 /media
 /staticfiles
-/static
 
 # -- Environment Variables --
 .env
@@ -84,7 +83,6 @@ yarn-error.log
 
 # -- Project Specific --
 note.txt
-PROJECT_STATUS.md
 ScreenShots/
 .qwen/
 logs/
@@ -94,3 +92,5 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
+
+# -- Customs --
