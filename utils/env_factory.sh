@@ -3,7 +3,7 @@
 # -- Environment Factory Script --
 # AMW Django ERP - Virtual Environment Management
 #
-# Usage: 
+# Usage:
 #   ./utils/env_factory.sh create    - Create/recreate virtual environment
 #   ./utils/env_factory.sh init-git  - Initialize Git repository if missing
 #   ./utils/env_factory.sh setup     - Initialize Git, create environment, install dependencies
@@ -22,6 +22,7 @@ VENV_NAME=".env_amw_dj_erp"
 VENV_PATH="$PROJECT_ROOT/$VENV_NAME"
 REQUIREMENTS_FILE="$PROJECT_ROOT/requirements.txt"
 PYTHON_VERSION="python3"
+GITHUB_REPO_NAME="AMW_Django_ERP"
 
 # -- Colors for Output --
 RED='\033[0;31m'
@@ -66,6 +67,102 @@ check_git() {
     fi
 }
 
+check_gh_cli() {
+    if ! command -v gh &> /dev/null; then
+        print_error "GitHub CLI (gh) is not installed."
+        print_info "Install it from: https://cli.github.com/"
+        print_info "Skipping GitHub repository creation."
+        return 1
+    fi
+    return 0
+}
+
+check_gh_auth() {
+    if ! check_gh_cli; then
+        return 1
+    fi
+    
+    print_info "Checking GitHub authentication status..."
+    if gh auth status &> /dev/null; then
+        print_success "GitHub authentication verified"
+        return 0
+    else
+        print_error "Not authenticated with GitHub CLI"
+        print_info "Run 'gh auth login' to authenticate"
+        print_info "Skipping GitHub repository creation."
+        return 1
+    fi
+}
+
+create_github_repo() {
+    print_header "GitHub Repository Creation"
+    
+    if ! check_gh_auth; then
+        return 0
+    fi
+    
+    # Check if remote already exists
+    if git remote get-url origin &> /dev/null; then
+        print_info "Remote 'origin' already configured"
+        ORIGIN_URL=$(git remote get-url origin)
+        print_info "Current remote: $ORIGIN_URL"
+        read -p "Do you want to change it to a new GitHub repository? (y/n): " -n 1 -r
+        echo ""
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            print_info "Keeping existing remote"
+            return 0
+        fi
+    fi
+    
+    # Prompt for repository creation
+    print_info "Repository name: $GITHUB_REPO_NAME"
+    read -p "Do you want to create a remote repository on GitHub? (y/n): " -n 1 -r
+    echo ""
+    
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        print_info "Skipping GitHub repository creation"
+        return 0
+    fi
+    
+    # Ask for visibility
+    read -p "Create as private repository? (y/n): " -n 1 -r
+    echo ""
+    VISIBILITY="--private"
+    if [[ $REPLY =~ ^[Nn]$ ]]; then
+        VISIBILITY="--public"
+        print_info "Creating public repository"
+    else
+        print_info "Creating private repository"
+    fi
+    
+    # Create the repository
+    print_info "Creating GitHub repository: $GITHUB_REPO_NAME"
+    
+    # Try to create, handle existing repo gracefully
+    if gh repo create "$GITHUB_REPO_NAME" $VISIBILITY --source=. --remote=origin --push 2>&1 | grep -q "already exists"; then
+        print_info "Repository already exists on GitHub"
+        print_info "Linking existing remote..."
+        
+        # Get the current user's GitHub username
+        GH_USER=$(gh api user | jq -r .login 2>/dev/null || echo "")
+        
+        if [ -n "$GH_USER" ]; then
+            REMOTE_URL="https://github.com/${GH_USER}/${GITHUB_REPO_NAME}.git"
+            git remote remove origin 2>/dev/null || true
+            git remote add origin "$REMOTE_URL"
+            print_success "Linked to existing repository: $REMOTE_URL"
+        else
+            print_info "Could not determine GitHub username"
+            print_info "Please manually set the remote URL"
+            print_info "Example: git remote add origin https://github.com/YOUR_USERNAME/$GITHUB_REPO_NAME.git"
+        fi
+    else
+        REPO_URL="https://github.com/$(gh api user | jq -r .login 2>/dev/null || echo 'YOUR_USERNAME')/$GITHUB_REPO_NAME"
+        print_success "GitHub repository created successfully"
+        print_info "Repository URL: $REPO_URL"
+    fi
+}
+
 init_git_repo() {
     print_header "Git Repository Setup"
 
@@ -74,12 +171,22 @@ init_git_repo() {
     if git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
         print_info "Git repository already initialized"
         print_info "Repository root: $(git rev-parse --show-toplevel)"
+        
+        # Offer to create GitHub repo even if git is already initialized
+        read -p "Do you want to configure GitHub remote? (y/n): " -n 1 -r
+        echo ""
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+            create_github_repo
+        fi
         return 0
     fi
 
     print_info "Initializing Git repository at: $PROJECT_ROOT"
     git init
     print_success "Git repository initialized successfully"
+    
+    # Offer to create GitHub repository
+    create_github_repo
 }
 
 create_venv() {
@@ -194,17 +301,22 @@ show_usage() {
     echo ""
     echo "Commands:"
     echo "  create    - Create/recreate the virtual environment"
-    echo "  init-git  - Initialize Git repository if missing"
+    echo "  init-git  - Initialize Git repository (with optional GitHub remote)"
     echo "  setup     - Bootstrap Git, environment, and dependencies"
     echo "  activate  - Check if environment can be activated"
     echo "  install   - Install dependencies from requirements.txt"
     echo "  clean     - Remove the virtual environment"
     echo "  help      - Show this help message"
     echo ""
+    echo "GitHub Integration:"
+    echo "  - Requires GitHub CLI (gh) installed and authenticated"
+    echo "  - Run 'gh auth login' to authenticate before using GitHub features"
+    echo "  - The init-git command will prompt to create a GitHub repository"
+    echo ""
     echo "Examples:"
     echo "  $0 create"
-    echo "  $0 init-git"
-    echo "  $0 setup"
+    echo "  $0 init-git           # Will prompt for GitHub repo creation"
+    echo "  $0 setup              # Full bootstrap with GitHub option"
     echo "  $0 install"
     echo "  source $VENV_NAME/bin/activate  # Then activate manually"
 }
