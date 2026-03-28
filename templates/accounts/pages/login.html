@@ -1,43 +1,96 @@
-{% extends "layouts/base.html" %}
-{% load static %}
-
-{% block title %}Login | AMW Django ERP{% endblock %}
-{% block body_class %}auth-page{% endblock %}
-
-{% block extra_styles %}
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<!-- -- AMW Django ERP - Login Page -- -->
+<!-- -- Constitution Section 7.2: templates/<module>/pages/ -- -->
+<!-- -- Design: Split layout with branding (Login_screenshot.png) -- -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | AMW Django ERP - Phase 2 Identity</title>
+    
+    <!-- -- External Stylesheet (Constitution Section 7.3) -- -->
     <link rel="stylesheet" href="{% static 'styles/accounts-auth.css' %}">
-{% endblock %}
-
-{% block page %}
-    <main class="auth-page__stage">
-        <section class="auth-card" aria-labelledby="login-title">
-            <header class="auth-card__header">
-                <p class="auth-card__eyebrow">AMW Django ERP</p>
-                <h1 id="login-title">Sign in to your account</h1>
-                <p class="auth-card__lead">Use your employee email and password to continue.</p>
-            </header>
-
+</head>
+<body class="accounts-login-page">
+    <div class="accounts-login-container">
+        <!-- -- Left Panel - Branding -- -->
+        <div class="accounts-login-left">
+            <div class="accounts-login-brand">
+                <div class="accounts-login-logo">AMW</div>
+                <div class="accounts-login-brand-name">AMW Django ERP</div>
+            </div>
+            
+            <div class="accounts-login-content">
+                <div class="accounts-login-phase">Phase 2 Identity</div>
+                <h2 class="accounts-login-tagline">Structured access for real operations.</h2>
+                <p class="accounts-login-description">
+                    Employee authentication should feel calm, credible, and deliberate from the first screen.
+                </p>
+            </div>
+        </div>
+        
+        <!-- -- Right Panel - Login Form -- -->
+        <div class="accounts-login-right">
+            <div class="accounts-login-header">
+                <span class="brand-name">AMW Django ERP</span>
+                <h1>Log in to your account</h1>
+                <p class="subtitle">Welcome back. Enter your employee credentials to continue.</p>
+            </div>
+            
+            <!-- -- Error Message (using _snipps_) -- -->
             {% if error_message %}
-                <div class="auth-alert auth-alert--error" role="alert">
-                    {{ error_message }}
-                </div>
+                {% include '_snipps_/_error_message.html' with message=error_message %}
             {% endif %}
-
-            <form method="post" action="{% url 'accounts:login' %}" class="auth-form">
+            
+            <!-- -- Login Form -- -->
+            <form method="post" action="{% url 'accounts:login' %}" class="accounts-login-form">
                 {% csrf_token %}
+                
+                <!-- -- Hidden next field for redirect after login -- -->
                 {% if next %}
                     <input type="hidden" name="next" value="{{ next }}">
                 {% endif %}
-
-                {% include "_snipps_/_input_.html" with field_id="email" label="Email Address" input_type="email" name="email" placeholder="you@example.com" autocomplete="email" required=True autofocus=True %}
-                {% include "_snipps_/_input_.html" with field_id="password" label="Password" input_type="password" name="password" placeholder="••••••••" autocomplete="current-password" required=True autofocus=False %}
-
-                <button type="submit" class="auth-form__submit">Sign In</button>
+                
+                <!-- -- Email Input -- -->
+                <div class="accounts-form-group">
+                    <label for="email">Email</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        placeholder="Enter your email"
+                        required 
+                        autofocus
+                    >
+                </div>
+                
+                <!-- -- Password Input -- -->
+                <div class="accounts-form-group">
+                    <label for="password">Password</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        placeholder="Enter your password"
+                        required
+                    >
+                </div>
+                
+                <!-- -- Form Footer -- -->
+                <div class="accounts-form-footer">
+                    <span class="admin-only">Admin access only</span>
+                    <a href="#" class="help-link">Need help?</a>
+                </div>
+                
+                <!-- -- Submit Button -- -->
+                <button type="submit" class="accounts-submit-btn">Sign In</button>
             </form>
-
-            <footer class="auth-card__footer">
-                <p>Admin access only</p>
-            </footer>
-        </section>
-    </main>
-{% endblock %}
+            
+            <!-- -- Footer Info -- -->
+            <div class="accounts-login-footer">
+                Secure employee identity gateway for AMW internal operations.
+            </div>
+        </div>
+    </div>
+</body>
+</html>

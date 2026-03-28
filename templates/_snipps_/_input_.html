@@ -3,8 +3,9 @@
 {# Expected context keys: field_id, label, input_type, name, placeholder, autocomplete, required, autofocus #}
 
 <div class="accounts-form-group">
-    <label for="{{ field_id|default:name }}">{{ label }}</label>
+    <label class="accounts-form-group__label" for="{{ field_id|default:name }}">{{ label }}</label>
     <input
+        class="accounts-form-group__input"
         type="{{ input_type|default:'text' }}"
         id="{{ field_id|default:name }}"
         name="{{ name }}"

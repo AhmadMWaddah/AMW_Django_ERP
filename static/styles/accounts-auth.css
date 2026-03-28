@@ -1,117 +1,265 @@
-.auth-page {
-    min-height: 100vh;
-    background: linear-gradient(135deg, var(--color-brand-900) 0%, var(--color-brand-700) 50%, var(--color-brand-500) 100%);
-}
+/* -- AMW Django ERP - Authentication Styles -- */
+/* Constitution Section 7.3: Asset Placement */
+/* Brand Colors: Coolors Palette - Earthy Brown Theme */
 
-.auth-page__stage {
+/* -- Login Page - Split Layout -- */
+
+.accounts-login-page {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 24px;
-}
-
-.auth-card {
-    width: min(100%, 430px);
-    background: var(--color-panel);
-    border: 1px solid var(--color-panel-border);
-    border-radius: var(--radius-panel);
-    box-shadow: var(--shadow-panel);
-    padding: 36px;
-}
-
-.auth-card__header {
-    text-align: center;
-    margin-bottom: 28px;
-}
-
-.auth-card__eyebrow {
-    margin: 0 0 8px;
-    font-size: 12px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--color-brand-700);
-}
-
-.auth-card__header h1 {
-    margin: 0 0 10px;
-    font-size: 31px;
-    line-height: 1.1;
-    color: var(--color-brand-900);
-}
-
-.auth-card__lead,
-.auth-card__footer {
+    padding: 0;
     margin: 0;
-    color: var(--color-muted);
+}
+
+.accounts-login-container {
+    display: flex;
+    width: 100%;
+    max-width: 1200px;
+    min-height: 700px;
+    background: white;
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+/* -- Left Panel - Branding -- */
+
+.accounts-login-left {
+    flex: 1;
+    background: linear-gradient(135deg, #fef9f3 0%, #fff8e8 50%, #f5e6d3 100%);
+    padding: 60px 48px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+}
+
+.accounts-login-left::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 200, 150, 0.15) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.accounts-login-brand {
+    position: relative;
+    z-index: 1;
+}
+
+.accounts-login-logo {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 18px;
+    margin-bottom: 16px;
+}
+
+.accounts-login-brand-name {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #7f4f24;
+}
+
+.accounts-login-content {
+    position: relative;
+    z-index: 1;
+}
+
+.accounts-login-phase {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #936639;
+    margin-bottom: 16px;
+}
+
+.accounts-login-tagline {
+    font-size: 36px;
+    font-weight: 700;
+    color: #582f0e;
+    line-height: 1.2;
+    margin: 0 0 16px 0;
+}
+
+.accounts-login-description {
     font-size: 14px;
+    color: #666;
+    line-height: 1.6;
+    max-width: 400px;
 }
 
-.auth-alert {
-    margin-bottom: 18px;
-    padding: 12px 14px;
-    border-radius: var(--radius-control);
+/* -- Right Panel - Form -- */
+
+.accounts-login-right {
+    flex: 1;
+    padding: 60px 48px;
+    display: flex;
+    flex-direction: column;
+}
+
+.accounts-login-header {
+    margin-bottom: 32px;
+}
+
+.accounts-login-header .brand-name {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #7f4f24;
+    margin-bottom: 12px;
+}
+
+.accounts-login-header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0 0 12px 0;
+    line-height: 1.2;
+}
+
+.accounts-login-header .subtitle {
+    color: #666;
     font-size: 14px;
+    line-height: 1.6;
 }
 
-.auth-alert--error {
-    background: var(--color-danger-surface);
-    color: var(--color-danger-text);
+.accounts-login-form {
+    flex: 1;
 }
 
-.auth-form {
-    display: grid;
-    gap: 18px;
+.accounts-form-group {
+    margin-bottom: 24px;
 }
 
-.form-field {
-    display: grid;
-    gap: 8px;
+.accounts-form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #1a1a1a;
+    font-weight: 600;
+    font-size: 13px;
 }
 
-.form-field__label {
+/* Input styling from screenshot */
+.accounts-form-group input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1.5px solid #e5e5e5;
+    border-radius: 10px;
     font-size: 14px;
+    transition: all 0.2s ease;
+    background: white;
+    box-sizing: border-box;
+}
+
+.accounts-form-group input:focus {
+    outline: none;
+    border-color: #f59e0b;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+}
+
+.accounts-form-group input::placeholder {
+    color: #999;
+}
+
+.accounts-form-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    font-size: 13px;
+}
+
+.accounts-form-footer .admin-only {
+    color: #666;
+}
+
+.accounts-form-footer .help-link {
+    color: #f59e0b;
+    text-decoration: none;
     font-weight: 600;
 }
 
-.form-field__input {
-    width: 100%;
-    padding: 13px 14px;
-    border: 1px solid var(--color-panel-border);
-    border-radius: var(--radius-control);
-    font: inherit;
-    color: var(--color-ink);
-    background: #fff;
+.accounts-form-footer .help-link:hover {
+    text-decoration: underline;
 }
 
-.form-field__input:focus {
-    outline: 2px solid rgba(127, 79, 36, 0.25);
-    border-color: var(--color-brand-700);
-}
-
-.auth-form__submit {
+.accounts-submit-btn {
     width: 100%;
-    padding: 14px 16px;
-    border: 0;
-    border-radius: var(--radius-control);
-    background: var(--color-brand-700);
-    color: #fff;
-    font: inherit;
-    font-weight: 700;
+    padding: 16px;
+    background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
     cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
 }
 
-.auth-form__submit:hover {
-    background: var(--color-brand-900);
+.accounts-submit-btn:hover {
+    background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(245, 158, 11, 0.3);
 }
 
-.auth-card__footer {
-    margin-top: 22px;
-    text-align: center;
+.accounts-submit-btn:active {
+    transform: translateY(0);
 }
 
-.dashboard-panel {
-    max-width: 820px;
-    margin: 40px auto;
-    padding: 24px;
+.accounts-login-footer {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid #f0f0f0;
+    font-size: 13px;
+    color: #666;
+    line-height: 1.6;
+}
+
+/* -- Error Message -- */
+
+.accounts-error-message {
+    background: #fef2f2;
+    color: #dc2626;
+    padding: 14px 16px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    font-size: 14px;
+    border: 1px solid #fecaca;
+}
+
+/* -- Responsive -- */
+
+@media (max-width: 968px) {
+    .accounts-login-container {
+        flex-direction: column;
+        max-width: 500px;
+        min-height: auto;
+    }
+    
+    .accounts-login-left {
+        display: none;
+    }
+    
+    .accounts-login-right {
+        padding: 48px 32px;
+    }
 }
