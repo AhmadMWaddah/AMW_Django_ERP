@@ -12,13 +12,14 @@ Tests cover:
 """
 
 import pytest
+from django.test import Client
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 
 Employee = get_user_model()
 
 
-@pytest.mark.unit
+@pytest.mark.django_db
 class TestEmployeeModel:
     """Tests for the Employee model."""
     
@@ -59,7 +60,8 @@ class TestEmployeeModel:
             password='pass123'
         )
         
-        assert employee.email == 'test@example.com'
+        # Django normalizes email to lowercase in save()
+        assert Employee.objects.get(pk=employee.pk).email == 'test@example.com'
     
     def test_create_employee_without_email(self):
         """Test that creating employee without email raises error."""
@@ -114,7 +116,7 @@ class TestEmployeeModel:
         assert employee2.get_short_name() == 'short@example.com'
 
 
-@pytest.mark.unit
+@pytest.mark.django_db
 class TestSuperuser:
     """Tests for superuser creation."""
     
@@ -156,11 +158,15 @@ class TestSuperuser:
 class TestAuthenticationFlow:
     """Integration tests for login/logout flow."""
     
+    def setup_method(self):
+        """Setup test client."""
+        self.client = Client()
+    
     def test_login_page_loads(self):
         """Test that login page loads successfully."""
         response = self.client.get(reverse('accounts:login'))
         assert response.status_code == 200
-        assert 'login.html' in [t.name for t in response.templates]
+        assert 'accounts/login.html' in [t.name for t in response.templates]
     
     def test_login_success(self):
         """Test successful login."""
@@ -195,7 +201,7 @@ class TestAuthenticationFlow:
         })
         
         assert response.status_code == 200
-        assert 'Please provide both email or password' in response.content.decode()
+        assert 'Please provide both email and password' in response.content.decode()
     
     def test_logout(self):
         """Test logout functionality."""
@@ -238,6 +244,10 @@ class TestAuthenticationFlow:
 @pytest.mark.integration
 class TestSecurity:
     """Security tests for authentication views."""
+    
+    def setup_method(self):
+        """Setup test client."""
+        self.client = Client()
     
     def test_open_redirect_blocked(self):
         """Test that external URLs are blocked in 'next' parameter."""
