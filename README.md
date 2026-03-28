@@ -19,16 +19,21 @@ AMW Django ERP is a comprehensive, production-ready ERP system designed for real
 
 ## 📊 Current Status
 
-| Phase       | Name                                         | Status           |
-|-------------|----------------------------------------------|------------------|
-| **Phase 1** | Foundation, Automation & Local Scaffolding   | ✅ **COMPLETE**  |
-| **Phase 2** | Infrastructure & Core Identity               | ✅ **COMPLETE**  |
-| Phase 3     | IAM & Security Framework                     | ⏳ **NEXT**      |
-| Phase 4     | Inventory Architecture & Valuation           | ⏳ Planned       |
-| Phase 5     | Sales & CRM Workflows                        | ⏳ Planned       |
-| Phase 6     | Purchasing & Procurement                     | ⏳ Planned       |
-| Phase 7     | Frontend Foundation & HTMX UI                | ⏳ Planned       |
-| Phase 8     | Async Tasks, Reporting & Hardening           | ⏳ Planned       |
+| Phase       | Name                                         | Status           | Branch          |
+|-------------|----------------------------------------------|------------------|-----------------|
+| **Phase 1** | Foundation, Automation & Local Scaffolding   | ✅ **COMPLETE**  | `master`        |
+| **Phase 2** | Infrastructure & Core Identity               | ✅ **COMPLETE**  | `phase-2`       |
+| Phase 3     | IAM & Security Framework                     | ⏳ **NEXT**      | `phase-3`       |
+| Phase 4     | Inventory Architecture & Valuation           | ⏳ Planned       | `phase-4`       |
+| Phase 5     | Sales & CRM Workflows                        | ⏳ Planned       | `phase-5`       |
+| Phase 6     | Purchasing & Procurement                     | ⏳ Planned       | `phase-6`       |
+| Phase 7     | Frontend Foundation & HTMX UI                | ⏳ Planned       | `phase-7`       |
+| Phase 8     | Async Tasks, Reporting & Hardening           | ⏳ Planned       | `phase-8`       |
+
+**Branch Strategy:**
+- `master` - Stable production baseline (Phase 1 complete)
+- `phase-2` - Current development (Phase 2 complete, bug fixes in progress)
+- Future phases will be developed in `phase-X` branches and merged to `master` after approval
 
 **See `Architecture/Phase_2_Infrastructure_Identity.md` for Phase 2 completion details.**
 
