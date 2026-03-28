@@ -22,15 +22,15 @@ AMW Django ERP is a comprehensive, production-ready ERP system designed for real
 | Phase       | Name                                         | Status           |
 |-------------|----------------------------------------------|------------------|
 | **Phase 1** | Foundation, Automation & Local Scaffolding   | ✅ **COMPLETE**  |
-| Phase 2     | Infrastructure & Core Identity               | ⏳ **NEXT**      |
-| Phase 3     | IAM & Security Framework                     | ⏳ Planned       |
+| **Phase 2** | Infrastructure & Core Identity               | ✅ **COMPLETE**  |
+| Phase 3     | IAM & Security Framework                     | ⏳ **NEXT**      |
 | Phase 4     | Inventory Architecture & Valuation           | ⏳ Planned       |
 | Phase 5     | Sales & CRM Workflows                        | ⏳ Planned       |
 | Phase 6     | Purchasing & Procurement                     | ⏳ Planned       |
 | Phase 7     | Frontend Foundation & HTMX UI                | ⏳ Planned       |
 | Phase 8     | Async Tasks, Reporting & Hardening           | ⏳ Planned       |
 
-**See `Architecture/Phase_1_Foundation.md` for the official Phase 1 completion record.**
+**See `Architecture/Phase_2_Infrastructure_Identity.md` for Phase 2 completion details.**
 
 ---
 
@@ -264,12 +264,12 @@ MIT License - See [LICENSE](LICENSE) file
 
 ## 🎯 Next Steps
 
-**Phase 2: Infrastructure & Core Identity**
+**Phase 3: IAM & Security Framework**
 
-- [ ] Docker Compose services (PostgreSQL, Redis)
-- [ ] Custom `Employee` model (AbstractBaseUser)
-- [ ] Authentication (login/logout)
-- [ ] Admin integration
+- [ ] Department, Role, and Policy models
+- [ ] Policy enforcement engine
+- [ ] Audit logging system
+- [ ] Integration with Employee model
 
 ---
 
