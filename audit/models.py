@@ -106,6 +106,7 @@ class AuditLog(models.Model):
         help_text='IP address of the request'
     )
     user_agent = models.TextField(
+        null=True,
         blank=True,
         help_text='User agent string from request'
     )

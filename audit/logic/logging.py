@@ -15,7 +15,7 @@ Usage:
 import json
 import functools
 from django.utils import timezone
-from .models import AuditLog
+from audit.models import AuditLog
 
 
 def audit_operation(action_code, action='other', get_target=None):
@@ -75,8 +75,8 @@ def audit_operation(action_code, action='other', get_target=None):
                     actor=actor,
                     action_code=action_code,
                     action=action,
-                    content_type=getattr(target_after, '__class__', type(None)).__name__,
-                    object_id=getattr(target_after, 'id', None),
+                    content_type=getattr(target_after, '__class__', type(None)).__name__ if target_after else 'Unknown',
+                    object_id=str(getattr(target_after, 'id', 'unknown')) if target_after and hasattr(target_after, 'id') else 'unknown',
                     object_repr=str(target_after) if target_after else 'Unknown',
                     before_data=serialize_for_audit(target_before),
                     after_data=serialize_for_audit(target_after),
