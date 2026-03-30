@@ -81,23 +81,20 @@ class Employee(AbstractBaseUser, PermissionsMixin):
 
     # -- Manager --
     objects = EmployeeManager()
-    
+
     # -- IAM Integration (Constitution Section 6.3) --
     department = models.ForeignKey(
-        'security.Department',
+        "security.Department",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name='employees',
-        help_text='Department this employee belongs to'
+        related_name="employees",
+        help_text="Department this employee belongs to",
     )
     roles = models.ManyToManyField(
-        'security.Role',
-        blank=True,
-        related_name='employees',
-        help_text='Roles assigned to this employee'
+        "security.Role", blank=True, related_name="employees", help_text="Roles assigned to this employee"
     )
-    
+
     # -- Required for AbstractBaseUser --
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["first_name", "last_name"]
