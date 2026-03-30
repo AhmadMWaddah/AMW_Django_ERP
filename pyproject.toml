@@ -46,12 +46,14 @@ filterwarnings = [
 target-version = "py310"
 line-length = 120
 
+# Note: Import sorting (I001) is intentionally excluded because we use
+# custom section headers (# -- Section Name --) that conflict with ruff's isort.
+# Our lint script (test_suite_runner.sh) ignores I001 for this reason.
 [tool.ruff.lint]
 select = [
     "E",   # pycodestyle errors
     "W",   # pycodestyle warnings
     "F",   # Pyflakes
-    "I",   # isort
     "B",   # flake8-bugbear
     "C4",  # flake8-comprehensions
     "UP",  # pyupgrade
