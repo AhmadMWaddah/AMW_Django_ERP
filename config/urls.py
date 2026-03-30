@@ -24,7 +24,6 @@ urlpatterns = [
     path("health/", TemplateView.as_view(template_name="health.html"), name="Health"),
 ]
 
-# -- Static & Media Files (Development) --
 if settings.DEBUG:
     if "debug_toolbar" in settings.INSTALLED_APPS:
         urlpatterns = [
@@ -34,6 +33,5 @@ if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-# -- Error Pages --
 handler404 = "core.views.error_404"
 handler500 = "core.views.error_500"

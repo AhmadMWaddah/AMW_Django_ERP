@@ -1,9 +1,7 @@
-/* -- AMW Django ERP - Accounts Styles -- */
 /* Module: Authentication (Login, Logout, Dashboard) */
 /* Constitution Section 7.3: Asset Placement */
 /* Brand Colors: Coolors Palette - Earthy Brown Theme */
 
-/* -- Login Page Styles -- */
 
 .accounts-login-page {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
@@ -132,7 +130,6 @@
     font-weight: 500;
 }
 
-/* -- Dashboard Styles -- */
 
 .accounts-dashboard-page {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;

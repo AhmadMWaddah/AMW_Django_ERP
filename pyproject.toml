@@ -46,13 +46,13 @@ filterwarnings = [
 target-version = "py310"
 line-length = 120
 
-# Re-enable import sorting with custom section configuration
+# Full automation - Ruff manages imports automatically
 [tool.ruff.lint]
 select = [
     "E",   # pycodestyle errors
     "W",   # pycodestyle warnings
     "F",   # Pyflakes
-    "I",   # isort - RE-ENABLED with custom sections
+    "I",   # isort - Automated import sorting
     "B",   # flake8-bugbear
     "C4",  # flake8-comprehensions
     "UP",  # pyupgrade
@@ -66,12 +66,6 @@ ignore = [
     "ARG001",# unused function argument
     "ARG002",# unused method argument
 ]
-
-# Configure isort to recognize our custom section headers
-[tool.ruff.lint.isort]
-known-first-party = ["accounts", "audit", "config", "core", "security"]
-section-order = ["future", "standard-library", "third-party", "first-party", "local-folder"]
-# Preserve custom section comments (# -- Section Name --)
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]  # unused imports in __init__ are OK

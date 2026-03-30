@@ -1,19 +1,14 @@
 {% load static %}<!DOCTYPE html>
 <html lang="en">
-<!-- -- AMW Django ERP - Login Page -- -->
-<!-- -- Constitution Section 7.2: templates/<module>/pages/ -- -->
-<!-- -- Design: Split layout with branding (Login_screenshot.png) -- -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login | AMW Django ERP - Phase 2 Identity</title>
     
-    <!-- -- External Stylesheet (Constitution Section 7.3) -- -->
     <link rel="stylesheet" href="{% static 'styles/accounts-auth.css' %}">
 </head>
 <body class="accounts-login-page">
     <div class="accounts-login-container">
-        <!-- -- Left Panel - Branding -- -->
         <div class="accounts-login-left">
             <div class="accounts-login-brand">
                 <div class="accounts-login-logo">AMW</div>
@@ -29,7 +24,6 @@
             </div>
         </div>
         
-        <!-- -- Right Panel - Login Form -- -->
         <div class="accounts-login-right">
             <div class="accounts-login-header">
                 <span class="brand-name">AMW Django ERP</span>
@@ -37,21 +31,17 @@
                 <p class="subtitle">Welcome back. Enter your employee credentials to continue.</p>
             </div>
             
-            <!-- -- Error Message (using _snipps_) -- -->
             {% if error_message %}
                 {% include '_snipps_/_error_message.html' with message=error_message %}
             {% endif %}
             
-            <!-- -- Login Form -- -->
             <form method="post" action="{% url 'Accounts:Login' %}" class="accounts-login-form">
                 {% csrf_token %}
                 
-                <!-- -- Hidden next field for redirect after login -- -->
                 {% if next %}
                     <input type="hidden" name="next" value="{{ next }}">
                 {% endif %}
                 
-                <!-- -- Email Input -- -->
                 <div class="accounts-form-group">
                     <label for="email">Email</label>
                     <input 
@@ -64,7 +54,6 @@
                     >
                 </div>
                 
-                <!-- -- Password Input -- -->
                 <div class="accounts-form-group">
                     <label for="password">Password</label>
                     <input 
@@ -76,17 +65,14 @@
                     >
                 </div>
                 
-                <!-- -- Form Footer -- -->
                 <div class="accounts-form-footer">
                     <span class="admin-only">Admin access only</span>
                     <a href="#" class="help-link">Need help?</a>
                 </div>
                 
-                <!-- -- Submit Button -- -->
                 <button type="submit" class="accounts-submit-btn">Sign In</button>
             </form>
             
-            <!-- -- Footer Info -- -->
             <div class="accounts-login-footer">
                 Secure employee identity gateway for AMW internal operations.
             </div>

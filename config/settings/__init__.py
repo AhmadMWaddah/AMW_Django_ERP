@@ -1,4 +1,3 @@
-# -- AMW Django ERP - Settings Package --
 # This package contains environment-specific settings modules.
 #
 # Structure:

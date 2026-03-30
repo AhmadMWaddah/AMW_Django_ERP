@@ -4,12 +4,8 @@
 Authentication URL patterns: login, logout, dashboard
 """
 
-# -- Standard Library --
-
-# -- Third-Party (Django) --
 from django.urls import path
 
-# -- Local Imports --
 from . import views
 
 app_name = "Accounts"

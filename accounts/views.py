@@ -9,16 +9,11 @@ Security:
 - Open redirect protection using Django's built-in validator
 """
 
-# -- Standard Library --
-
-# -- Third-Party (Django) --
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_http_methods
-
-# -- Local Imports --
 
 
 @require_http_methods(["GET", "POST"])

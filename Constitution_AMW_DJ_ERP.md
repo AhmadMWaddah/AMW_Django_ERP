@@ -456,12 +456,13 @@ error = 'Invalid email or password'
 
 - Use docstrings for classes, operation methods, and non-trivial utilities.
 - Comments must explain why, not repeat what the code already says.
-- Use clear section headers where they improve readability in large files.
+- Import statements MUST be managed automatically by Ruff/isort (no manual section headers).
+- Avoid manual import organization; let automation handle consistency.
 
-**Preferred section styles:**
-- Python or Bash: `# -- Section Name --`
-- HTML: `<!-- -- Section Name -- -->`
-- CSS or JS: `/* -- Section Name -- */`
+**Automated Import Management:**
+- Ruff (with isort rules) automatically sorts all imports
+- No manual `# -- Section --` headers in import blocks
+- CI enforces consistent import ordering across the codebase
 
 ---
 

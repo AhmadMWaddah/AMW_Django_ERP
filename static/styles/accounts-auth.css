@@ -1,8 +1,6 @@
-/* -- AMW Django ERP - Authentication Styles -- */
 /* Constitution Section 7.3: Asset Placement */
 /* Brand Colors: Coolors Palette - Earthy Brown Theme */
 
-/* -- Login Page - Split Layout -- */
 
 .accounts-login-page {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
@@ -25,7 +23,6 @@
     overflow: hidden;
 }
 
-/* -- Left Panel - Branding -- */
 
 .accounts-login-left {
     flex: 1;
@@ -104,7 +101,6 @@
     max-width: 400px;
 }
 
-/* -- Right Panel - Form -- */
 
 .accounts-login-right {
     flex: 1;
@@ -234,7 +230,6 @@
     line-height: 1.6;
 }
 
-/* -- Error Message -- */
 
 .accounts-error-message {
     background: #fef2f2;
@@ -246,7 +241,6 @@
     border: 1px solid #fecaca;
 }
 
-/* -- Responsive -- */
 
 @media (max-width: 968px) {
     .accounts-login-container {
