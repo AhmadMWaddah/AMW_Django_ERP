@@ -99,10 +99,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Migration Safety Gate
-        run: |
-          python manage.py makemigrations --check --dry-run --settings=config.settings.dev
-
       - name: Create test .env file
         run: |
           cat > .env << EOF
@@ -117,6 +113,10 @@ jobs:
           DB_PORT=5432
           REDIS_URL=redis://localhost:6379/0
           EOF
+
+      - name: Migration Safety Gate
+        run: |
+          python manage.py makemigrations --check --dry-run --settings=config.settings.dev
 
       - name: Run migrations
         run: |
