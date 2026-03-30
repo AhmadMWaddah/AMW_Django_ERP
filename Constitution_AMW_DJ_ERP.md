@@ -303,11 +303,37 @@ git commit -m "Feature: Open redirect protection" -m "Added Django's url_has_all
 - Description should explain WHAT and WHY (not HOW)
 - Both title and description are mandatory
 - Use the utility script `utils/git_task_commit.sh` for consistency
+- **Local Quality Gate:** The commit script runs mandatory lint checks before allowing commits
 
 ### 9.4 Merge Rule
 
 - Merge to `master` only after Ahmad confirms deliverables and fixes.
 - Architecture-sensitive changes should be reviewed before merge.
+- Use `utils/git_phase_finish.sh` for automated phase completion and merging.
+
+### 9.5 Phase Completion and Tagging
+
+**MANDATORY:** Each completed phase MUST be:
+1. Merged to `master` branch
+2. Tagged with a version tag (e.g., `v3.0-phase3`)
+3. Pushed to GitHub with tags
+
+**Automated Process:**
+```bash
+./utils/git_phase_finish.sh <phase-number> [version-tag]
+
+# Examples:
+./utils/git_phase_finish.sh 3           # Auto-generates tag
+./utils/git_phase_finish.sh 3 v3.0     # Custom tag
+```
+
+**What the script does:**
+1. Runs full test suite (must pass)
+2. Runs lint checks (must pass)
+3. Merges phase branch to master
+4. Creates annotated version tag
+5. Pushes master and tags to GitHub
+6. Optionally cleans up phase branch
 
 ---
 
@@ -513,7 +539,68 @@ Required outcomes:
 
 ---
 
-## 14. Testing and Verification Law
+## 14. CI/CD and Automation Law
+
+### 14.1 CI Defender (GitHub Actions)
+
+**MANDATORY:** All pushes and pull requests MUST pass CI checks.
+
+**CI Pipeline Jobs:**
+1. **Lint Check** - Ruff and Black formatting
+2. **Test Suite** - Full pytest coverage with PostgreSQL
+3. **Django Check** - System check for dev and prod settings
+4. **Build Verification** - Docker image build success
+
+**No PR shall be merged unless the CI Defender is Green.**
+
+### 14.2 Local Quality Gate
+
+**MANDATORY:** All commits MUST pass lint checks before entering Git history.
+
+**Enforcement:**
+- `utils/git_task_commit.sh` runs mandatory lint check
+- Ruff must pass (with I001 ignored for import sorting)
+- Black must pass (auto-formats if needed)
+- Commit blocked if lint fails
+
+### 14.3 Phase Completion Automation
+
+**MANDATORY:** Phase completion MUST use the automated script.
+
+**Script:** `utils/git_phase_finish.sh`
+
+**Automated Steps:**
+1. Run full test suite (must pass)
+2. Run lint checks (must pass)
+3. Merge phase branch to master
+4. Create version tag
+5. Push to GitHub
+6. Cleanup phase branch (optional)
+
+**Usage:**
+```bash
+./utils/git_phase_finish.sh <phase-number> [version-tag]
+```
+
+### 14.4 Milestone Tagging
+
+**MANDATORY:** Each completed phase MUST be tagged.
+
+**Tag Format:** `v{phase-number}.0-phase{phase-number}-complete`
+
+**Examples:**
+- `v1.0-phase1-complete`
+- `v2.0-phase2-complete`
+- `v3.0-phase3-complete`
+
+**Benefits:**
+- Instant rollback capability
+- Clear historical milestones
+- Production deployment markers
+
+---
+
+## 15. Testing and Verification Law
 
 - Every critical business feature requires tests.
 - Every bug fix should include regression protection where practical.

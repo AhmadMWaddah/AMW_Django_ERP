@@ -41,6 +41,41 @@ print_info() {
     echo -e "${YELLOW}INFO: $1${NC}"
 }
 
+run_lint_check() {
+    print_header "Running Lint Check (Quality Gate)"
+    
+    # Activate virtual environment if available
+    if [ -d "$PROJECT_ROOT/.env_amw_dj_erp" ]; then
+        source "$PROJECT_ROOT/.env_amw_dj_erp/bin/activate"
+    fi
+    
+    cd "$PROJECT_ROOT"
+    
+    # Run ruff check
+    print_info "Running ruff..."
+    if python -m ruff check . --fix --ignore I001; then
+        print_success "Ruff check passed"
+    else
+        print_error "Ruff check failed"
+        print_info "Please fix linting errors before committing"
+        print_info "Run: python -m ruff check . --fix"
+        exit 1
+    fi
+    
+    # Run black check
+    print_info "Running black (check mode)..."
+    if python -m black --check .; then
+        print_success "Black check passed"
+    else
+        print_info "Formatting code with black..."
+        python -m black .
+        print_success "Code formatted"
+        print_info "Please review formatted changes and re-commit"
+    fi
+    
+    print_success "Lint check completed successfully"
+}
+
 # -- Validation --
 if [ $# -lt 2 ]; then
     print_error "Both Title and Description are required"
@@ -99,6 +134,9 @@ fi
 echo "Changes to be committed:"
 echo "$STAGED_STATUS"
 echo ""
+
+# -- Run Lint Check (Quality Gate) --
+run_lint_check
 
 # -- Create Commit Message --
 # Format: [branch] Title + Description (Multi-Message)
