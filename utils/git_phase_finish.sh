@@ -194,29 +194,36 @@ else
     print_warning "You can push tags manually: git push origin $VERSION_TAG"
 fi
 
-# -- Step 7: Cleanup --
+# -- Step 7: Cleanup (Automatic Branch Removal) --
 print_header "Step 7: Cleanup"
 
-read -p "Do you want to delete the $PHASE_BRANCH branch? (y/n): " -n 1 -r
+# Automatically delete local phase branch
+print_info "Deleting local branch: $PHASE_BRANCH"
+if git branch -d "$PHASE_BRANCH" 2>/dev/null; then
+    print_success "Deleted local branch: $PHASE_BRANCH"
+else
+    print_info "Local branch may already be deleted"
+fi
+
+# Automatically delete remote phase branch
+print_info "Deleting remote branch: origin/$PHASE_BRANCH"
+if git push origin --delete "$PHASE_BRANCH" 2>/dev/null; then
+    print_success "Deleted remote branch: $PHASE_BRANCH"
+else
+    print_info "Remote branch may not exist or already deleted"
+fi
+
+# Ask about keeping backup branch (optional)
+echo ""
+read -p "Create a backup branch before deletion? (y/n): " -n 1 -r
 echo ""
 
 if [[ $REPLY =~ ^[Yy]$ ]]; then
-    if git branch -d "$PHASE_BRANCH"; then
-        print_success "Deleted local branch: $PHASE_BRANCH"
-    fi
-    
-    read -p "Do you want to delete the remote $PHASE_BRANCH branch? (y/n): " -n 1 -r
-    echo ""
-    
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
-        if git push origin --delete "$PHASE_BRANCH" 2>/dev/null; then
-            print_success "Deleted remote branch: $PHASE_BRANCH"
-        else
-            print_info "Remote branch may not exist or already deleted"
-        fi
-    fi
-else
-    print_info "Keeping $PHASE_BRANCH branch"
+    BACKUP_BRANCH="backup/${PHASE_BRANCH}-$(date +%Y%m%d)"
+    git checkout "$VERSION_TAG" -b "$BACKUP_BRANCH"
+    git push origin "$BACKUP_BRANCH"
+    print_success "Created backup branch: $BACKUP_BRANCH"
+    git checkout master
 fi
 
 # -- Completion Summary --
