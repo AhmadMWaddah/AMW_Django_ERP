@@ -110,11 +110,12 @@ AMW_Django_ERP/
 │       └── prod.py        # Production settings
 ├── core/                   # Core app (base models, utilities)
 ├── utils/                  # Utility scripts
-│   ├── git_task_commit.sh
-│   ├── env_factory.sh
-│   ├── test_suite_runner.sh
-│   ├── db_manage_dev.sh
-│   └── infra_manage.sh
+│   ├── git_task_commit.sh  # Task-based commits
+│   ├── git_phase_finish.sh # Phase merge & tagging automation
+│   ├── env_factory.sh      # Environment bootstrap
+│   ├── test_suite_runner.sh# Testing & Linting
+│   ├── db_manage_dev.sh    # Database operations
+│   └── infra_manage.sh     # Docker services
 ├── templates/              # Global templates
 ├── static/                 # Static files (CSS, JS, images)
 ├── media/                  # User-uploaded media
@@ -152,11 +153,22 @@ git add path/to/file
 ./utils/env_factory.sh install        # Install dependencies
 ```
 
+**Phase Completion & Tagging:**
+```bash
+./utils/git_phase_finish.sh <phase-number> [tag]
+
+# Examples:
+./utils/git_phase_finish.sh 2           # Auto-generates tag v2.0-phase2-complete
+./utils/git_phase_finish.sh 2 v2.0     # Custom tag
+```
+
 **Testing:**
+```bash
 ./utils/test_suite_runner.sh          # Run all tests
 ./utils/test_suite_runner.sh unit     # Unit tests only
 ./utils/test_suite_runner.sh coverage # With coverage
 ./utils/test_suite_runner.sh lint     # Run linters
+```
 
 # Database operations
 ./utils/db_manage_dev.sh migrate

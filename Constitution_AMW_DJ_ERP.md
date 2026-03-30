@@ -1,5 +1,12 @@
 # AMW Django ERP - Project Law for AI CLI Agents
 
+**Version:** 2.0 (Enterprise Grade)  
+**Last Updated:** 2026-03-30
+
+---
+
+# Block A: Project Identity (Who & What)
+
 ## 1. Purpose of This File
 
 This file is the operational law of the AMW Django ERP project.
@@ -51,6 +58,8 @@ This is not a generic starter template and not a toy demo. Every implementation 
 - If multiple AI tools are used, they must behave as collaborators under the same constitution, not as independent authors with conflicting methods.
 
 ---
+
+# Block B: Execution & Delivery Law (How We Work)
 
 ## 4. Mandatory Behavior for Any AI CLI Tool
 
@@ -112,167 +121,42 @@ A task, part, or phase is complete only when:
 
 ---
 
-## 6. Core Architecture Law
+## 6. Git & Branching Law
 
-### 6.1 Operations-First Business Logic
-
-- Core business logic must live in `operations/` modules inside each app.
-- Views are request/response orchestration layers, not business rule containers.
-- The following are mandatory examples of operation-layer logic:
-  - stock adjustments,
-  - stock valuation changes,
-  - order confirmation,
-  - purchasing receipt,
-  - policy checks,
-  - audit-producing state changes.
-
-Example pattern:
-- `inventory/operations/stock.py`
-- `sales/operations/orders.py`
-- `purchasing/operations/receiving.py`
-
-### 6.2 Identity Anchor
-
-- The project must use a custom `Employee` model extending `AbstractBaseUser`.
-- This is a foundational decision, not an optional enhancement.
-- All identity-aware modules must be designed around this model from the start.
-
-### 6.3 IAM Strategy
-
-- IAM follows this model:
-  - `Employee -> Department -> Role -> Policies`
-- Policy checks must be reusable from Python code.
-- Access control must not exist only in templates or view decorators.
-
-### 6.4 Soft Delete Rule
-
-- Soft delete is the default for core business entities that may need restoration or historical visibility.
-- Audit logs, immutable ledgers, and technical records are allowed to remain hard-persistent where appropriate.
-- If a model does not use soft delete, there should be a deliberate reason.
-
-### 6.5 Stock Valuation Rule
-
-- Inventory valuation uses Weighted Average Cost.
-- WAC must be recalculated automatically on stock-in flows that affect valuation.
-- Stock updates must not allow silent corruption of quantity, cost, or audit history.
-
-### 6.6 Atomic Safety Rule
-
-- Concurrency-sensitive state changes must run inside `transaction.atomic`.
-- Inventory-changing flows must use locking such as `select_for_update()` where row contention is possible.
-
-### 6.7 Audit Rule
-
-- Business-critical state changes must be logged.
-- Audit records must capture:
-  - actor,
-  - action,
-  - target,
-  - timestamp,
-  - and meaningful before/after change data where applicable.
-
----
-
-## 7. Frontend & Template Law
-
-### 7.1 Rendering Strategy
-
-- The project frontend is server-rendered using Django templates.
-- HTMX is the primary engine for dynamic UI interactions.
-- JavaScript helpers may support HTMX behavior, but must not replace the HTMX-first approach without approval.
-
-### 7.2 Template Hierarchy
-
-- `templates/layouts/`
-  - high-level structural shells such as `base.html` and `dashboard.html`
-- `templates/_snipps_/`
-  - global atoms such as buttons and inputs
-- `templates/_snipps_/_button_.html`
-  - global atoms such as buttons and inputs HTML files
-- `templates/components/`
-  - global shared sections such as navbar, sidebar, and cards
-- `templates/<module>/components/`
-  - module-specific fragments
-- `templates/<module>/pages/`
-  - full pages rendered by views
-
-### 7.3 Asset Placement
-
-- CSS belongs in `static/styles/`
-- JavaScript belongs in `static/scripts/`
-- Avoid inline styles
-- Theme values should use CSS custom properties
-- Brand colors should align with the `Brand/` directory assets and references
-
-### 7.4 Interaction Rule
-
-- Dynamic updates, row injection, modal content loading, and partial refreshes should use HTMX by default.
-- jQuery may be used as a support tool, not as the main frontend architecture.
-
----
-
-## 8. Tools, Environment, and Execution Standards
-
-### 8.1 Approved Stack
-
-| Layer        | Technology                     |
-|--------------|--------------------------------|
-| Backend      | Python, Django                 |
-| Database     | PostgreSQL                     |
-| Frontend     | HTMX, Django Templates, CSS    |
-| JS Support   | jQuery only when justified     |
-| Async        | Celery + Redis                 |
-| Testing      | `pytest`, `pytest-django`      |
-| Dev Port     | `8010`                         |
-
-### 8.2 Utility Scripts
-
-Official project scripts live in `utils/` and include:
-1. `git_task_commit.sh`
-2. `env_factory.sh`
-3. `test_suite_runner.sh`
-4. `db_manage_dev.sh`
-5. `infra_manage.sh`
-
-### 8.3 Script Rule
-
-- AI tools should prefer project utility scripts when they exist and are appropriate for the task.
-- If a required script is missing, incomplete, or broken, the tool may work around it temporarily but should note the gap.
-
-### 8.4 Environment Rule
-
-- Development setup should remain repeatable.
-- Settings should be split clearly by environment.
-- Environment-sensitive behavior must be controlled explicitly, not by accidental defaults.
-
----
-
-## 9. Git and Delivery Law
-
-### 9.1 Branching
+### 6.1 Branching
 
 - Do not commit directly to `master`.
 - All work should happen in branches.
 - Remote-first workflow is expected when repository hosting is active.
 
-### 9.2 Branch Naming
+### 6.2 Branch Naming
 
 The original phase naming is preserved conceptually, but branch names used in Git should be machine-safe.
 
-Recommended branch style:
+**Recommended branch style:**
 - `phase-1`
 - `phase-2`
 - `phase-3`
 - `phase-4`
 - `fix-fix_name`
 
-### 9.3 Commits - Multi-Message Format
+### 6.3 Commits - Multi-Message Format
 
 **MANDATORY:** All commits MUST use the two-part commit format for audit clarity.
 
 **Format:**
 ```bash
 git commit -m "[branch-prefix] Title" -m "Detailed description"
+```
+
+**Using the utility script (RECOMMENDED):**
+```bash
+./utils/git_task_commit.sh "Title" "Description"
+
+# Examples:
+./utils/git_task_commit.sh "phase-2: Employee Model" "Added AbstractBaseUser with email authentication"
+./utils/git_task_commit.sh "Fix: Navigation bug" "Changed bare URLs to namespaced accounts:dashboard"
+./utils/git_task_commit.sh "Feature: Open redirect protection" "Added Django's url_has_allowed_host_and_scheme"
 ```
 
 **Title Prefixes:**
@@ -283,21 +167,6 @@ git commit -m "[branch-prefix] Title" -m "Detailed description"
 - `Docs:` - For documentation updates
 - `Test:` - For test additions or modifications
 
-**Examples:**
-```bash
-# Phase work
-git commit -m "phase-2: Employee Model Implementation" -m "Added AbstractBaseUser extension with email authentication"
-
-# Bug fix
-git commit -m "Fix: Navigation bug in auth views" -m "Changed bare URLs to namespaced accounts:dashboard"
-
-# Feature
-git commit -m "Feature: Open redirect protection" -m "Added Django's url_has_allowed_host_and_scheme validator"
-
-# Using utility script
-./utils/git_task_commit.sh "phase-2: Add authentication views" "Implemented login, logout, and dashboard views"
-```
-
 **Rules:**
 - Title should be concise (under 72 characters)
 - Description should explain WHAT and WHY (not HOW)
@@ -305,25 +174,32 @@ git commit -m "Feature: Open redirect protection" -m "Added Django's url_has_all
 - Use the utility script `utils/git_task_commit.sh` for consistency
 - **Local Quality Gate:** The commit script runs mandatory lint checks before allowing commits
 
-### 9.4 Merge Rule
+### 6.4 Merge Rule
 
 - Merge to `master` only after Ahmad confirms deliverables and fixes.
 - Architecture-sensitive changes should be reviewed before merge.
 - Use `utils/git_phase_finish.sh` for automated phase completion and merging.
 
-### 9.5 Phase Completion and Tagging
+### 6.5 Phase Completion and Tagging
 
 **MANDATORY:** Each completed phase MUST be:
 1. Merged to `master` branch
-2. Tagged with a version tag (e.g., `v3.0-phase3`)
+2. Tagged with a version tag
 3. Pushed to GitHub with tags
+
+**Tag Format:** `v{phase-number}.0-phase{phase-number}-complete`
+
+**Examples:**
+- `v1.0-phase1-complete`
+- `v2.0-phase2-complete`
+- `v3.0-phase3-complete`
 
 **Automated Process:**
 ```bash
 ./utils/git_phase_finish.sh <phase-number> [version-tag]
 
 # Examples:
-./utils/git_phase_finish.sh 3           # Auto-generates tag
+./utils/git_phase_finish.sh 3           # Auto-generates tag: v3.0-phase3-complete
 ./utils/git_phase_finish.sh 3 v3.0     # Custom tag
 ```
 
@@ -337,211 +213,9 @@ git commit -m "Feature: Open redirect protection" -m "Added Django's url_has_all
 
 ---
 
-## 10. Documentation and Commenting Law
+## 7. CI/CD & Automation Law
 
-- Use docstrings for classes, operation methods, and non-trivial utilities.
-- Comments must explain why, not repeat what the code already says.
-- Use clear section headers where they improve readability in large files.
-
-Preferred section styles:
-- Python or Bash: `# -- Section Name --`
-- HTML: `<!-- -- Section Name -- -->`
-- CSS or JS: `/* -- Section Name -- */`
-
----
-
-## 11. Project Modules and Domain Scope
-
-The project should be organized around these major domains:
-
-### 11.1 Foundation
-
-- core project configuration
-- utilities
-- environment setup
-- test framework
-- infrastructure bootstrap
-
-### 11.2 Identity
-
-- custom `Employee`
-- authentication
-- admin integration
-- technical and business account separation
-
-### 11.3 IAM and Security
-
-- `Department`
-- `Role`
-- `Policy`
-- permission mixins
-- operation-level policy enforcement
-
-### 11.4 Inventory
-
-- `Category`
-- `Product`
-- stock ledger
-- stock adjustment logic
-- WAC valuation engine
-
-### 11.5 Sales and CRM
-
-- `Customer`
-- `SalesOrder`
-- `SalesOrderItem`
-- totals calculation
-- order confirmation and stock deduction
-
-### 11.6 Purchasing
-
-- `Supplier`
-- `PurchaseOrder`
-- `PurchaseOrderItem`
-- stock receipt and cost update
-
-### 11.7 Frontend Foundation
-
-- layouts
-- atoms
-- shared components
-- HTMX partials
-- dashboard and module pages
-
-### 11.8 Async and Reporting
-
-- Celery task execution
-- background document generation
-- reporting workflows
-- progress feedback patterns
-
----
-
-## 12. Project Roadmap Law
-
-The roadmap below remains part of project law because this project is being built in deliberate phases, not ad hoc feature drift.
-
-### Phase 1: Foundation, Automation & Local Scaffolding
-
-Goal:
-- initialize the project professionally,
-- build the utility scripts,
-- and establish a reproducible local environment.
-
-Required outcomes:
-- `utils/` is in place
-- virtual environment workflow is defined
-- dependencies are locked
-- quality tooling is configured
-- Django project and `core` app scaffolding exist
-- settings are environment-aware
-
-### Phase 2: Infrastructure & Core Identity
-
-Goal:
-- establish Docker-backed services and the custom `Employee` identity system.
-
-Required outcomes:
-- PostgreSQL and Redis are available
-- `Employee` is active as the user model
-- login/logout and admin support are working
-
-### Phase 3: IAM & Security Framework
-
-Goal:
-- implement reusable policy-based authorization and centralized audit foundations.
-
-Required outcomes:
-- department, role, and policy models exist
-- policy checks are reusable in Python
-- base operation security rules are enforced
-- activity logging foundation exists
-
-### Phase 4: Inventory Architecture & Valuation
-
-Goal:
-- build the product catalog, stock ledger, and weighted average cost engine.
-
-Required outcomes:
-- category and product architecture exist
-- stock transactions are recorded
-- WAC recalculation is implemented
-- stock changes are atomic and concurrency-safe
-- inventory history is visible and auditable
-
-### Phase 5: Sales & CRM Workflows
-
-Goal:
-- implement customer management and atomic sales order workflows.
-
-Required outcomes:
-- customer records exist
-- sales orders and order items exist
-- snapshot pricing is preserved
-- order confirmation drives stock deduction through operations
-
-### Phase 6: Purchasing & Procurement
-
-Goal:
-- implement supplier workflows and stock receiving.
-
-Required outcomes:
-- supplier and purchase order models exist
-- receiving stock updates quantity and valuation correctly
-
-### Phase 7: Frontend Foundation & HTMX UI
-
-Goal:
-- build reusable UI structure and consistent dynamic interactions.
-
-Required outcomes:
-- base layouts exist
-- shared atoms and components exist
-- HTMX modal and fragment patterns are established
-- responsive behavior is considered
-
-### Phase 8: Async Tasks, Reporting & Hardening
-
-Goal:
-- finalize background processing, reporting, and performance hardening.
-
-Required outcomes:
-- Celery is operational
-- long-running tasks can execute asynchronously
-- reporting workflows are available
-- obvious query inefficiencies are reviewed
-- production packaging is prepared
-
----
-
-## 13. Required Implementation Standards by Domain
-
-### 13.1 Inventory
-
-- `Product.current_stock` must be treated as a controlled field, not casually edited from arbitrary code paths.
-- Stock movement should be represented by a transaction ledger, not only by direct field mutation.
-- WAC formula must be implemented deterministically and tested.
-
-### 13.2 Sales
-
-- Order confirmation must be an operation, not a view-side shortcut.
-- Sales order item pricing must preserve snapshot values at time of order.
-
-### 13.3 Purchasing
-
-- Stock receiving must be the authoritative point for purchase-driven stock increases.
-- Valuation updates must happen through receiving logic, not through disconnected side effects.
-
-### 13.4 IAM
-
-- Every protected workflow must be capable of policy validation before execution.
-- Do not hardcode permission decisions in many unrelated places.
-
----
-
-## 14. CI/CD and Automation Law
-
-### 14.1 CI Defender (GitHub Actions)
+### 7.1 CI Defender (GitHub Actions)
 
 **MANDATORY:** All pushes and pull requests MUST pass CI checks.
 
@@ -553,7 +227,7 @@ Required outcomes:
 
 **No PR shall be merged unless the CI Defender is Green.**
 
-### 14.2 Local Quality Gate
+### 7.2 Local Quality Gate
 
 **MANDATORY:** All commits MUST pass lint checks before entering Git history.
 
@@ -563,7 +237,7 @@ Required outcomes:
 - Black must pass (auto-formats if needed)
 - Commit blocked if lint fails
 
-### 14.3 Phase Completion Automation
+### 7.3 Phase Completion Automation
 
 **MANDATORY:** Phase completion MUST use the automated script.
 
@@ -582,7 +256,7 @@ Required outcomes:
 ./utils/git_phase_finish.sh <phase-number> [version-tag]
 ```
 
-### 14.4 Milestone Tagging
+### 7.4 Milestone Tagging
 
 **MANDATORY:** Each completed phase MUST be tagged.
 
@@ -600,7 +274,198 @@ Required outcomes:
 
 ---
 
-## 15. Testing and Verification Law
+# Block C: Architectural Law (The Design Rules)
+
+## 8. Core Architecture Law
+
+### 8.1 Operations-First Business Logic
+
+- Core business logic must live in `operations/` modules inside each app.
+- Views are request/response orchestration layers, not business rule containers.
+- The following are mandatory examples of operation-layer logic:
+  - stock adjustments,
+  - stock valuation changes,
+  - order confirmation,
+  - purchasing receipt,
+  - policy checks,
+  - audit-producing state changes.
+
+**Example pattern:**
+- `inventory/operations/stock.py`
+- `sales/operations/orders.py`
+- `purchasing/operations/receiving.py`
+
+### 8.2 Identity Anchor
+
+- The project must use a custom `Employee` model extending `AbstractBaseUser`.
+- This is a foundational decision, not an optional enhancement.
+- All identity-aware modules must be designed around this model from the start.
+
+### 8.3 IAM Strategy
+
+- IAM follows this model: `Employee -> Department -> Role -> Policies`
+- Policy checks must be reusable from Python code.
+- Access control must not exist only in templates or view decorators.
+
+### 8.4 Soft Delete Rule
+
+- Soft delete is the default for core business entities that may need restoration or historical visibility.
+- Audit logs, immutable ledgers, and technical records are allowed to remain hard-persistent where appropriate.
+- If a model does not use soft delete, there should be a deliberate reason.
+
+### 8.5 Stock Valuation Rule
+
+- Inventory valuation uses Weighted Average Cost (WAC).
+- WAC must be recalculated automatically on stock-in flows that affect valuation.
+- Stock updates must not allow silent corruption of quantity, cost, or audit history.
+
+### 8.6 Atomic Safety Rule
+
+- Concurrency-sensitive state changes must run inside `transaction.atomic`.
+- Inventory-changing flows must use locking such as `select_for_update()` where row contention is possible.
+
+### 8.7 Audit Rule
+
+- Business-critical state changes must be logged.
+- Audit records must capture:
+  - actor,
+  - action,
+  - target,
+  - timestamp,
+  - and meaningful before/after change data where applicable.
+
+---
+
+## 9. Domain Implementation Standards
+
+### 9.1 Inventory
+
+- `Product.current_stock` must be treated as a controlled field, not casually edited from arbitrary code paths.
+- Stock movement should be represented by a transaction ledger, not only by direct field mutation.
+- WAC formula must be implemented deterministically and tested.
+
+### 9.2 Sales
+
+- Order confirmation must be an operation, not a view-side shortcut.
+- Sales order item pricing must preserve snapshot values at time of order.
+
+### 9.3 Purchasing
+
+- Stock receiving must be the authoritative point for purchase-driven stock increases.
+- Valuation updates must happen through receiving logic, not through disconnected side effects.
+
+### 9.4 IAM
+
+- Every protected workflow must be capable of policy validation before execution.
+- Do not hardcode permission decisions in many unrelated places.
+
+---
+
+## 10. Frontend & Template Law
+
+### 10.1 Rendering Strategy
+
+- The project frontend is server-rendered using Django templates.
+- HTMX is the primary engine for dynamic UI interactions.
+- JavaScript helpers may support HTMX behavior, but must not replace the HTMX-first approach without approval.
+
+### 10.2 Template Hierarchy
+
+- `templates/layouts/` - high-level structural shells such as `base.html` and `dashboard.html`
+- `templates/_snipps_/` - global atoms such as buttons and inputs
+- `templates/_snipps_/_button_.html` - global atoms such as buttons and inputs HTML files
+- `templates/components/` - global shared sections such as navbar, sidebar, and cards
+- `templates/<module>/components/` - module-specific fragments
+- `templates/<module>/pages/` - full pages rendered by views
+
+### 10.3 Asset Placement
+
+- CSS belongs in `static/styles/`
+- JavaScript belongs in `static/scripts/`
+- Avoid inline styles
+- Theme values should use CSS custom properties
+- Brand colors should align with the `Brand/` directory assets and references
+
+### 10.4 Interaction Rule
+
+- Dynamic updates, row injection, modal content loading, and partial refreshes should use HTMX by default.
+- jQuery may be used as a support tool, not as the main frontend architecture.
+
+---
+
+# Block D: Engineering Standards (The Quality)
+
+## 11. Approved Stack & Tools
+
+### 11.1 Technology Stack
+
+| Layer        | Technology                     |
+|--------------|--------------------------------|
+| Backend      | Python, Django                 |
+| Database     | PostgreSQL                     |
+| Frontend     | HTMX, Django Templates, CSS    |
+| JS Support   | jQuery only when justified     |
+| Async        | Celery + Redis                 |
+| Testing      | `pytest`, `pytest-django`      |
+| Dev Port     | `8010`                         |
+
+### 11.2 Utility Scripts
+
+Official project scripts live in `utils/` and include:
+1. `git_task_commit.sh` - Atomic commits with lint check
+2. `git_phase_finish.sh` - Phase completion automation
+3. `env_factory.sh` - Virtual environment management
+4. `test_suite_runner.sh` - Unified testing interface
+5. `db_manage_dev.sh` - Database operations
+6. `infra_manage.sh` - Docker infrastructure management
+
+### 11.3 Script Rule
+
+- AI tools should prefer project utility scripts when they exist and are appropriate for the task.
+- If a required script is missing, incomplete, or broken, the tool may work around it temporarily but should note the gap.
+
+### 11.4 Environment Rule
+
+- Development setup should remain repeatable.
+- Settings should be split clearly by environment.
+- Environment-sensitive behavior must be controlled explicitly, not by accidental defaults.
+
+### 11.5 Python Style: Double Quotes
+
+**MANDATORY:** Use double quotes (`"`) for all Python strings.
+
+**Examples:**
+```python
+# CORRECT (Double quotes)
+name = "Employee"
+error = "Invalid email or password"
+
+# INCORRECT (Single quotes)
+name = 'Employee'
+error = 'Invalid email or password'
+```
+
+**Rationale:**
+- Consistency across the codebase
+- Easier string interpolation with f-strings
+- Matches Django and modern Python conventions
+
+---
+
+## 12. Documentation & Commenting Law
+
+- Use docstrings for classes, operation methods, and non-trivial utilities.
+- Comments must explain why, not repeat what the code already says.
+- Use clear section headers where they improve readability in large files.
+
+**Preferred section styles:**
+- Python or Bash: `# -- Section Name --`
+- HTML: `<!-- -- Section Name -- -->`
+- CSS or JS: `/* -- Section Name -- */`
+
+---
+
+## 13. Testing & Verification Law
 
 - Every critical business feature requires tests.
 - Every bug fix should include regression protection where practical.
@@ -617,7 +482,147 @@ At minimum, verification should cover:
 
 ---
 
-## 15. Final Rule
+# Block E: Roadmap & Final Rules
+
+## 14. Project Modules & Domain Scope
+
+The project should be organized around these major domains:
+
+### 14.1 Foundation
+- core project configuration
+- utilities
+- environment setup
+- test framework
+- infrastructure bootstrap
+
+### 14.2 Identity
+- custom `Employee`
+- authentication
+- admin integration
+- technical and business account separation
+
+### 14.3 IAM and Security
+- `Department`
+- `Role`
+- `Policy`
+- permission mixins
+- operation-level policy enforcement
+
+### 14.4 Inventory
+- `Category`
+- `Product`
+- stock ledger
+- stock adjustment logic
+- WAC valuation engine
+
+### 14.5 Sales and CRM
+- `Customer`
+- `SalesOrder`
+- `SalesOrderItem`
+- totals calculation
+- order confirmation and stock deduction
+
+### 14.6 Purchasing
+- `Supplier`
+- `PurchaseOrder`
+- `PurchaseOrderItem`
+- stock receipt and cost update
+
+### 14.7 Frontend Foundation
+- layouts
+- atoms
+- shared components
+- HTMX partials
+- dashboard and module pages
+
+### 14.8 Async and Reporting
+- Celery task execution
+- background document generation
+- reporting workflows
+- progress feedback patterns
+
+---
+
+## 15. Project Roadmap Law
+
+The roadmap below remains part of project law because this project is being built in deliberate phases, not ad hoc feature drift.
+
+### Phase 1: Foundation, Automation & Local Scaffolding ✅ COMPLETE
+**Goal:** Initialize the project professionally with utility scripts and reproducible environment.
+
+**Required outcomes:**
+- ✅ `utils/` is in place
+- ✅ Virtual environment workflow is defined
+- ✅ Dependencies are locked
+- ✅ Quality tooling is configured
+- ✅ Django project and `core` app scaffolding exist
+- ✅ Settings are environment-aware
+
+### Phase 2: Infrastructure & Core Identity ✅ COMPLETE
+**Goal:** Establish Docker-backed services and the custom `Employee` identity system.
+
+**Required outcomes:**
+- ✅ PostgreSQL and Redis are available
+- ✅ `Employee` is active as the user model
+- ✅ Login/logout and admin support are working
+
+### Phase 3: IAM & Security Framework ✅ COMPLETE
+**Goal:** Implement reusable policy-based authorization and centralized audit foundations.
+
+**Required outcomes:**
+- ✅ Department, Role, and Policy models exist
+- ✅ Policy checks are reusable in Python
+- ✅ Base operation security rules are enforced
+- ✅ Activity logging foundation exists
+
+### Phase 4: Inventory Architecture & Valuation
+**Goal:** Build the product catalog, stock ledger, and weighted average cost engine.
+
+**Required outcomes:**
+- Category and product architecture exist
+- Stock transactions are recorded
+- WAC recalculation is implemented
+- Stock changes are atomic and concurrency-safe
+- Inventory history is visible and auditable
+
+### Phase 5: Sales & CRM Workflows
+**Goal:** Implement customer management and atomic sales order workflows.
+
+**Required outcomes:**
+- Customer records exist
+- Sales orders and order items exist
+- Snapshot pricing is preserved
+- Order confirmation drives stock deduction through operations
+
+### Phase 6: Purchasing & Procurement
+**Goal:** Implement supplier workflows and stock receiving.
+
+**Required outcomes:**
+- Supplier and purchase order models exist
+- Receiving stock updates quantity and valuation correctly
+
+### Phase 7: Frontend Foundation & HTMX UI
+**Goal:** Build reusable UI structure and consistent dynamic interactions.
+
+**Required outcomes:**
+- Base layouts exist
+- Shared atoms and components exist
+- HTMX modal and fragment patterns are established
+- Responsive behavior is considered
+
+### Phase 8: Async Tasks, Reporting & Hardening
+**Goal:** Finalize background processing, reporting, and performance hardening.
+
+**Required outcomes:**
+- Celery is operational
+- Long-running tasks can execute asynchronously
+- Reporting workflows are available
+- Obvious query inefficiencies are reviewed
+- Production packaging is prepared
+
+---
+
+## 16. Final Rule
 
 If an AI CLI tool produces output that is generic, vague, not tied to AMW Django ERP, or disconnected from the phases and modules defined here, that output is not compliant with project law.
 
@@ -625,4 +630,5 @@ This project requires concrete, phase-aware, architecture-aware execution.
 
 ---
 
-*Project Law Version: 1.0*
+*Project Law Version: 2.0 (Enterprise Grade)*  
+*Reorganized: 2026-03-30*
