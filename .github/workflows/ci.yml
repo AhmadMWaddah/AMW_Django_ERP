@@ -175,6 +175,28 @@ jobs:
         run: |
           python manage.py check --settings=config.settings.dev
 
+      - name: Create production .env file
+        run: |
+          cat > .env << EOF
+          DJANGO_SECRET_KEY=ci-production-secret-key-not-for-production-use-only-123456789
+          DJANGO_DEBUG=False
+          DJANGO_ALLOWED_HOSTS=example.com
+          DB_ENGINE=django.db.backends.postgresql
+          DB_NAME=amw_django_erp_test
+          DB_USER=amw_erp_user
+          DB_PASSWORD=amw_erp_password_test
+          DB_HOST=localhost
+          DB_PORT=5432
+          REDIS_URL=redis://localhost:6379/0
+          EMAIL_HOST=smtp.example.com
+          EMAIL_PORT=587
+          EMAIL_USE_TLS=True
+          EMAIL_HOST_USER=ci@example.com
+          EMAIL_HOST_PASSWORD=ci-email-password
+          DEFAULT_FROM_EMAIL=noreply@example.com
+          CSRF_TRUSTED_ORIGINS=https://example.com
+          EOF
+
       - name: Run Django check (production)
         run: |
           python manage.py check --deploy --settings=config.settings.prod
@@ -198,7 +220,25 @@ jobs:
 
       - name: Verify Docker image functionality
         run: |
-          docker run --rm amw-django-erp:${{ github.sha }} python manage.py check --settings=config.settings.prod
+          docker run --rm \
+            -e DJANGO_SECRET_KEY=ci-production-secret-key-not-for-production-use-only-123456789 \
+            -e DJANGO_DEBUG=False \
+            -e DJANGO_ALLOWED_HOSTS=example.com \
+            -e DB_ENGINE=django.db.backends.postgresql \
+            -e DB_NAME=amw_django_erp_test \
+            -e DB_USER=amw_erp_user \
+            -e DB_PASSWORD=amw_erp_password_test \
+            -e DB_HOST=localhost \
+            -e DB_PORT=5432 \
+            -e REDIS_URL=redis://localhost:6379/0 \
+            -e EMAIL_HOST=smtp.example.com \
+            -e EMAIL_PORT=587 \
+            -e EMAIL_USE_TLS=True \
+            -e EMAIL_HOST_USER=ci@example.com \
+            -e EMAIL_HOST_PASSWORD=ci-email-password \
+            -e DEFAULT_FROM_EMAIL=noreply@example.com \
+            -e CSRF_TRUSTED_ORIGINS=https://example.com \
+            amw-django-erp:${{ github.sha }} python manage.py check --settings=config.settings.prod
 
       - name: List built images
         run: |
