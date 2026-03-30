@@ -12,10 +12,10 @@ from django.urls import path
 # -- Local Imports --
 from . import views
 
-app_name = "accounts"
+app_name = "Accounts"
 
 urlpatterns = [
-    path("login/", views.login_view, name="login"),
-    path("logout/", views.logout_view, name="logout"),
-    path("dashboard/", views.dashboard_view, name="dashboard"),
+    path("login/", views.login_view, name="Login"),
+    path("logout/", views.logout_view, name="Logout"),
+    path("dashboard/", views.dashboard_view, name="Dashboard"),
 ]

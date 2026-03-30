@@ -26,11 +26,17 @@ class EmployeeManager(BaseUserManager):
     """
 
     def create_user(self, email, password=None, **extra_fields):
-        """Create and return a regular Employee user."""
+        """Create and return a regular Employee user.
+
+        Email is normalized to lowercase for case-insensitive authentication.
+        """
         if not email:
             raise ValueError("Email address is required")
 
-        email = self.normalize_email(email)
+        # Normalize email to lowercase (both local and domain parts)
+        # Django's normalize_email() only lowercases the domain part
+        email = email.lower()
+
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)

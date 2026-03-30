@@ -35,7 +35,7 @@ def login_view(request):
     - Generic error messages to prevent user enumeration
     """
     if request.user.is_authenticated:
-        return redirect("accounts:dashboard")
+        return redirect("Accounts:Dashboard")
 
     error_message = None
 
@@ -43,6 +43,10 @@ def login_view(request):
         email = request.POST.get("email")
         password = request.POST.get("password")
         next_url = request.POST.get("next", request.GET.get("next", ""))
+
+        # Normalize email to lowercase for case-insensitive authentication
+        if email:
+            email = email.lower()
 
         # Validate next URL using Django's built-in validator
         # This prevents open redirect attacks
@@ -56,7 +60,7 @@ def login_view(request):
             if user is not None:
                 login(request, user)
                 # Safe redirect after login
-                redirect_to = next_url if next_url else "accounts:dashboard"
+                redirect_to = next_url if next_url else "Accounts:Dashboard"
                 return redirect(redirect_to)
             else:
                 # Generic error message (doesn't reveal if user exists)
@@ -83,7 +87,7 @@ def logout_view(request):
     - Uses namespaced URL for login redirect
     """
     logout(request)
-    return redirect("accounts:login")
+    return redirect("Accounts:Login")
 
 
 @login_required

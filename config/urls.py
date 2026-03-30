@@ -17,11 +17,11 @@ urlpatterns = [
     # Admin
     path("admin/", admin.site.urls),
     # Accounts / Authentication (with namespace)
-    path("accounts/", include("accounts.urls", namespace="accounts")),
+    path("accounts/", include("accounts.urls", namespace="Accounts")),
     # Root redirect to dashboard
     path("", RedirectView.as_view(url="/accounts/dashboard/", permanent=False)),
     # Health Check (for monitoring)
-    path("health/", TemplateView.as_view(template_name="health.html"), name="health"),
+    path("health/", TemplateView.as_view(template_name="health.html"), name="Health"),
 ]
 
 # -- Static & Media Files (Development) --

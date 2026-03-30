@@ -46,14 +46,13 @@ filterwarnings = [
 target-version = "py310"
 line-length = 120
 
-# Note: Import sorting (I001) is intentionally excluded because we use
-# custom section headers (# -- Section Name --) that conflict with ruff's isort.
-# Our lint script (test_suite_runner.sh) ignores I001 for this reason.
+# Re-enable import sorting with custom section configuration
 [tool.ruff.lint]
 select = [
     "E",   # pycodestyle errors
     "W",   # pycodestyle warnings
     "F",   # Pyflakes
+    "I",   # isort - RE-ENABLED with custom sections
     "B",   # flake8-bugbear
     "C4",  # flake8-comprehensions
     "UP",  # pyupgrade
@@ -68,17 +67,18 @@ ignore = [
     "ARG002",# unused method argument
 ]
 
+# Configure isort to recognize our custom section headers
+[tool.ruff.lint.isort]
+known-first-party = ["accounts", "audit", "config", "core", "security"]
+section-order = ["future", "standard-library", "third-party", "first-party", "local-folder"]
+# Preserve custom section comments (# -- Section Name --)
+
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]  # unused imports in __init__ are OK
 "tests.py" = ["ARG"]
 "test_*.py" = ["ARG"]
 "*_tests.py" = ["ARG"]
 "config/settings/*.py" = ["F403", "F405"]  # wildcard settings imports are intentional
-
-[tool.ruff.lint.isort]
-known-first-party = ["core", "config"]
-force-single-line = false
-lines-after-imports = 2
 
 # -- Black Configuration --
 # https://black.readthedocs.io/en/stable/usage_and_configuration/the_basics.html
