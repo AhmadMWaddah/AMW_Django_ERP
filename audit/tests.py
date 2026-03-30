@@ -306,7 +306,7 @@ class TestAuditOperationDecorator:
             return MockItem()
 
         # Execute operation
-        result = create_item(employee, "Test Item")
+        create_item(employee, "Test Item")
 
         # Check audit log was created
         audit_entries = AuditLog.objects.filter(actor=employee, action_code="test.operation")
@@ -341,7 +341,7 @@ class TestAuditOperationDecorator:
             return stock_obj
 
         # Execute operation
-        result = adjust_stock(employee, stock, 90)
+        adjust_stock(employee, stock, 90)
 
         # Check audit log
         audit_entries = AuditLog.objects.filter(actor=employee, action_code="inventory.stock.adjust")

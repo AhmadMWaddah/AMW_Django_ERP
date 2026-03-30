@@ -112,6 +112,9 @@ def serialize_for_audit(obj):
     Returns:
         dict or None: Serialized data suitable for JSON storage
     """
+    from datetime import date, datetime
+    from decimal import Decimal
+
     if obj is None:
         return None
 
@@ -127,16 +130,42 @@ def serialize_for_audit(obj):
             # Add all field values
             for field in obj._meta.fields:
                 value = getattr(obj, field.name, None)
-                if isinstance(value, (models.DateTimeField, models.DateField)):
-                    value = value.isoformat() if value else None
+                # Handle datetime/date values (convert to ISO format string)
+                if isinstance(value, datetime):
+                    value = value.isoformat()
+                elif isinstance(value, date):
+                    value = value.isoformat()
+                # Handle Decimal values (convert to string)
+                elif isinstance(value, Decimal):
+                    value = str(value)
                 data[field.name] = value
             return data
 
-    # Dictionary
+    # Dictionary - recursively serialize values
     if isinstance(obj, dict):
-        return {k: str(v) if not isinstance(v, (str, int, float, bool, type(None))) else v for k, v in obj.items()}
+        result = {}
+        for k, v in obj.items():
+            if isinstance(v, datetime):
+                result[k] = v.isoformat()
+            elif isinstance(v, date):
+                result[k] = v.isoformat()
+            elif isinstance(v, Decimal):
+                result[k] = str(v)
+            elif isinstance(v, (str, int, float, bool, type(None))):
+                result[k] = v
+            else:
+                result[k] = str(v)
+        return result
 
-    # Primitive
+    # Primitive - handle datetime/date/decimal
+    if isinstance(obj, datetime):
+        return {"value": obj.isoformat()}
+    elif isinstance(obj, date):
+        return {"value": obj.isoformat()}
+    elif isinstance(obj, Decimal):
+        return {"value": str(obj)}
+
+    # Default: convert to string
     return {"value": str(obj)}
 
 

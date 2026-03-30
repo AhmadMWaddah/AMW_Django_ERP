@@ -12,13 +12,11 @@ Tests cover:
 """
 
 import pytest
-from django.contrib.auth import get_user_model
+from django.db import IntegrityError
 
 from accounts.models import Employee
 from security.logic.enforcement import PolicyEngine, check_permission
 from security.models import Department, Policy, Role
-
-Employee = get_user_model()
 
 
 @pytest.mark.django_db
@@ -80,7 +78,7 @@ class TestDepartmentModel:
         """Test that department names must be unique."""
         Department.objects.create(name="Marketing")
 
-        with pytest.raises(Exception):  # IntegrityError
+        with pytest.raises(IntegrityError):
             Department.objects.create(name="Marketing")
 
 
@@ -154,7 +152,7 @@ class TestPolicyModel:
         """Test that policy names must be unique."""
         Policy.objects.create(name="Unique Policy", resource="test", action="read")
 
-        with pytest.raises(Exception):
+        with pytest.raises(IntegrityError):
             Policy.objects.create(name="Unique Policy", resource="test2", action="write")
 
 
@@ -177,7 +175,7 @@ class TestRoleModel:
         dept = Department.objects.create(name="Sales")
         Role.objects.create(name="Manager", department=dept)
 
-        with pytest.raises(Exception):
+        with pytest.raises(IntegrityError):
             Role.objects.create(name="Manager", department=dept)
 
     def test_role_same_name_different_departments(self):
