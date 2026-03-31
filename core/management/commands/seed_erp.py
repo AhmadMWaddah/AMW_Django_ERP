@@ -481,9 +481,7 @@ class Command(BaseCommand):
                         )
                     )
                 except Product.DoesNotExist:
-                    self.stdout.write(
-                        self.style.WARNING(f"  ⚠️  Product {stock_item['sku']} not found - skipping")
-                    )
+                    self.stdout.write(self.style.WARNING(f"  ⚠️  Product {stock_item['sku']} not found - skipping"))
         except ImportError:
             self.stdout.write(self.style.WARNING("  ⚠️  Inventory app not found - skipping stock levels"))
 
