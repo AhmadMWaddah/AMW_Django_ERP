@@ -133,12 +133,29 @@ A task, part, or phase is complete only when:
 
 The original phase naming is preserved conceptually, but branch names used in Git should be machine-safe.
 
-**Recommended branch style:**
-- `phase-1`
-- `phase-2`
-- `phase-3`
-- `phase-4`
-- `fix-fix_name`
+**Branch Naming Convention:**
+
+| Branch Type | Format | Example |
+|-------------|--------|---------|
+| **Phase Branch** | `phase-X` | `phase-4` |
+| **Feature Branch** | `feature-{name}` | `feature-seed_erp` |
+| **Fix Branch** | `fix-{name}` | `fix-login_bug` |
+| **Hotfix Branch** | `hotfix-{name}` | `hotfix-security_patch` |
+
+**When to Use Each:**
+
+- **Phase branches** (`phase-X`): Active development of planned phase work
+- **Feature branches** (`feature-{name}`): New features outside active phase scope (e.g., utility commands, enhancements)
+- **Fix branches** (`fix-{name}`): Bug fixes after phase merged to master
+- **Hotfix branches** (`hotfix-{name}`): Critical production fixes
+
+**Workflow Rule:**
+
+1. **During Active Phase Development:** All work goes in `phase-X` branch
+2. **After Phase Merge to Master:** 
+   - New features → `feature-{name}` branch
+   - Bug fixes → `fix-{name}` branch
+3. **Merge to Master:** After Ahmad confirms and approves
 
 ### 6.3 Commits - Multi-Message Format
 
