@@ -221,7 +221,9 @@ class TestStockOperations:
         # Create a test employee (using superuser from seed_erp)
         from accounts.models import Employee
 
-        employee = Employee.objects.create_user(email="test@amw.io", password="test123", first_name="Test", last_name="User")
+        employee = Employee.objects.create_user(
+            email="test@amw.io", password="test123", first_name="Test", last_name="User"
+        )
 
         return {"product": product, "employee": employee}
 
