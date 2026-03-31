@@ -321,32 +321,33 @@ class Command(BaseCommand):
         """
         Seed product categories for Phase 4.
 
-        Note: This creates Category instances if the inventory app exists.
-        Otherwise, it's a placeholder for Phase 4 implementation.
+        Creates hierarchical category structure for inventory.
         """
-        self.stdout.write("📦 Seeding Categories (Phase 4 Preparation)...")
+        self.stdout.write("📦 Seeding Categories (Phase 4)...")
 
-        # Try to import Category model (may not exist yet in Phase 3)
         try:
             from inventory.models import Category
 
             categories_data = [
-                {"name": "Major Appliances", "code": "MAJ"},
-                {"name": "Small Appliances", "code": "SML"},
-                {"name": "Kitchenware", "code": "KIT"},
+                {"name": "Major Appliances", "code": "MAJ", "description": "Large household appliances"},
+                {"name": "Small Appliances", "code": "SML", "description": "Portable household appliances"},
+                {"name": "Kitchenware", "code": "KIT", "description": "Kitchen tools and equipment"},
             ]
 
             for cat_data in categories_data:
                 category, created = Category.objects.get_or_create(
                     name=cat_data["name"],
-                    defaults={"code": cat_data["code"]},
+                    defaults={
+                        "code": cat_data["code"],
+                        "description": cat_data["description"],
+                    },
                 )
                 if created:
                     self.stdout.write(self.style.SUCCESS(f"  ✅ Created: {category.name}"))
                 else:
                     self.stdout.write(self.style.WARNING(f"  ⚠️  Exists: {category.name}"))
         except ImportError:
-            self.stdout.write(self.style.WARNING("  ⚠️  Inventory app not found - skipping categories (Phase 4)"))
+            self.stdout.write(self.style.WARNING("  ⚠️  Inventory app not found - skipping categories"))
 
         self.stdout.write()
 
@@ -354,18 +355,17 @@ class Command(BaseCommand):
         """
         Seed sample products for Phase 4 WAC engine testing.
 
-        Note: This creates Product instances if the inventory app exists.
-        Otherwise, it's a placeholder for Phase 4 implementation.
+        Creates products with SKU pattern: CATEGORY-SUBCATEGORY-MODEL
         """
-        self.stdout.write("🏷️  Seeding Products (Phase 4 Preparation)...")
+        self.stdout.write("🏷️  Seeding Products (Phase 4)...")
 
-        # Try to import Product model (may not exist yet in Phase 3)
         try:
             from inventory.models import Category, Product
 
             # Get categories
             maj_category = Category.objects.get(name="Major Appliances")
             sml_category = Category.objects.get(name="Small Appliances")
+            kit_category = Category.objects.get(name="Kitchenware")
 
             products_data = [
                 {
@@ -373,24 +373,40 @@ class Command(BaseCommand):
                     "name": "Frost-Free Refrigerator 500L",
                     "category": maj_category,
                     "unit_of_measure": "pcs",
+                    "description": "Energy-efficient frost-free refrigerator with 500L capacity",
+                    "location_note": "Warehouse A, Shelf 1-3",
                 },
                 {
                     "sku": "MAJ-WM-CR159",
                     "name": "Washing Machine Crazy 159",
                     "category": maj_category,
                     "unit_of_measure": "pcs",
+                    "description": "Front-load washing machine with 159 programs",
+                    "location_note": "Warehouse A, Shelf 4-6",
                 },
                 {
                     "sku": "SML-IR-STM",
                     "name": "Steam Iron Pro",
                     "category": sml_category,
                     "unit_of_measure": "pcs",
+                    "description": "Professional steam iron with ceramic soleplate",
+                    "location_note": "Warehouse B, Shelf A2",
                 },
                 {
                     "sku": "MAJ-OV-ELC",
                     "name": "Electric Convection Oven",
                     "category": maj_category,
                     "unit_of_measure": "pcs",
+                    "description": "Countertop electric convection oven with digital controls",
+                    "location_note": "Warehouse A, Shelf 7-9",
+                },
+                {
+                    "sku": "KIT-BL-HSP",
+                    "name": "High-Speed Blender",
+                    "category": kit_category,
+                    "unit_of_measure": "pcs",
+                    "description": "Professional high-speed blender for smoothies",
+                    "location_note": "Warehouse B, Shelf B1",
                 },
             ]
 
@@ -401,6 +417,8 @@ class Command(BaseCommand):
                         "name": prod_data["name"],
                         "category": prod_data["category"],
                         "unit_of_measure": prod_data["unit_of_measure"],
+                        "description": prod_data["description"],
+                        "location_note": prod_data["location_note"],
                     },
                 )
                 if created:
@@ -408,6 +426,6 @@ class Command(BaseCommand):
                 else:
                     self.stdout.write(self.style.WARNING(f"  ⚠️  Exists: {product.name} ({product.sku})"))
         except ImportError:
-            self.stdout.write(self.style.WARNING("  ⚠️  Inventory app not found - skipping products (Phase 4)"))
+            self.stdout.write(self.style.WARNING("  ⚠️  Inventory app not found - skipping products"))
 
         self.stdout.write()

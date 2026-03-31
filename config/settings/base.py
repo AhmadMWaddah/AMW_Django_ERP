@@ -50,6 +50,7 @@ LOCAL_APPS = [
     "accounts",
     "security",  # IAM: Department, Role, Policy
     "audit",  # Audit logging
+    "inventory",  # Inventory: Category, Product, StockTransaction, StockAdjustment
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
