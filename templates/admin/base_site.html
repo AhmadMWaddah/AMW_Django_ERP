@@ -1,0 +1,15 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <link rel="icon" href="{% static 'images/AMW_DJ_ERP_Fav_Icon.png' %}">
+{% endblock %}
+
+{% block branding %}
+    <h1 id="site-name">
+        <a href="{% url 'admin:index' %}">
+            AMW Django ERP - Administration
+        </a>
+    </h1>
+{% endblock %}
