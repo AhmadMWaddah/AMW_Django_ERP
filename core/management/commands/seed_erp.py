@@ -13,6 +13,8 @@ Constitution Compliance:
 - Safety check for production environments
 """
 
+from decimal import Decimal
+
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand, CommandError
@@ -77,6 +79,9 @@ class Command(BaseCommand):
             # Phase 4: Product Catalog Foundation
             self._seed_categories()
             self._seed_products()
+
+            # Phase 4: Initial Stock Levels
+            self._seed_initial_stock()
 
         self.stdout.write()
         self.stdout.write(self.style.SUCCESS("=" * 60))
@@ -427,5 +432,59 @@ class Command(BaseCommand):
                     self.stdout.write(self.style.WARNING(f"  ⚠️  Exists: {product.name} ({product.sku})"))
         except ImportError:
             self.stdout.write(self.style.WARNING("  ⚠️  Inventory app not found - skipping products"))
+
+        self.stdout.write()
+
+    def _seed_initial_stock(self):
+        """
+        Seed initial stock levels for Phase 4 products.
+
+        Uses stock_in operations to create proper transaction ledger entries
+        and set initial WAC prices.
+        """
+        self.stdout.write("📊 Seeding Initial Stock Levels (Phase 4)...")
+
+        try:
+            from inventory.models import Product
+            from inventory.operations.stock import stock_in, StockChangeType
+
+            # Get the Owner employee for stock operations
+            owner = Employee.objects.get(email="amw@amw.io")
+
+            # Initial stock data: SKU, quantity, unit_cost
+            stock_data = [
+                {"sku": "MAJ-FR-500", "quantity": Decimal("50.0000"), "unit_cost": Decimal("450.0000")},
+                {"sku": "MAJ-WM-CR159", "quantity": Decimal("30.0000"), "unit_cost": Decimal("380.0000")},
+                {"sku": "SML-IR-STM", "quantity": Decimal("100.0000"), "unit_cost": Decimal("25.5000")},
+                {"sku": "MAJ-OV-ELC", "quantity": Decimal("40.0000"), "unit_cost": Decimal("120.0000")},
+                {"sku": "KIT-BL-HSP", "quantity": Decimal("75.0000"), "unit_cost": Decimal("45.0000")},
+            ]
+
+            for stock_item in stock_data:
+                try:
+                    product = Product.objects.get(sku=stock_item["sku"])
+
+                    # Perform stock-in operation
+                    stock_in(
+                        product=product,
+                        quantity=stock_item["quantity"],
+                        unit_cost=stock_item["unit_cost"],
+                        employee=owner,
+                        change_type=StockChangeType.INTAKE,
+                        notes="Initial stock seeding",
+                    )
+
+                    product.refresh_from_db()
+                    self.stdout.write(
+                        self.style.SUCCESS(
+                            f"  ✅ {product.sku}: {product.current_stock} units @ WAC {product.wac_price}"
+                        )
+                    )
+                except Product.DoesNotExist:
+                    self.stdout.write(
+                        self.style.WARNING(f"  ⚠️  Product {stock_item['sku']} not found - skipping")
+                    )
+        except ImportError:
+            self.stdout.write(self.style.WARNING("  ⚠️  Inventory app not found - skipping stock levels"))
 
         self.stdout.write()
