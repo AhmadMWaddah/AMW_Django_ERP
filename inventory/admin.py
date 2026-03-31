@@ -13,8 +13,8 @@ from inventory.models import Category, Product, StockAdjustment, StockTransactio
 class CategoryAdmin(admin.ModelAdmin):
     """Admin interface for Category model."""
 
-    list_display = ["name", "code", "parent", "deleted_at_display", "created_at"]
-    list_filter = ["parent", "deleted_at"]
+    list_display = ["name", "code", "parent", "created_at"]
+    list_filter = ["parent"]
     search_fields = ["name", "code", "description"]
     ordering = ["name"]
     readonly_fields = ["created_at", "modified_at", "deleted_at"]
@@ -23,13 +23,6 @@ class CategoryAdmin(admin.ModelAdmin):
         ("Category Details", {"fields": ("name", "code", "parent", "description")}),
         ("Status", {"fields": ("deleted_at", "created_at", "modified_at")}),
     )
-
-    def deleted_at_display(self, obj):
-        """Display whether the object is deleted."""
-        return "Yes" if obj.deleted_at else "No"
-
-    deleted_at_display.short_description = "Deleted"
-    deleted_at_display.boolean = True
 
 
 @admin.register(Product)
@@ -43,9 +36,8 @@ class ProductAdmin(admin.ModelAdmin):
         "current_stock",
         "wac_price",
         "unit_of_measure",
-        "deleted_at_display",
     ]
-    list_filter = ["category", "unit_of_measure", "deleted_at"]
+    list_filter = ["category", "unit_of_measure"]
     search_fields = ["sku", "name", "description"]
     ordering = ["sku"]
     readonly_fields = ["current_stock", "wac_price", "created_at", "modified_at", "deleted_at"]
@@ -76,13 +68,6 @@ class ProductAdmin(admin.ModelAdmin):
             {"fields": ("deleted_at", "created_at", "modified_at")},
         ),
     )
-
-    def deleted_at_display(self, obj):
-        """Display whether the object is deleted."""
-        return "Yes" if obj.deleted_at else "No"
-
-    deleted_at_display.short_description = "Deleted"
-    deleted_at_display.boolean = True
 
 
 @admin.register(StockTransaction)
