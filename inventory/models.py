@@ -419,6 +419,11 @@ class StockAdjustment(SoftDeleteModel):
         blank=True,
         help_text="Execution timestamp (when transaction was created)",
     )
+    rejection_comment = models.TextField(
+        blank=True,
+        null=True,
+        help_text="Required comment when rejecting adjustment (explains why)",
+    )
 
     # -- Notes and Reference --
     notes = models.TextField(
@@ -464,14 +469,26 @@ class StockAdjustment(SoftDeleteModel):
         self.approved_at = now()
         self.save(update_fields=["status", "approved_by", "approved_at"])
 
-    def reject(self, approver):
-        """Reject the adjustment."""
+    def reject(self, approver, comment=None):
+        """
+        Reject the adjustment.
+
+        Args:
+            approver: Employee rejecting the adjustment
+            comment: Required comment explaining the rejection reason
+
+        Raises:
+            ValidationError: If adjustment is not PENDING or comment is not provided
+        """
         if self.status != StockAdjustmentStatus.PENDING:
             raise ValidationError("Only pending adjustments can be rejected")
+        if not comment:
+            raise ValidationError("Rejection requires a comment explaining the reason")
         self.status = StockAdjustmentStatus.REJECTED
         self.approved_by = approver
         self.approved_at = now()
-        self.save(update_fields=["status", "approved_by", "approved_at"])
+        self.rejection_comment = comment
+        self.save(update_fields=["status", "approved_by", "approved_at", "rejection_comment"])
 
     def mark_executed(self):
         """Mark adjustment as executed (called after transaction creation)."""

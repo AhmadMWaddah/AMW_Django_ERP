@@ -190,6 +190,7 @@ class StockAdjustmentAdmin(admin.ModelAdmin):
         "approved_by",
         "approved_at",
         "executed_at",
+        "rejection_comment",
         "notes",
         "location_note",
         "deleted_at",
@@ -221,6 +222,7 @@ class StockAdjustmentAdmin(admin.ModelAdmin):
                     "approved_by",
                     "approved_at",
                     "executed_at",
+                    "rejection_comment",
                 )
             },
         ),
@@ -248,7 +250,7 @@ class StockAdjustmentAdmin(admin.ModelAdmin):
         """Bulk reject selected pending adjustments."""
         rejected_count = 0
         for adjustment in queryset.filter(status="PENDING"):
-            adjustment.reject(request.user)
+            adjustment.reject(request.user, comment="Bulk rejected via admin action")
             rejected_count += 1
         self.message_user(request, f"Rejected {rejected_count} adjustments")
 
