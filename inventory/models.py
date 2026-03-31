@@ -54,6 +54,7 @@ class Category(SoftDeleteModel):
     )
     description = models.TextField(
         blank=True,
+        null=True,
         help_text="Category description",
     )
 
@@ -156,11 +157,13 @@ class Product(SoftDeleteModel):
     # -- Metadata --
     description = models.TextField(
         blank=True,
+        null=True,
         help_text="Product description",
     )
     location_note = models.CharField(
         max_length=200,
         blank=True,
+        null=True,
         help_text="Storage location note (e.g., 'Warehouse A, Shelf 5')",
     )
 
@@ -270,16 +273,19 @@ class StockTransaction(models.Model):
     reference_type = models.CharField(
         max_length=50,
         blank=True,
+        null=True,
         help_text="Type of reference document (e.g., 'PurchaseOrder', 'SalesOrder')",
     )
     reference_id = models.CharField(
         max_length=50,
         blank=True,
+        null=True,
         help_text="ID of reference document",
     )
     location_note = models.CharField(
         max_length=200,
         blank=True,
+        null=True,
         help_text="Storage location (if different from product default)",
     )
 
@@ -296,6 +302,7 @@ class StockTransaction(models.Model):
     )
     notes = models.TextField(
         blank=True,
+        null=True,
         help_text="Additional notes about this transaction",
     )
 
@@ -416,11 +423,13 @@ class StockAdjustment(SoftDeleteModel):
     # -- Notes and Reference --
     notes = models.TextField(
         blank=True,
+        null=True,
         help_text="Additional notes about the adjustment",
     )
     location_note = models.CharField(
         max_length=200,
         blank=True,
+        null=True,
         help_text="Storage location note",
     )
 
