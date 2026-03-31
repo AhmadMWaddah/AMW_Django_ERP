@@ -22,7 +22,6 @@ Usage:
 from decimal import Decimal
 
 from django.db import transaction
-from django.utils.timezone import now
 
 from audit.logic.logging import log_audit
 from inventory.logic.valuation import calculate_wac, should_recalculate_wac
@@ -170,9 +169,7 @@ def stock_out(
 
     # Validate sufficient stock
     if product.current_stock < quantity:
-        raise ValueError(
-            f"Insufficient stock: available={product.current_stock}, requested={quantity}"
-        )
+        raise ValueError(f"Insufficient stock: available={product.current_stock}, requested={quantity}")
 
     # Capture state BEFORE
     old_quantity = product.current_stock
@@ -315,9 +312,7 @@ def approve_adjustment(adjustment, approver):
         StockAdjustmentStatus.PENDING,
         StockAdjustmentStatus.APPROVED,
     ]:
-        raise ValueError(
-            f"Adjustment must be PENDING or APPROVED, got {adjustment.status}"
-        )
+        raise ValueError(f"Adjustment must be PENDING or APPROVED, got {adjustment.status}")
 
     # Approve if still pending
     if adjustment.status == StockAdjustmentStatus.PENDING:

@@ -180,9 +180,7 @@ class Product(SoftDeleteModel):
     def clean(self):
         # Validate SKU format (should contain at least one hyphen)
         if "-" not in self.sku:
-            raise ValidationError(
-                "SKU should follow pattern CATEGORY-SUBCATEGORY-MODEL (e.g., 'WM-CR-159')"
-            )
+            raise ValidationError("SKU should follow pattern CATEGORY-SUBCATEGORY-MODEL (e.g., 'WM-CR-159')")
 
     def get_stock_value(self):
         """Calculate total stock value (quantity × WAC price)."""
