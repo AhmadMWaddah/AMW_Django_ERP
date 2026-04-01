@@ -357,9 +357,7 @@ class SalesOrder(SoftDeleteModel):
             OrderStatus.VOIDED: [],  # Terminal state
         }
         if new_status not in valid_transitions.get(old_status, []):
-            raise ValidationError(
-                f"Invalid status transition from {old_status} to {new_status}"
-            )
+            raise ValidationError(f"Invalid status transition from {old_status} to {new_status}")
 
     def get_amount_due(self):
         """Calculate remaining amount due."""

@@ -14,7 +14,7 @@ Operations:
 - generate_order_number(): Atomic unique order numbering
 """
 
-from decimal import Decimal, ROUND_HALF_UP
+from decimal import Decimal
 
 from django.conf import settings
 from django.db import transaction
@@ -117,10 +117,12 @@ def confirm_order(order, employee):
                 reference_id=str(order.id),
                 notes=f"Order {order.order_number} confirmed",
             )
-            items_data.append({
-                "product": str(item.product),
-                "quantity": str(item.quantity),
-            })
+            items_data.append(
+                {
+                    "product": str(item.product),
+                    "quantity": str(item.quantity),
+                }
+            )
         except ValueError as e:
             # Rollback entire order if any item fails
             raise ValueError(f"Failed to deduct stock for {item.product.sku}: {str(e)}")
@@ -203,10 +205,12 @@ def void_order(order, employee, reason=None):
                 reference_id=str(order.id),
                 notes=f"Order {order.order_number} voided: {reason or 'No reason provided'}",
             )
-            items_data.append({
-                "product": str(item.product),
-                "quantity": str(item.quantity),
-            })
+            items_data.append(
+                {
+                    "product": str(item.product),
+                    "quantity": str(item.quantity),
+                }
+            )
         except Exception as e:
             # Rollback entire void if any item fails
             raise ValueError(f"Failed to restore stock for {item.product.sku}: {str(e)}")

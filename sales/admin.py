@@ -34,6 +34,7 @@ class CustomerCategoryAdmin(admin.ModelAdmin):
 
     def deleted_at_display(self, obj):
         return "Yes" if obj.deleted_at else "No"
+
     deleted_at_display.short_description = "Deleted"
 
 
@@ -56,6 +57,7 @@ class CustomerAdmin(admin.ModelAdmin):
 
     def deleted_at_display(self, obj):
         return "Yes" if obj.deleted_at else "No"
+
     deleted_at_display.short_description = "Deleted"
 
 
@@ -98,28 +100,49 @@ class SalesOrderAdmin(admin.ModelAdmin):
     ]
 
     fieldsets = (
-        ("Order Information", {"fields": ("order_number", "customer", "created_at")}),
+        ("Order Information", {"fields": ("order_number", "customer")}),
         ("Snapshot", {"fields": ("shipping_address_snapshot",)}),
-        ("Status & Payment", {
-            "fields": (
-                "status",
-                "payment_status",
-                "payment_method",
-                "amount_paid",
-            )
-        }),
-        ("Financials", {
-            "fields": ("subtotal", "tax_amount", "total_amount"),
-            "description": "All amounts use Decimal 19,4 precision",
-        }),
-        ("Workflow", {
-            "fields": (
-                "created_by", "created_at",
-                "confirmed_by", "confirmed_at",
-                "shipped_by", "shipped_at",
-                "voided_by", "voided_at",
-            )
-        }),
+        (
+            "Status & Payment",
+            {
+                "fields": (
+                    "status",
+                    "payment_status",
+                    "payment_method",
+                    "amount_paid",
+                )
+            },
+        ),
+        (
+            "Financials",
+            {
+                "fields": ("subtotal", "tax_amount", "total_amount"),
+                "description": "All amounts use Decimal 19,4 precision",
+            },
+        ),
+        (
+            "Workflow",
+            {
+                "fields": (
+                    "created_by",
+                    "confirmed_by",
+                    "shipped_by",
+                    "voided_by",
+                )
+            },
+        ),
+        (
+            "Timestamps",
+            {
+                "fields": (
+                    "created_at",
+                    "confirmed_at",
+                    "shipped_at",
+                    "voided_at",
+                    "deleted_at",
+                )
+            },
+        ),
         ("Notes", {"fields": ("notes",)}),
     )
 
@@ -139,8 +162,9 @@ class SalesOrderAdmin(admin.ModelAdmin):
             '<span style="background-color: {}; color: white; padding: 3px 8px; '
             'border-radius: 3px; font-size: 11px;">{}</span>',
             color,
-            obj.get_status_display()
+            obj.get_status_display(),
         )
+
     status_badge.short_description = "Status"
 
     def payment_status_badge(self, obj):
@@ -154,8 +178,9 @@ class SalesOrderAdmin(admin.ModelAdmin):
             '<span style="background-color: {}; color: white; padding: 3px 8px; '
             'border-radius: 3px; font-size: 11px;">{}</span>',
             color,
-            obj.get_payment_status_display()
+            obj.get_payment_status_display(),
         )
+
     payment_status_badge.short_description = "Payment"
 
     def confirm_selected_orders(self, request, queryset):
@@ -234,9 +259,12 @@ class SalesOrderItemAdmin(admin.ModelAdmin):
 
     fieldsets = (
         ("Order Link", {"fields": ("order", "product")}),
-        ("Pricing (Constitution 9.5: Decimal 19,4)", {
-            "fields": ("quantity", "snapshot_unit_price", "total_price"),
-            "description": "Unit price is frozen at order time and never changes",
-        }),
+        (
+            "Pricing (Constitution 9.5: Decimal 19,4)",
+            {
+                "fields": ("quantity", "snapshot_unit_price", "total_price"),
+                "description": "Unit price is frozen at order time and never changes",
+            },
+        ),
         ("Notes", {"fields": ("notes",)}),
     )
