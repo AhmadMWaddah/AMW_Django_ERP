@@ -1,6 +1,6 @@
 # AMW Django ERP - Project Law for AI CLI Agents
 
-**Version:** 2.2 (Enterprise Grade)
+**Version:** 2.3 (Enterprise Grade)
 **Last Updated:** 2026-04-01
 
 ---
@@ -617,14 +617,22 @@ The roadmap below remains part of project law because this project is being buil
 
 **Tag:** `v4.0-phase4-complete` | **Merged:** 2026-03-31
 
-### Phase 5: Sales & CRM Workflows
+### Phase 5: Sales & CRM Workflows ✅ COMPLETE
 **Goal:** Implement customer management and atomic sales order workflows.
 
 **Required outcomes:**
-- Customer records exist
-- Sales orders and order items exist
-- Snapshot pricing is preserved
-- Order confirmation drives stock deduction through operations
+- ✅ Customer and CustomerCategory models with SoftDeleteMixin
+- ✅ SalesOrder and SalesOrderItem models with snapshot pricing (19,4 precision)
+- ✅ Snapshot pricing preserved (Constitution 9.2)
+- ✅ Order confirmation drives stock deduction through inventory operations
+- ✅ Order state machine: Draft → Confirmed → Shipped → Voided
+- ✅ Atomic order numbering (#Eg-00001 format, configurable prefix)
+- ✅ Payment tracking (Pending, Partially Paid, Paid)
+- ✅ Void operation with inventory rollback
+- ✅ 34 comprehensive tests (all passing)
+- ✅ Full Django admin integration with bulk actions
+
+**Tag:** `v5.0-phase5-complete` | **Status:** Ready for merge
 
 ### Phase 6: Purchasing & Procurement
 **Goal:** Implement supplier workflows and stock receiving.

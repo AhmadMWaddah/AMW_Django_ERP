@@ -25,8 +25,8 @@ AMW Django ERP is a comprehensive, production-ready ERP system designed for real
 | **Phase 2** | Infrastructure & Core Identity               | ✅ **COMPLETE**  | `master`        |
 | **Phase 3** | IAM & Security Framework                     | ✅ **COMPLETE**  | `master`        |
 | **Phase 4** | Inventory Architecture & Valuation           | ✅ **COMPLETE**  | `master`        |
-| Phase 5     | Sales & CRM Workflows                        | ⏳ **NEXT**      | `phase-5`       |
-| Phase 6     | Purchasing & Procurement                     | ⏳ Planned       | `phase-6`       |
+| **Phase 5** | Sales & CRM Workflows                        | ✅ **COMPLETE**  | `phase-5`       |
+| Phase 6     | Purchasing & Procurement                     | ⏳ **NEXT**      | `phase-6`       |
 | Phase 7     | Frontend Foundation & HTMX UI                | ⏳ Planned       | `phase-7`       |
 | Phase 8     | Async Tasks, Reporting & Hardening           | ⏳ Planned       | `phase-8`       |
 
@@ -34,13 +34,15 @@ AMW Django ERP is a comprehensive, production-ready ERP system designed for real
 - `master` - Stable production baseline (Phase 4 complete)
 - `phase-3` - Merged to master (v3.0-phase3-complete)
 - `phase-4` - Merged to master (v4.0-phase4-complete)
+- `phase-5` - Ready for merge (v5.0-phase5-complete pending)
 - Future phases will be developed in `phase-X` branches and merged to `master` after approval
 
 **Version Tags:**
 - `v3.0-phase3-complete` - IAM & Security Framework
 - `v4.0-phase4-complete` - Inventory Architecture & Valuation
+- `v5.0-phase5-complete` - Sales & CRM Workflows (pending merge)
 
-**See `Architecture/Phase_4_Inventory_Valuation.md` for Phase 4 completion details.**
+**See `Architecture/Phase_5_Sales_CRM.md` for Phase 5 completion details.**
 
 ---
 
@@ -224,6 +226,7 @@ pytest --cov=. --cov-report=html
 | **IAM & Security**       | ✅ Production | Department, Role, Policy                             | Policy enforcement engine                     |
 | **Audit Logging**        | ✅ Production | AuditLog                                             | Operation decorator, state capture            |
 | **Inventory Management** | ✅ Production | Category, Product, StockTransaction, StockAdjustment | stock_in, stock_out, adjust_stock, WAC engine |
+| **Sales & CRM**          | ✅ Production | Customer, CustomerCategory, SalesOrder, SalesOrderItem | confirm_order, void_order, payment tracking |
 
 ### Technology Stack
 
@@ -307,16 +310,16 @@ MIT License - See [LICENSE](LICENSE) file
 
 ## 🎯 Next Steps
 
-**Phase 5: Sales & CRM Workflows**
+**Phase 6: Purchasing & Procurement**
 
-- [ ] Customer model and management
-- [ ] SalesOrder and SalesOrderItem models
-- [ ] Snapshot pricing preservation
-- [ ] Order confirmation workflow (atomic stock deduction)
+- [ ] Supplier model and management
+- [ ] PurchaseOrder and PurchaseOrderItem models
+- [ ] Stock receiving workflow (atomic stock increase)
+- [ ] WAC recalculation on purchase receipt
 - [ ] Integration with inventory operations
 
 ---
 
-*Last Updated: 2026-03-31*
-*Phase 4 Status: ✅ COMPLETE (v4.0-phase4-complete)*
-*Phase 5 Status: ⏳ NEXT*
+*Last Updated: 2026-04-01*
+*Phase 5 Status: ✅ COMPLETE (138 tests passing, ready for merge)*
+*Phase 6 Status: ⏳ NEXT*
