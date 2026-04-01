@@ -21,6 +21,7 @@ from django.db import transaction
 from django.utils.timezone import now
 
 from audit.logic.logging import log_audit
+from inventory.models import StockChangeType
 from inventory.operations.stock import stock_in, stock_out
 from sales.logic.pricing import calculate_order_totals
 from sales.models import OrderStatus, SalesOrder
@@ -112,7 +113,7 @@ def confirm_order(order, employee):
                 product=item.product,
                 quantity=item.quantity,
                 employee=employee,
-                change_type="SALE",
+                change_type=StockChangeType.SALE,
                 reference_type="SalesOrder",
                 reference_id=str(order.id),
                 notes=f"Order {order.order_number} confirmed",
@@ -139,8 +140,8 @@ def confirm_order(order, employee):
         action_code="sales.order.confirm",
         action="confirm",
         target=order,
-        before={"status": old_status.value},
-        after={"status": OrderStatus.CONFIRMED.value},
+        before={"status": str(old_status)},
+        after={"status": str(OrderStatus.CONFIRMED.value)},
         extra_data={
             "order_number": order.order_number,
             "items": items_data,
@@ -195,12 +196,13 @@ def void_order(order, employee, reason=None):
     for item in order.items.all():
         try:
             # Call inventory stock_in operation (atomic, with select_for_update)
+            # Note: We pass negative quantity to stock_in to reverse the original deduction
             stock_in(
                 product=item.product,
                 quantity=item.quantity,
                 unit_cost=item.product.wac_price,  # Use current WAC for valuation
                 employee=employee,
-                change_type="SALE",  # Using SALE as reverse type
+                change_type=StockChangeType.RETURN,  # Using RETURN for voided orders
                 reference_type="SalesOrder.Void",
                 reference_id=str(order.id),
                 notes=f"Order {order.order_number} voided: {reason or 'No reason provided'}",
@@ -227,8 +229,8 @@ def void_order(order, employee, reason=None):
         action_code="sales.order.void",
         action="void",
         target=order,
-        before={"status": old_status.value},
-        after={"status": OrderStatus.VOIDED.value},
+        before={"status": str(old_status)},
+        after={"status": str(OrderStatus.VOIDED.value)},
         extra_data={
             "order_number": order.order_number,
             "reason": reason or "No reason provided",
@@ -317,11 +319,11 @@ def update_payment(order, amount, employee, notes=None):
         target=order,
         before={
             "amount_paid": str(old_amount_paid),
-            "payment_status": old_payment_status.value,
+            "payment_status": str(old_payment_status),
         },
         after={
             "amount_paid": str(order.amount_paid),
-            "payment_status": order.payment_status.value,
+            "payment_status": str(order.payment_status),
         },
         extra_data={
             "order_number": order.order_number,
