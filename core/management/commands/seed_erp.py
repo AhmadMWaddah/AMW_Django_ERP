@@ -1,7 +1,7 @@
 """
 AMW Django ERP - Seed ERP Data Command
 
-Generates idempotent, persona-based dummy data for Phases 1-4.
+Generates idempotent, persona-based dummy data for Phases 1-5.
 
 Usage:
     python manage.py seed_erp              # Safe mode (aborts if DEBUG=False)
@@ -82,6 +82,11 @@ class Command(BaseCommand):
 
             # Phase 4: Initial Stock Levels
             self._seed_initial_stock()
+
+            # Phase 5: Sales & CRM
+            self._seed_customer_categories()
+            self._seed_customers()
+            self._seed_sales_orders()
 
         self.stdout.write()
         self.stdout.write(self.style.SUCCESS("=" * 60))
@@ -484,5 +489,256 @@ class Command(BaseCommand):
                     self.stdout.write(self.style.WARNING(f"  ⚠️  Product {stock_item['sku']} not found - skipping"))
         except ImportError:
             self.stdout.write(self.style.WARNING("  ⚠️  Inventory app not found - skipping stock levels"))
+
+        self.stdout.write()
+
+    def _seed_customer_categories(self):
+        """
+        Seed customer categories for Phase 5.
+
+        Creates hierarchical customer segments.
+        """
+        self.stdout.write("🏢 Seeding Customer Categories (Phase 5)...")
+
+        try:
+            from sales.models import CustomerCategory
+
+            categories_data = [
+                {"name": "Retail", "description": "Individual retail customers"},
+                {"name": "Corporate", "description": "Corporate and business customers"},
+                {"name": "VIP", "description": "VIP and premium customers"},
+            ]
+
+            for cat_data in categories_data:
+                category, created = CustomerCategory.objects.get_or_create(
+                    name=cat_data["name"],
+                    defaults={
+                        "code": cat_data["name"].lower(),
+                        "description": cat_data["description"],
+                    },
+                )
+                if created:
+                    self.stdout.write(self.style.SUCCESS(f"  ✅ Created: {category.name}"))
+                else:
+                    self.stdout.write(self.style.WARNING(f"  ⚠️  Exists: {category.name}"))
+        except ImportError:
+            self.stdout.write(self.style.WARNING("  ⚠️  Sales app not found - skipping customer categories"))
+
+        self.stdout.write()
+
+    def _seed_customers(self):
+        """
+        Seed customer records for Phase 5.
+
+        Creates customers with shipping addresses for order testing.
+        """
+        self.stdout.write("👥 Seeding Customers (Phase 5)...")
+
+        try:
+            from sales.models import Customer, CustomerCategory
+
+            # Get categories
+            retail_category = CustomerCategory.objects.get(name="Retail")
+            corporate_category = CustomerCategory.objects.get(name="Corporate")
+            vip_category = CustomerCategory.objects.get(name="VIP")
+
+            customers_data = [
+                {
+                    "name": "John Doe",
+                    "email": "john.doe@example.com",
+                    "phone": "+20 123 456 7890",
+                    "category": retail_category,
+                    "shipping_address": "123 Tahrir St, Cairo, Egypt",
+                    "billing_address": "Same as shipping",
+                },
+                {
+                    "name": "ABC Corporation",
+                    "email": "purchasing@abc-corp.com",
+                    "phone": "+20 2 3456 7890",
+                    "category": corporate_category,
+                    "shipping_address": "456 Business Park, New Cairo, Egypt",
+                    "billing_address": "Finance Dept, 789 Corporate Blvd, Cairo",
+                },
+                {
+                    "name": "Ahmed Mohamed",
+                    "email": "ahmed.vip@example.com",
+                    "phone": "+20 100 999 8888",
+                    "category": vip_category,
+                    "shipping_address": "789 Nile Corniche, Zamalek, Cairo, Egypt",
+                    "billing_address": "Same as shipping",
+                },
+            ]
+
+            for cust_data in customers_data:
+                customer, created = Customer.objects.get_or_create(
+                    name=cust_data["name"],
+                    defaults={
+                        "email": cust_data["email"],
+                        "phone": cust_data["phone"],
+                        "category": cust_data["category"],
+                        "shipping_address": cust_data["shipping_address"],
+                        "billing_address": cust_data["billing_address"],
+                    },
+                )
+                if created:
+                    self.stdout.write(self.style.SUCCESS(f"  ✅ Created: {customer.name}"))
+                else:
+                    self.stdout.write(self.style.WARNING(f"  ⚠️  Exists: {customer.name}"))
+        except ImportError:
+            self.stdout.write(self.style.WARNING("  ⚠️  Sales app not found - skipping customers"))
+
+        self.stdout.write()
+
+    def _seed_sales_orders(self):
+        """
+        Seed sales orders for Phase 5.
+
+        Creates orders in different states (Draft, Confirmed, Shipped) to test workflows.
+        Uses confirm_order() operation to test business logic.
+        """
+        self.stdout.write("📦 Seeding Sales Orders (Phase 5)...")
+
+        try:
+            from sales.models import (
+                Customer,
+                OrderStatus,
+                PaymentMethod,
+                PaymentStatus,
+                SalesOrder,
+                SalesOrderItem,
+            )
+            from sales.operations.orders import confirm_order, generate_order_number
+
+            # Get sales rep
+            sales_rep = Employee.objects.get(email="sales.rep@amw.io")
+
+            # Get customers
+            john = Customer.objects.get(name="John Doe")
+            abc_corp = Customer.objects.get(name="ABC Corporation")
+            ahmed = Customer.objects.get(name="Ahmed Mohamed")
+
+            # Get products
+            from inventory.models import Product
+
+            refrigerator = Product.objects.get(sku="MAJ-FR-500")
+            washing_machine = Product.objects.get(sku="MAJ-WM-CR159")
+            iron = Product.objects.get(sku="SML-IR-STM")
+            oven = Product.objects.get(sku="MAJ-OV-ELC")
+            blender = Product.objects.get(sku="KIT-BL-HSP")
+
+            # Order 1: Draft order (ABC Corporation)
+            order_number1 = generate_order_number()
+            order1 = SalesOrder.objects.create(
+                order_number=order_number1,
+                customer=abc_corp,
+                created_by=sales_rep,
+                shipping_address_snapshot=abc_corp.shipping_address,
+                status=OrderStatus.DRAFT,
+                payment_status=PaymentStatus.PENDING,
+                notes="Draft order - awaiting customer confirmation",
+            )
+            SalesOrderItem.objects.create(
+                order=order1,
+                product=refrigerator,
+                quantity=Decimal("2.0000"),
+                snapshot_unit_price=Decimal("450.0000"),
+            )
+            SalesOrderItem.objects.create(
+                order=order1,
+                product=washing_machine,
+                quantity=Decimal("1.0000"),
+                snapshot_unit_price=Decimal("380.0000"),
+            )
+            # Calculate totals
+            from sales.logic.pricing import calculate_order_totals
+            subtotal, tax, total = calculate_order_totals(order1)
+            order1.subtotal = subtotal
+            order1.tax_amount = tax
+            order1.total_amount = total
+            order1.save()
+
+            self.stdout.write(self.style.SUCCESS(f"  ✅ Created Draft Order: {order1.order_number} ({order1.total_amount})"))
+
+            # Order 2: Confirmed order (John Doe) - USE confirm_order() operation
+            order_number2 = generate_order_number()
+            order2 = SalesOrder.objects.create(
+                order_number=order_number2,
+                customer=john,
+                created_by=sales_rep,
+                shipping_address_snapshot=john.shipping_address,
+                status=OrderStatus.DRAFT,
+                payment_status=PaymentStatus.PENDING,
+            )
+            SalesOrderItem.objects.create(
+                order=order2,
+                product=iron,
+                quantity=Decimal("3.0000"),
+                snapshot_unit_price=Decimal("25.5000"),
+            )
+            SalesOrderItem.objects.create(
+                order=order2,
+                product=blender,
+                quantity=Decimal("1.0000"),
+                snapshot_unit_price=Decimal("45.0000"),
+            )
+            # Calculate totals
+            subtotal, tax, total = calculate_order_totals(order2)
+            order2.subtotal = subtotal
+            order2.tax_amount = tax
+            order2.total_amount = total
+            order2.save()
+
+            # CONFIRM THE ORDER using operation (tests business logic)
+            confirm_order(order2, sales_rep)
+
+            # Add partial payment
+            order2.amount_paid = Decimal("50.0000")
+            order2.payment_status = PaymentStatus.PARTIALLY_PAID
+            order2.payment_method = PaymentMethod.COD
+            order2.save()
+
+            self.stdout.write(self.style.SUCCESS(f"  ✅ Created Confirmed Order: {order2.order_number} ({order2.total_amount}, Partially Paid)"))
+
+            # Order 3: Shipped order (Ahmed Mohamed - VIP)
+            order_number3 = generate_order_number()
+            order3 = SalesOrder.objects.create(
+                order_number=order_number3,
+                customer=ahmed,
+                created_by=sales_rep,
+                shipping_address_snapshot=ahmed.shipping_address,
+                status=OrderStatus.DRAFT,
+                payment_status=PaymentStatus.PENDING,
+            )
+            SalesOrderItem.objects.create(
+                order=order3,
+                product=oven,
+                quantity=Decimal("1.0000"),
+                snapshot_unit_price=Decimal("120.0000"),
+            )
+            SalesOrderItem.objects.create(
+                order=order3,
+                product=refrigerator,
+                quantity=Decimal("1.0000"),
+                snapshot_unit_price=Decimal("450.0000"),
+            )
+            # Calculate totals
+            subtotal, tax, total = calculate_order_totals(order3)
+            order3.subtotal = subtotal
+            order3.tax_amount = tax
+            order3.total_amount = total
+            order3.save()
+
+            # Confirm and ship
+            confirm_order(order3, sales_rep)
+            order3.status = OrderStatus.SHIPPED
+            order3.payment_status = PaymentStatus.PAID
+            order3.payment_method = PaymentMethod.CREDIT_CARD
+            order3.amount_paid = total
+            order3.save()
+
+            self.stdout.write(self.style.SUCCESS(f"  ✅ Created Shipped Order: {order3.order_number} ({order3.total_amount}, Paid)"))
+
+        except ImportError:
+            self.stdout.write(self.style.WARNING("  ⚠️  Sales app not found - skipping sales orders"))
 
         self.stdout.write()
