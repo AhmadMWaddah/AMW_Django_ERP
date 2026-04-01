@@ -93,3 +93,4 @@ note.txt
 ScreenShots/
 .qwen/
 logs/
+!Architecture/*.md

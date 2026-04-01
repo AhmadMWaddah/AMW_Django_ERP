@@ -10,6 +10,7 @@ Usage:
 """
 
 from importlib.util import find_spec
+from decimal import Decimal
 
 from .base import *
 
@@ -27,6 +28,12 @@ DATABASES = {
         "PORT": env("DB_PORT", default="5432"),
     }
 }
+
+# -- Phase 5: Sales Settings --
+# Order numbering prefix (Constitution 9.5)
+ORDER_PREFIX = "Eg"  # Egypt
+# Sales tax rate (14% VAT for Egypt)
+SALES_TAX_RATE = Decimal("0.14")
 
 if find_spec("debug_toolbar"):
     INSTALLED_APPS += ["debug_toolbar"]
