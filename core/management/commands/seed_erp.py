@@ -651,13 +651,16 @@ class Command(BaseCommand):
             )
             # Calculate totals
             from sales.logic.pricing import calculate_order_totals
+
             subtotal, tax, total = calculate_order_totals(order1)
             order1.subtotal = subtotal
             order1.tax_amount = tax
             order1.total_amount = total
             order1.save()
 
-            self.stdout.write(self.style.SUCCESS(f"  ✅ Created Draft Order: {order1.order_number} ({order1.total_amount})"))
+            self.stdout.write(
+                self.style.SUCCESS(f"  ✅ Created Draft Order: {order1.order_number} ({order1.total_amount})")
+            )
 
             # Order 2: Confirmed order (John Doe) - USE confirm_order() operation
             order_number2 = generate_order_number()
@@ -697,7 +700,11 @@ class Command(BaseCommand):
             order2.payment_method = PaymentMethod.COD
             order2.save()
 
-            self.stdout.write(self.style.SUCCESS(f"  ✅ Created Confirmed Order: {order2.order_number} ({order2.total_amount}, Partially Paid)"))
+            self.stdout.write(
+                self.style.SUCCESS(
+                    f"  ✅ Created Confirmed Order: {order2.order_number} ({order2.total_amount}, Partially Paid)"
+                )
+            )
 
             # Order 3: Shipped order (Ahmed Mohamed - VIP)
             order_number3 = generate_order_number()
@@ -736,7 +743,9 @@ class Command(BaseCommand):
             order3.amount_paid = total
             order3.save()
 
-            self.stdout.write(self.style.SUCCESS(f"  ✅ Created Shipped Order: {order3.order_number} ({order3.total_amount}, Paid)"))
+            self.stdout.write(
+                self.style.SUCCESS(f"  ✅ Created Shipped Order: {order3.order_number} ({order3.total_amount}, Paid)")
+            )
 
         except ImportError:
             self.stdout.write(self.style.WARNING("  ⚠️  Sales app not found - skipping sales orders"))
