@@ -58,7 +58,7 @@ AMW Django ERP is a comprehensive, production-ready ERP system designed for real
 cd /path/to/AMW_Django_ERP
 
 # Bootstrap git + environment + dependencies
-./utils/env_factory.sh setup
+bash utils/env_factory.sh setup
 
 # Activate environment
 source .env_amw_dj_erp/bin/activate
@@ -68,20 +68,20 @@ source .env_amw_dj_erp/bin/activate
 
 ```bash
 # Start PostgreSQL and Redis
-./utils/infra_manage.sh start
+bash utils/infra_manage.sh start
 
 # Check services status
-./utils/infra_manage.sh status
+bash utils/infra_manage.sh status
 ```
 
 ### 3. Initialize Database
 
 ```bash
 # Run migrations
-./utils/db_manage_dev.sh migrate
+bash utils/db_manage_dev.sh migrate
 
 # Create admin superuser
-./utils/db_manage_dev.sh createsuperuser
+bash utils/db_manage_dev.sh createsuperuser
 ```
 
 ### 4. Run Development Server
@@ -142,48 +142,48 @@ Official project utility scripts are located in the `utils/` directory. For deta
 **Git Commits (Multi-Message Format - Constitution Section 9.3):**
 ```bash
 git add path/to/file
-./utils/git_task_commit.sh "Title" "Description"
+bash utils/git_task_commit.sh "Title" "Description"
 
 # Examples:
-./utils/git_task_commit.sh "phase-2: Employee Model" "Added AbstractBaseUser with email auth"
-./utils/git_task_commit.sh "Fix: Navigation bug" "Changed to namespaced URLs accounts:dashboard"
-./utils/git_task_commit.sh "Feature: Open redirect protection" "Added Django's url_has_allowed_host_and_scheme"
+bash utils/git_task_commit.sh "phase-2: Employee Model" "Added AbstractBaseUser with email auth"
+bash utils/git_task_commit.sh "Fix: Navigation bug" "Changed to namespaced URLs accounts:dashboard"
+bash utils/git_task_commit.sh "Feature: Open redirect protection" "Added Django's url_has_allowed_host_and_scheme"
 ```
 
 **Environment Management:**
 ```bash
-./utils/env_factory.sh setup          # Bootstrap git + venv + dependencies
-./utils/env_factory.sh init-git       # Initialize git repository
-./utils/env_factory.sh create         # Create virtual environment
-./utils/env_factory.sh install        # Install dependencies
+bash utils/env_factory.sh setup          # Bootstrap git + venv + dependencies
+bash utils/env_factory.sh init-git       # Initialize git repository
+bash utils/env_factory.sh create         # Create virtual environment
+bash utils/env_factory.sh install        # Install dependencies
 ```
 
 **Phase Completion & Tagging:**
 ```bash
-./utils/git_phase_finish.sh <phase-number> [tag]
+bash utils/git_phase_finish.sh <phase-number> [tag]
 
 # Examples:
-./utils/git_phase_finish.sh 2           # Auto-generates tag v2.0-phase2-complete
-./utils/git_phase_finish.sh 2 v2.0     # Custom tag
+bash utils/git_phase_finish.sh 2           # Auto-generates tag v2.0-phase2-complete
+bash utils/git_phase_finish.sh 2 v2.0     # Custom tag
 ```
 
 **Testing:**
 ```bash
-./utils/test_suite_runner.sh          # Run all tests
-./utils/test_suite_runner.sh unit     # Unit tests only
-./utils/test_suite_runner.sh coverage # With coverage
-./utils/test_suite_runner.sh lint     # Run linters
+bash utils/test_suite_runner.sh          # Run all tests
+bash utils/test_suite_runner.sh unit     # Unit tests only
+bash utils/test_suite_runner.sh coverage # With coverage
+bash utils/test_suite_runner.sh lint     # Run linters
 ```
 
 # Database operations
-./utils/db_manage_dev.sh migrate
-./utils/db_manage_dev.sh shell
-./utils/db_manage_dev.sh createsuperuser
+bash utils/db_manage_dev.sh migrate
+bash utils/db_manage_dev.sh shell
+bash utils/db_manage_dev.sh createsuperuser
 
 # Infrastructure (Docker)
-./utils/infra_manage.sh start
-./utils/infra_manage.sh logs
-./utils/infra_manage.sh status
+bash utils/infra_manage.sh start
+bash utils/infra_manage.sh logs
+bash utils/infra_manage.sh status
 ```
 
 ### Code Quality
@@ -218,11 +218,11 @@ pytest --cov=. --cov-report=html
 
 ### Completed Modules
 
-| Module | Status | Models | Operations |
-|--------|--------|--------|------------|
-| **Employee Identity** | ✅ Production | Employee (custom user model) | Authentication, Role assignment |
-| **IAM & Security** | ✅ Production | Department, Role, Policy | Policy enforcement engine |
-| **Audit Logging** | ✅ Production | AuditLog | Operation decorator, state capture |
+| Module                   | Status        | Models                                               | Operations                                    |
+|--------------------------|---------------|------------------------------------------------------|-----------------------------------------------|
+| **Employee Identity**    | ✅ Production | Employee (custom user model)                         | Authentication, Role assignment               |
+| **IAM & Security**       | ✅ Production | Department, Role, Policy                             | Policy enforcement engine                     |
+| **Audit Logging**        | ✅ Production | AuditLog                                             | Operation decorator, state capture            |
 | **Inventory Management** | ✅ Production | Category, Product, StockTransaction, StockAdjustment | stock_in, stock_out, adjust_stock, WAC engine |
 
 ### Technology Stack
