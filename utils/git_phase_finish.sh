@@ -3,9 +3,10 @@
 # -- Git Phase Finish Script --
 # AMW Django ERP - Phase Completion and Merge Automation
 #
-# Usage: ./utils/git_phase_finish.sh <phase-number> [version-tag]
+# Usage: ./utils/git_phase_finish.sh <phase-number> [version-tag] [--force]
 # Example: ./utils/git_phase_finish.sh 3 v3.0
 # Example: ./utils/git_phase_finish.sh 3 3.0-phase3-complete
+# Example: ./utils/git_phase_finish.sh 3 --force  # Skip confirmation
 #
 # This script automates the complete phase closure process:
 # 1. Runs full test suite
@@ -21,6 +22,25 @@ set -e
 # -- Configuration --
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+
+# -- Parse Arguments --
+FORCE="false"
+POSITIONAL_ARGS=()
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --force)
+            FORCE="true"
+            shift
+            ;;
+        *)
+            POSITIONAL_ARGS+=("$1")
+            shift
+            ;;
+    esac
+done
+
+set -- "${POSITIONAL_ARGS[@]}"
 
 # -- Colors for Output --
 RED='\033[0;31m'
@@ -140,12 +160,19 @@ echo "  1. Merge $PHASE_BRANCH into master"
 echo "  2. Create tag $VERSION_TAG"
 echo "  3. Push master and tags to GitHub"
 echo ""
-read -p "Are you sure you want to finish Phase ${PHASE_NUMBER}? (yes/no): " -r
-echo ""
 
-if [[ ! $REPLY =~ ^[Yy][Ee][Ss]$ ]]; then
-    print_info "Phase completion cancelled"
-    exit 0
+# Auto-confirm if input is piped (non-interactive) or if --force flag is used
+if [ -t 0 ] && [ "$FORCE" != "true" ]; then
+    # Interactive mode
+    read -p "Are you sure you want to finish Phase ${PHASE_NUMBER}? (yes/no): " -r
+    echo ""
+    if [[ ! $REPLY =~ ^[Yy][Ee][Ss]$ ]]; then
+        print_info "Phase completion cancelled"
+        exit 0
+    fi
+else
+    # Non-interactive mode (piped input or --force)
+    print_info "Non-interactive mode: auto-confirming"
 fi
 
 # -- Step 4: Merge to Master --
