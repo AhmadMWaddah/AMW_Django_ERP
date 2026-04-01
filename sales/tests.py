@@ -19,13 +19,11 @@ import pytest
 from django.core.exceptions import ValidationError
 
 from inventory.models import Product
-from inventory.operations.stock import stock_in
 from sales.logic.pricing import calculate_line_total, calculate_order_totals
 from sales.models import (
     Customer,
     CustomerCategory,
     OrderStatus,
-    PaymentMethod,
     PaymentStatus,
     SalesOrder,
     SalesOrderItem,
