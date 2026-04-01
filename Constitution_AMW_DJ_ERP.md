@@ -1,7 +1,7 @@
 # AMW Django ERP - Project Law for AI CLI Agents
 
-**Version:** 2.1 (Enterprise Grade)
-**Last Updated:** 2026-03-31
+**Version:** 2.2 (Enterprise Grade)
+**Last Updated:** 2026-04-01
 
 ---
 
@@ -365,6 +365,8 @@ bash utils/git_phase_finish.sh <phase-number> [version-tag]
 
 - Order confirmation must be an operation, not a view-side shortcut.
 - Sales order item pricing must preserve snapshot values at time of order.
+- Customer shipping address must be snapshotted at order time (not referenced).
+- SalesOrder and related entities use SoftDeleteMixin (Constitution 8.4).
 
 ### 9.3 Purchasing
 
@@ -375,6 +377,13 @@ bash utils/git_phase_finish.sh <phase-number> [version-tag]
 
 - Every protected workflow must be capable of policy validation before execution.
 - Do not hardcode permission decisions in many unrelated places.
+
+### 9.5 Financial Precision
+
+- All currency fields must use `DecimalField(max_digits=19, decimal_places=4)`.
+- Monetary calculations must use Python's `Decimal` class (not `float`).
+- Rounding must use `ROUND_HALF_UP` for consistency across all financial operations.
+- Order numbering must be atomic, unique, and generated in the operations layer (e.g., `#Eg-00001`).
 
 ---
 
