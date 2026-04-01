@@ -1,7 +1,7 @@
 # AMW Django ERP - Project Law for AI CLI Agents
 
-**Version:** 2.0 (Enterprise Grade)  
-**Last Updated:** 2026-03-30
+**Version:** 2.1 (Enterprise Grade)
+**Last Updated:** 2026-03-31
 
 ---
 
@@ -135,12 +135,12 @@ The original phase naming is preserved conceptually, but branch names used in Gi
 
 **Branch Naming Convention:**
 
-| Branch Type | Format | Example |
-|-------------|--------|---------|
-| **Phase Branch** | `phase-X` | `phase-4` |
-| **Feature Branch** | `feature-{name}` | `feature-seed_erp` |
-| **Fix Branch** | `fix-{name}` | `fix-login_bug` |
-| **Hotfix Branch** | `hotfix-{name}` | `hotfix-security_patch` |
+| Branch Type        | Format          | Example                 |
+|--------------------|-----------------|-------------------------|
+| **Phase Branch**   | `phase-X`       | `phase-4`               |
+| **Feature Branch** | `feature-{name}`| `feature-seed_erp`      |
+| **Fix Branch**     | `fix-{name}`    | `fix-login_bug`         |
+| **Hotfix Branch**  | `hotfix-{name}` | `hotfix-security_patch` |
 
 **When to Use Each:**
 
@@ -163,17 +163,17 @@ The original phase naming is preserved conceptually, but branch names used in Gi
 
 **Format:**
 ```bash
-git commit -m "[branch-prefix] Title" -m "Detailed description"
+git commit -m "branch-prefix Title" -m "Detailed description"
 ```
 
 **Using the utility script (RECOMMENDED):**
 ```bash
-./utils/git_task_commit.sh "Title" "Description"
+bash utils/git_task_commit.sh "Title" "Description"
 
 # Examples:
-./utils/git_task_commit.sh "phase-2: Employee Model" "Added AbstractBaseUser with email authentication"
-./utils/git_task_commit.sh "Fix: Navigation bug" "Changed bare URLs to namespaced accounts:dashboard"
-./utils/git_task_commit.sh "Feature: Open redirect protection" "Added Django's url_has_allowed_host_and_scheme"
+bash utils/git_task_commit.sh "phase-2: Employee Model" "Added AbstractBaseUser with email authentication"
+bash utils/git_task_commit.sh "Fix: Navigation bug" "Changed bare URLs to namespaced accounts:dashboard"
+bash utils/git_task_commit.sh "Feature: Open redirect protection" "Added Django's url_has_allowed_host_and_scheme"
 ```
 
 **Title Prefixes:**
@@ -213,11 +213,11 @@ git commit -m "[branch-prefix] Title" -m "Detailed description"
 
 **Automated Process:**
 ```bash
-./utils/git_phase_finish.sh <phase-number> [version-tag]
+bash utils/git_phase_finish.sh <phase-number> [version-tag]
 
 # Examples:
-./utils/git_phase_finish.sh 3           # Auto-generates tag: v3.0-phase3-complete
-./utils/git_phase_finish.sh 3 v3.0     # Custom tag
+bash utils/git_phase_finish.sh 3           # Auto-generates tag: v3.0-phase3-complete
+bash utils/git_phase_finish.sh 3 v3.0     # Custom tag
 ```
 
 **What the script does:**
@@ -270,7 +270,7 @@ git commit -m "[branch-prefix] Title" -m "Detailed description"
 
 **Usage:**
 ```bash
-./utils/git_phase_finish.sh <phase-number> [version-tag]
+bash utils/git_phase_finish.sh <phase-number> [version-tag]
 ```
 
 ### 7.4 Milestone Tagging
@@ -593,15 +593,20 @@ The roadmap below remains part of project law because this project is being buil
 - ✅ Base operation security rules are enforced
 - ✅ Activity logging foundation exists
 
-### Phase 4: Inventory Architecture & Valuation
+### Phase 4: Inventory Architecture & Valuation ✅ COMPLETE
 **Goal:** Build the product catalog, stock ledger, and weighted average cost engine.
 
 **Required outcomes:**
-- Category and product architecture exist
-- Stock transactions are recorded
-- WAC recalculation is implemented
-- Stock changes are atomic and concurrency-safe
-- Inventory history is visible and auditable
+- ✅ Category and product architecture exist
+- ✅ Stock transactions are recorded in immutable ledger
+- ✅ WAC recalculation is implemented (19,4 precision)
+- ✅ Stock changes are atomic and concurrency-safe
+- ✅ Inventory history is visible and auditable
+- ✅ StockAdjustment workflow with approval/rejection
+- ✅ 26 comprehensive tests (all passing)
+- ✅ Full Django admin integration
+
+**Tag:** `v4.0-phase4-complete` | **Merged:** 2026-03-31
 
 ### Phase 5: Sales & CRM Workflows
 **Goal:** Implement customer management and atomic sales order workflows.

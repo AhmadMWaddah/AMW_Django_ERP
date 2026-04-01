@@ -23,19 +23,24 @@ AMW Django ERP is a comprehensive, production-ready ERP system designed for real
 |-------------|----------------------------------------------|------------------|-----------------|
 | **Phase 1** | Foundation, Automation & Local Scaffolding   | ✅ **COMPLETE**  | `master`        |
 | **Phase 2** | Infrastructure & Core Identity               | ✅ **COMPLETE**  | `master`        |
-| **Phase 3** | IAM & Security Framework                     | ✅ **COMPLETE**  | `phase-3`       |
-| Phase 4     | Inventory Architecture & Valuation           | ⏳ **NEXT**      | `phase-4`       |
-| Phase 5     | Sales & CRM Workflows                        | ⏳ Planned       | `phase-5`       |
+| **Phase 3** | IAM & Security Framework                     | ✅ **COMPLETE**  | `master`        |
+| **Phase 4** | Inventory Architecture & Valuation           | ✅ **COMPLETE**  | `master`        |
+| Phase 5     | Sales & CRM Workflows                        | ⏳ **NEXT**      | `phase-5`       |
 | Phase 6     | Purchasing & Procurement                     | ⏳ Planned       | `phase-6`       |
 | Phase 7     | Frontend Foundation & HTMX UI                | ⏳ Planned       | `phase-7`       |
 | Phase 8     | Async Tasks, Reporting & Hardening           | ⏳ Planned       | `phase-8`       |
 
 **Branch Strategy:**
-- `master` - Stable production baseline (Phase 2 complete)
-- `phase-3` - Current development (Phase 3 complete, ready for merge)
+- `master` - Stable production baseline (Phase 4 complete)
+- `phase-3` - Merged to master (v3.0-phase3-complete)
+- `phase-4` - Merged to master (v4.0-phase4-complete)
 - Future phases will be developed in `phase-X` branches and merged to `master` after approval
 
-**See `Architecture/Phase_3_IAM_Security.md` for Phase 3 completion details.**
+**Version Tags:**
+- `v3.0-phase3-complete` - IAM & Security Framework
+- `v4.0-phase4-complete` - Inventory Architecture & Valuation
+
+**See `Architecture/Phase_4_Inventory_Valuation.md` for Phase 4 completion details.**
 
 ---
 
@@ -204,10 +209,21 @@ pytest --cov=. --cov-report=html
 
 - **Operations-First Business Logic** - Core workflows in `operations/` modules, not views
 - **Soft Delete by Default** - All business entities support restoration (Constitution 6.4)
-- **Weighted Average Cost** - Automatic WAC recalculation on stock movements (Constitution 6.5)
+- **Weighted Average Cost (WAC)** - Automatic WAC recalculation on stock-in (Constitution 6.5)
 - **Atomic Safety** - `transaction.atomic` + `select_for_update()` for concurrency (Constitution 6.6)
 - **Comprehensive Audit** - Before/after snapshots for all critical changes (Constitution 6.7)
 - **Policy-Based IAM** - Reusable authorization: Employee → Department → Role → Policies
+- **Immutable Stock Ledger** - All stock movements recorded with full traceability
+- **Stock Adjustment Workflow** - Approval-based corrections with rejection comments
+
+### Completed Modules
+
+| Module | Status | Models | Operations |
+|--------|--------|--------|------------|
+| **Employee Identity** | ✅ Production | Employee (custom user model) | Authentication, Role assignment |
+| **IAM & Security** | ✅ Production | Department, Role, Policy | Policy enforcement engine |
+| **Audit Logging** | ✅ Production | AuditLog | Operation decorator, state capture |
+| **Inventory Management** | ✅ Production | Category, Product, StockTransaction, StockAdjustment | stock_in, stock_out, adjust_stock, WAC engine |
 
 ### Technology Stack
 
@@ -291,14 +307,16 @@ MIT License - See [LICENSE](LICENSE) file
 
 ## 🎯 Next Steps
 
-**Phase 3: IAM & Security Framework**
+**Phase 5: Sales & CRM Workflows**
 
-- [ ] Department, Role, and Policy models
-- [ ] Policy enforcement engine
-- [ ] Audit logging system
-- [ ] Integration with Employee model
+- [ ] Customer model and management
+- [ ] SalesOrder and SalesOrderItem models
+- [ ] Snapshot pricing preservation
+- [ ] Order confirmation workflow (atomic stock deduction)
+- [ ] Integration with inventory operations
 
 ---
 
-*Last Updated: 2026-03-28*  
-*Phase 1 Status: ✅ COMPLETE*
+*Last Updated: 2026-03-31*
+*Phase 4 Status: ✅ COMPLETE (v4.0-phase4-complete)*
+*Phase 5 Status: ⏳ NEXT*
