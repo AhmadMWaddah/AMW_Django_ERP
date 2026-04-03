@@ -1,15 +1,66 @@
 {% extends "layouts/dashboard.html" %}
 
-{% block title %}Dashboard | AMW Django ERP{% endblock %}
+{% block title %}Dashboard - {{ app_name }}{% endblock %}
+
+{% block topbar_title %}Dashboard{% endblock %}
 
 {% block dashboard_content %}
-    <main class="dashboard-panel">
-        <h1>Welcome, {{ user.get_full_name }}!</h1>
-        <p>Email: {{ user.email }}</p>
-
-        <form method="post" action="{% url 'Accounts:Logout' %}">
+<div class="card">
+    <div class="card__header">
+        <h2 class="card__title">Welcome, {{ request.user.get_full_name|default:request.user.email }}</h2>
+    </div>
+    <div class="card__body">
+        <p class="u-text-muted u-mb-md">You're logged in to {{ app_name }}.</p>
+        <p class="u-text-sm"><strong>Email:</strong> {{ request.user.email }}</p>
+        {% if request.user.department %}
+            <p class="u-text-sm"><strong>Department:</strong> {{ request.user.department.name }}</p>
+        {% endif %}
+    </div>
+    <div class="card__footer">
+        <form method="post" action="{% url 'Accounts:Logout' %}" class="u-flex u-items-center u-gap-sm">
             {% csrf_token %}
-            <button type="submit">Logout</button>
+            {% include "_snipps/_button_.html" with text="Logout" type="submit" class="btn btn--outline" only %}
         </form>
-    </main>
+    </div>
+</div>
+
+{# Module Quick Links #}
+<div class="u-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--space-md);">
+    <div class="card">
+        <div class="card__body u-text-center">
+            <div class="u-flex u-justify-center u-items-center u-gap-sm u-mb-sm">
+                {% include "_snipps/_icon_.html" with icon="package" class="" only %}
+            </div>
+            <h3 class="u-text-sm u-font-semibold u-mb-xs">Inventory</h3>
+            <p class="u-text-xs u-text-muted">Products, categories, and stock management</p>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card__body u-text-center">
+            <div class="u-flex u-justify-center u-items-center u-gap-sm u-mb-sm">
+                {% include "_snipps/_icon_.html" with icon="shopping-cart" class="" only %}
+            </div>
+            <h3 class="u-text-sm u-font-semibold u-mb-xs">Sales & CRM</h3>
+            <p class="u-text-xs u-text-muted">Customers, orders, and sales tracking</p>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card__body u-text-center">
+            <div class="u-flex u-justify-center u-items-center u-gap-sm u-mb-sm">
+                {% include "_snipps/_icon_.html" with icon="truck" class="" only %}
+            </div>
+            <h3 class="u-text-sm u-font-semibold u-mb-xs">Purchasing</h3>
+            <p class="u-text-xs u-text-muted">Suppliers, purchase orders, and receiving</p>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card__body u-text-center">
+            <div class="u-flex u-justify-center u-items-center u-gap-sm u-mb-sm">
+                {% include "_snipps/_icon_.html" with icon="shield-check" class="" only %}
+            </div>
+            <h3 class="u-text-sm u-font-semibold u-mb-xs">IAM & Security</h3>
+            <p class="u-text-xs u-text-muted">Departments, roles, and policies</p>
+        </div>
+    </div>
+</div>
 {% endblock %}

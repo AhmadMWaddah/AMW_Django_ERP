@@ -1,0 +1,28 @@
+{# -- AMW Django ERP - Form Group Snippet --
+ #
+ # A complete form field wrapper with label, input, and optional errors.
+ #
+ # Usage:
+ #   {% include "_snipps/_form_group.html" with
+ #      field_id="email" label="Email" type="email"
+ #      name="email" placeholder="Enter email" value=""
+ #      required=True errors=None only %}
+ #}
+<div class="form-group">
+    <label for="{{ field_id }}" class="form-group__label">
+        {{ label }}{% if required %} *{% endif %}
+    </label>
+    <input
+        type="{{ type }}"
+        id="{{ field_id }}"
+        name="{{ name }}"
+        class="form-group__input{% if errors %} form-group__input--error{% endif %}"
+        placeholder="{{ placeholder }}"
+        {% if value is not None %}value="{{ value }}"{% endif %}
+        {% if required %}required{% endif %}
+        {% if autofocus %}autofocus{% endif %}
+    >
+    {% if errors %}
+        {% include "_snipps/_field_error_.html" with errors=errors only %}
+    {% endif %}
+</div>

@@ -3,80 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | AMW Django ERP - Phase 2 Identity</title>
-    
-    <link rel="stylesheet" href="{% static 'styles/accounts-auth.css' %}">
+    <title>Login - AMW Django ERP</title>
+    <link rel="icon" type="image/png" href="{% static 'images/AMW_DJ_ERP_Fav_Icon.png' %}">
+
+    {# Core Styles #}
+    <link rel="stylesheet" href="{% static 'styles/_variables.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/_base.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/_utilities.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/accounts.css' %}">
 </head>
-<body class="accounts-login-page">
-    <div class="accounts-login-container">
-        <div class="accounts-login-left">
-            <div class="accounts-login-brand">
-                <div class="accounts-login-logo">AMW</div>
-                <div class="accounts-login-brand-name">AMW Django ERP</div>
-            </div>
-            
-            <div class="accounts-login-content">
-                <div class="accounts-login-phase">Phase 2 Identity</div>
-                <h2 class="accounts-login-tagline">Structured access for real operations.</h2>
-                <p class="accounts-login-description">
-                    Employee authentication should feel calm, credible, and deliberate from the first screen.
-                </p>
-            </div>
+<body>
+
+<div class="auth-page">
+    <div class="auth-card">
+        <div class="auth-card__header">
+            <div class="auth-card__logo">{{ app_name }}</div>
+            <p class="auth-card__subtitle">Sign in with your employee credentials</p>
         </div>
-        
-        <div class="accounts-login-right">
-            <div class="accounts-login-header">
-                <span class="brand-name">AMW Django ERP</span>
-                <h1>Log in to your account</h1>
-                <p class="subtitle">Welcome back. Enter your employee credentials to continue.</p>
-            </div>
-            
-            {% if error_message %}
-                {% include '_snipps_/_error_message.html' with message=error_message %}
+
+        {% if error_message %}
+            {% include "_snipps/_error_message.html" with message=error_message %}
+        {% endif %}
+
+        <form method="post" action="{% url 'Accounts:Login' %}">
+            {% csrf_token %}
+            {% if next %}
+                <input type="hidden" name="next" value="{{ next }}">
             {% endif %}
-            
-            <form method="post" action="{% url 'Accounts:Login' %}" class="accounts-login-form">
-                {% csrf_token %}
-                
-                {% if next %}
-                    <input type="hidden" name="next" value="{{ next }}">
-                {% endif %}
-                
-                <div class="accounts-form-group">
-                    <label for="email">Email</label>
-                    <input 
-                        type="email" 
-                        id="email" 
-                        name="email" 
-                        placeholder="Enter your email"
-                        required 
-                        autofocus
-                    >
-                </div>
-                
-                <div class="accounts-form-group">
-                    <label for="password">Password</label>
-                    <input 
-                        type="password" 
-                        id="password" 
-                        name="password" 
-                        placeholder="Enter your password"
-                        required
-                    >
-                </div>
-                
-                <div class="accounts-form-footer">
-                    <span class="admin-only">Admin access only</span>
-                    <a href="#" class="help-link">Need help?</a>
-                </div>
-                
-                <button type="submit" class="accounts-submit-btn">Sign In</button>
-            </form>
-            
-            <div class="accounts-login-footer">
-                Secure employee identity gateway for AMW internal operations.
+
+            {% include "_snipps/_input_.html" with
+                field_id="email" label="Email" input_type="email"
+                name="email" placeholder="Enter your email"
+                autocomplete="email" required=True autofocus=True only %}
+
+            {% include "_snipps/_input_.html" with
+                field_id="password" label="Password" input_type="password"
+                name="password" placeholder="Enter your password"
+                autocomplete="current-password" required=True only %}
+
+            <div class="auth-actions">
+                <button type="submit" class="auth-actions__submit">Sign In</button>
             </div>
+        </form>
+
+        <div class="auth-footer">
+            Secure employee identity gateway for AMW internal operations.
         </div>
     </div>
+</div>
+
 </body>
 </html>

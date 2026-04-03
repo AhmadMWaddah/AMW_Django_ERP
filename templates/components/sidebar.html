@@ -1,0 +1,43 @@
+{% load static %}
+<nav class="sidebar" role="navigation" aria-label="Main navigation">
+
+    {# Brand Header #}
+    <div class="sidebar__brand">
+        <div>
+            <div class="sidebar__brand-logo">{{ app_name }}</div>
+            <div class="sidebar__brand-sub">Enterprise Resource Planning</div>
+        </div>
+    </div>
+
+    {# Navigation Links #}
+    <div class="sidebar__nav">
+        {% for section in nav_hierarchy %}
+            {# Section with children (dropdown/group) #}
+            {% if section.children %}
+                <div class="sidebar__section-title">{{ section.title }}</div>
+                {% for child in section.children %}
+                    <a href="{% url child.url %}"
+                       class="sidebar__link {% if active_app == child.app %}sidebar__link--active{% endif %}"
+                       aria-current="{% if active_app == child.app %}page{% endif %}">
+                        {% include "_snipps/_icon_.html" with icon=child.icon class="sidebar__link-icon" only %}
+                        <span class="sidebar__link-text">{{ child.title }}</span>
+                    </a>
+                {% endfor %}
+
+            {# Single link (no children) #}
+            {% else %}
+                <a href="{% url section.url %}"
+                   class="sidebar__link {% if active_app == section.app %}sidebar__link--active{% endif %}"
+                   aria-current="{% if active_app == section.app %}page{% endif %}">
+                    {% include "_snipps/_icon_.html" with icon=section.icon class="sidebar__link-icon" only %}
+                    <span class="sidebar__link-text">{{ section.title }}</span>
+                </a>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    {# Footer #}
+    <div class="sidebar__footer">
+        AMW Django ERP &copy; {% now "Y" %}
+    </div>
+</nav>

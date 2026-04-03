@@ -1,9 +1,24 @@
 {% extends "layouts/base.html" %}
 
-{% block body_class %}dashboard-shell{% endblock %}
+{% block title %}{{ app_name }} - Dashboard{% endblock %}
+{% block body_class %}app-shell{% endblock %}
 
 {% block page %}
-    <div class="dashboard-shell">
-        {% block dashboard_content %}{% endblock %}
+<div class="app-shell">
+
+    {# Sidebar #}
+    {% include "components/sidebar.html" %}
+
+    {# Main Content #}
+    <div class="main-content">
+
+        {# Topbar #}
+        {% include "components/topbar.html" %}
+
+        {# Page Content #}
+        <div class="main-content__inner">
+            {% block dashboard_content %}{% endblock %}
+        </div>
     </div>
+</div>
 {% endblock %}

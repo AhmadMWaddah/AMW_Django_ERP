@@ -1,0 +1,32 @@
+{# -- AMW Django ERP - Input Snippet --
+ #
+ # Usage:
+ #   {% include "_snipps/_input_.html" with
+ #      field_id="email" label="Email" input_type="email"
+ #      name="email" placeholder="Enter email" autocomplete="email"
+ #      required=True autofocus=True value="" errors=None only %}
+ #
+ # Expected context keys:
+ #   field_id, label, input_type, name, placeholder,
+ #   autocomplete (optional), required (optional), autofocus (optional),
+ #   value (optional), errors (optional)
+ #}
+<div class="form-group">
+    <label for="{{ field_id }}" class="form-group__label">
+        {{ label }}{% if required %} *{% endif %}
+    </label>
+    <input
+        type="{{ input_type }}"
+        id="{{ field_id }}"
+        name="{{ name }}"
+        class="form-group__input{% if errors %} form-group__input--error{% endif %}"
+        placeholder="{{ placeholder }}"
+        {% if value is not None %}value="{{ value }}"{% endif %}
+        {% if autocomplete %}autocomplete="{{ autocomplete }}"{% endif %}
+        {% if required %}required{% endif %}
+        {% if autofocus %}autofocus{% endif %}
+    >
+    {% if errors %}
+        {% include "_snipps/_field_error_.html" with errors=errors only %}
+    {% endif %}
+</div>

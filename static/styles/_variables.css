@@ -1,0 +1,135 @@
+/*
+ * AMW Django ERP - Design Tokens (CSS Custom Properties)
+ *
+ * Brand Palette: Coolors earthy brown/olive
+ * Reference: Brand/Dj_ERP_Colour_Pallete_CSS.scss
+ *
+ * Gem Note: All styles centralized. Flat structure, underscore partials.
+ * Professional names mapped from brand hex/HSL values.
+ */
+
+/* ============================================================
+   Brand Colors
+   ============================================================ */
+
+:root {
+    /* Primary Brand */
+    --color-brand-primary: hsl(27, 73%, 20%);       /* dark-walnut   #582f0e */
+    --color-brand-primary-light: hsl(28, 56%, 32%); /* saddle-brown  #7f4f24 */
+    --color-brand-accent: hsl(30, 44%, 40%);        /* toffee-brown  #936639 */
+    --color-brand-warm: hsl(35, 27%, 52%);          /* camel         #a68a64 */
+
+    /* Neutral / Surface */
+    --color-surface-base: hsl(46, 21%, 64%);        /* khaki-beige   #b6ad90 */
+    --color-surface-muted: hsl(67, 19%, 72%);       /* dry-sage      #c2c5aa */
+    --color-surface-soft: hsl(73, 19%, 60%);        /* dry-sage-2    #a4ac86 */
+
+    /* Dark / Text */
+    --color-text-primary: hsl(90, 20%, 20%);        /* charcoal-brwn #333d29 */
+    --color-text-secondary: hsl(80, 17%, 24%);      /* ebony         #414833 */
+    --color-text-muted: hsl(74, 19%, 36%);          /* dusty-olive   #656d4a */
+
+    /* Semantic Colors */
+    --color-success: hsl(145, 40%, 35%);
+    --color-success-light: hsl(145, 30%, 85%);
+    --color-warning: hsl(35, 85%, 45%);
+    --color-warning-light: hsl(35, 90%, 90%);
+    --color-danger: hsl(0, 65%, 50%);
+    --color-danger-light: hsl(0, 60%, 92%);
+    --color-info: hsl(210, 60%, 45%);
+    --color-info-light: hsl(210, 50%, 90%);
+}
+
+/* ============================================================
+   Spacing Scale (4px base)
+   ============================================================ */
+
+:root {
+    --space-xs:  4px;    /* Extra small */
+    --space-sm:  8px;    /* Small */
+    --space-md:  16px;   /* Medium */
+    --space-lg:  24px;   /* Large */
+    --space-xl:  32px;   /* Extra large */
+    --space-2xl: 48px;   /* 2x large */
+    --space-3xl: 64px;   /* 3x large */
+}
+
+/* ============================================================
+   Typography
+   ============================================================ */
+
+:root {
+    --font-family-base: "Inter", -apple-system, BlinkMacSystemFont,
+        "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-family-mono: "JetBrains Mono", "Fira Code", "Consolas", monospace;
+
+    --font-size-xs:   0.75rem;   /* 12px */
+    --font-size-sm:   0.875rem;  /* 14px */
+    --font-size-base: 1rem;      /* 16px */
+    --font-size-lg:   1.125rem;  /* 18px */
+    --font-size-xl:   1.25rem;   /* 20px */
+    --font-size-2xl:  1.5rem;    /* 24px */
+    --font-size-3xl:  1.875rem;  /* 30px */
+    --font-size-4xl:  2.25rem;   /* 36px */
+
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+
+    --line-height-tight: 1.25;
+    --line-height-base: 1.5;
+    --line-height-relaxed: 1.75;
+
+    --letter-spacing-tight: -0.025em;
+    --letter-spacing-base: 0;
+    --letter-spacing-wide: 0.05em;
+}
+
+/* ============================================================
+   Borders & Radius
+   ============================================================ */
+
+:root {
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    --radius-full: 9999px;
+
+    --border-width: 1px;
+    --border-color: hsla(67, 19%, 72%, 0.6);  /* dry-sage with opacity */
+    --border-color-strong: hsl(74, 19%, 36%);  /* dusty-olive */
+}
+
+/* ============================================================
+   Shadows
+   ============================================================ */
+
+:root {
+    --shadow-sm: 0 1px 2px rgba(51, 61, 41, 0.06);
+    --shadow-md: 0 4px 6px rgba(51, 61, 41, 0.08);
+    --shadow-lg: 0 10px 15px rgba(51, 61, 41, 0.1);
+    --shadow-xl: 0 20px 25px rgba(51, 61, 41, 0.12);
+}
+
+/* ============================================================
+   Layout Dimensions
+   ============================================================ */
+
+:root {
+    --sidebar-width: 260px;
+    --sidebar-collapsed-width: 72px;
+    --topbar-height: 64px;
+    --content-max-width: 1400px;
+}
+
+/* ============================================================
+   Transitions
+   ============================================================ */
+
+:root {
+    --transition-fast: 150ms ease;
+    --transition-base: 250ms ease;
+    --transition-slow: 350ms ease;
+}

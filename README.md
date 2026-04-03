@@ -19,16 +19,16 @@ AMW Django ERP is a comprehensive, production-ready ERP system designed for real
 
 ## 📊 Current Status
 
-| Phase       | Name                                         | Status           | Branch          |
-|-------------|----------------------------------------------|------------------|-----------------|
-| **Phase 1** | Foundation, Automation & Local Scaffolding   | ✅ **COMPLETE**  | `master`        |
-| **Phase 2** | Infrastructure & Core Identity               | ✅ **COMPLETE**  | `master`        |
-| **Phase 3** | IAM & Security Framework                     | ✅ **COMPLETE**  | `master`        |
-| **Phase 4** | Inventory Architecture & Valuation           | ✅ **COMPLETE**  | `master`        |
-| **Phase 5** | Sales & CRM Workflows                        | ✅ **COMPLETE**  | `master`        |
-| **Phase 6** | Purchasing & Procurement                     | ✅ **COMPLETE**  | `phase-6`       |
-| Phase 7     | Frontend Foundation & HTMX UI                | ⏳ NEXT          | `phase-7`       |
-| Phase 8     | Async Tasks, Reporting & Hardening           | ⏳ Planned       | `phase-8`       |
+| Phase       | Name                                         | Status           | Branch    |
+|-------------|----------------------------------------------|------------------|-----------|
+| **Phase 1** | Foundation, Automation & Local Scaffolding   | ✅ **COMPLETE**  | `master`  |
+| **Phase 2** | Infrastructure & Core Identity               | ✅ **COMPLETE**  | `master`  |
+| **Phase 3** | IAM & Security Framework                     | ✅ **COMPLETE**  | `master`  |
+| **Phase 4** | Inventory Architecture & Valuation           | ✅ **COMPLETE**  | `master`  |
+| **Phase 5** | Sales & CRM Workflows                        | ✅ **COMPLETE**  | `master`  |
+| **Phase 6** | Purchasing & Procurement                     | ✅ **COMPLETE**  | `phase-6` |
+| Phase 7     | Frontend Foundation & HTMX UI                | ⏳ NEXT          | `phase-7` |
+| Phase 8     | Async Tasks, Reporting & Hardening           | ⏳ Planned       | `phase-8` |
 
 **Branch Strategy:**
 - `master` - Stable production baseline (Phase 5 complete)

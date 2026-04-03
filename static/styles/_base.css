@@ -1,0 +1,143 @@
+/*
+ * AMW Django ERP - Base Styles (Resets & Defaults)
+ *
+ * Normalizes browser defaults and establishes baseline typography.
+ * Loaded after _variables.css so custom properties are available.
+ */
+
+/* ============================================================
+   Reset & Box Sizing
+   ============================================================ */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* ============================================================
+   HTML & Body
+   ============================================================ */
+
+html {
+    font-size: 100%;
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-normal);
+    line-height: var(--line-height-base);
+    color: var(--color-text-primary);
+    background-color: var(--color-surface-muted);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================================
+   Typography
+   ============================================================ */
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-tight);
+    color: var(--color-text-primary);
+}
+
+h1 { font-size: var(--font-size-3xl); }
+h2 { font-size: var(--font-size-2xl); }
+h3 { font-size: var(--font-size-xl); }
+h4 { font-size: var(--font-size-lg); }
+h5 { font-size: var(--font-size-base); }
+h6 { font-size: var(--font-size-sm); }
+
+p {
+    margin-bottom: var(--space-md);
+}
+
+a {
+    color: var(--color-brand-primary-light);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+a:hover {
+    color: var(--color-brand-accent);
+}
+
+small {
+    font-size: var(--font-size-xs);
+}
+
+strong {
+    font-weight: var(--font-weight-semibold);
+}
+
+/* ============================================================
+   Lists
+   ============================================================ */
+
+ul, ol {
+    list-style: none;
+}
+
+/* ============================================================
+   Images & Media
+   ============================================================ */
+
+img, svg {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+/* ============================================================
+   Forms
+   ============================================================ */
+
+input,
+select,
+textarea,
+button {
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+}
+
+button {
+    cursor: pointer;
+    border: none;
+    background: none;
+}
+
+/* ============================================================
+   Tables
+   ============================================================ */
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 100%;
+}
+
+/* ============================================================
+   Focus
+   ============================================================ */
+
+:focus-visible {
+    outline: 2px solid var(--color-brand-primary-light);
+    outline-offset: 2px;
+}
+
+/* ============================================================
+   Selection
+   ============================================================ */
+
+::selection {
+    background-color: var(--color-brand-warm);
+    color: var(--color-text-primary);
+}
