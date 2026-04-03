@@ -175,3 +175,23 @@ print_header "Repository Status"
 git status
 
 print_success "Task commit completed: $COMMIT_TITLE"
+
+# -- Auto-Push to Remote --
+print_header "Pushing to Remote"
+
+# Check if branch exists on remote
+if git ls-remote --exit-code --heads origin "$CURRENT_BRANCH" > /dev/null 2>&1; then
+    print_info "Branch '$CURRENT_BRANCH' exists on remote — pushing changes"
+    git push origin "$CURRENT_BRANCH"
+else
+    print_info "Branch '$CURRENT_BRANCH' not found on remote — pushing with upstream tracking"
+    git push -u origin "$CURRENT_BRANCH"
+fi
+
+if [ $? -eq 0 ]; then
+    print_success "Pushed to origin/$CURRENT_BRANCH"
+else
+    print_error "Push to origin/$CURRENT_BRANCH failed"
+    print_info "Local commit is intact. Push manually when ready:"
+    print_info "  git push origin $CURRENT_BRANCH"
+fi
