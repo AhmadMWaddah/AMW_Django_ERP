@@ -48,32 +48,32 @@
     <div class="card__header">
         <h3 class="card__title">Quick Stock Adjustment</h3>
     </div>
-    <div class="card__body">
+    <div class="card__body u-flex u-justify-center">
         <form hx-post="{% url 'Inventory:AdjustStock' product.id %}"
               hx-target="#adjustment-result"
               hx-swap="innerHTML"
-              class="u-flex u-flex-wrap u-gap-sm u-items-end">
-            <div class="form-group u-mb-0">
+              class="u-flex u-flex-wrap u-gap-sm u-items-end u-justify-center">
+            <div class="form-group u-mb-0" style="width: auto;">
                 <label class="form-group__label">Action</label>
                 <select name="action" class="form-group__input" style="width: 140px;">
                     <option value="in">Add Stock</option>
                     <option value="out">Reduce Stock</option>
                 </select>
             </div>
-            <div class="form-group u-mb-0">
+            <div class="form-group u-mb-0" style="width: auto;">
                 <label class="form-group__label">Quantity</label>
                 <input type="number" name="quantity" class="form-group__input" step="0.0001" min="0"
-                       style="width: 150px;" required>
+                       style="width: 130px;" required>
             </div>
-            <div class="form-group u-mb-0">
+            <div class="form-group u-mb-0" style="width: auto;">
                 <label class="form-group__label">Note (optional)</label>
                 <input type="text" name="location_note" class="form-group__input"
-                       style="width: 200px;" placeholder="Location">
+                       style="width: 180px;" placeholder="Location">
             </div>
             <button type="submit" class="btn btn--primary">Adjust</button>
         </form>
-        <div id="adjustment-result" class="u-mt-md"></div>
     </div>
+    <div id="adjustment-result" class="u-mt-md u-text-center"></div>
 </div>
 
 {# Stock Transactions Ledger #}

@@ -774,3 +774,108 @@ a.card--clickable:hover {
     background-color: var(--color-surface-muted);
     color: var(--color-text-muted);
 }
+
+/* ============================================================
+   Button Hover Consistency
+   All buttons get consistent hover behavior
+   ============================================================ */
+
+/* Primary button: swap to lighter background on hover, text stays light */
+.btn--primary:hover,
+.btn--primary:focus {
+    background-color: var(--color-brand-accent);
+    border-color: var(--color-brand-accent);
+    color: var(--color-surface-base);
+}
+
+/* ============================================================
+   Hide Horizontal Scrollbars (Visual Only)
+   Keeps scroll functionality, hides the bar
+   ============================================================ */
+
+.card__body[style*="overflow-x"]::-webkit-scrollbar {
+    height: 0;
+    width: 0;
+    background: transparent;
+}
+
+.card__body[style*="overflow-x"] {
+    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none;  /* IE/Edge */
+}
+
+/* ============================================================
+   Action Buttons (Detail/Ledger style variants)
+   ============================================================ */
+
+.btn--detail {
+    background-color: var(--color-brand-primary);
+    color: var(--color-surface-base);
+    border-color: var(--color-brand-primary);
+}
+
+.btn--detail:hover {
+    background-color: transparent;
+    color: var(--color-brand-primary);
+    border-color: var(--color-brand-primary);
+}
+
+.btn--ledger {
+    background-color: transparent;
+    color: var(--color-brand-accent);
+    border-color: var(--color-brand-accent);
+}
+
+.btn--ledger:hover {
+    background-color: var(--color-brand-accent);
+    color: var(--color-surface-base);
+    border-color: var(--color-brand-accent);
+}
+
+/* ============================================================
+   Form Inputs - Enhanced Outlines
+   Darker border, consistent with login page aesthetic
+   ============================================================ */
+
+.form-group__input {
+    width: 100%;
+    padding: var(--space-sm) var(--space-md);
+    font-size: var(--font-size-sm);
+    font-family: var(--font-family-base);
+    line-height: var(--line-height-base);
+    color: var(--color-text-primary);
+    background-color: var(--color-surface-base);
+    border: var(--border-width) solid var(--color-brand-primary);
+    border-radius: var(--radius-md);
+    transition: border-color var(--transition-fast),
+        box-shadow var(--transition-fast);
+}
+
+.form-group__input::placeholder {
+    color: var(--color-text-muted);
+    opacity: 0.7;
+}
+
+.form-group__input:focus {
+    outline: none;
+    border-color: var(--color-brand-accent);
+    box-shadow: 0 0 0 3px rgba(147, 102, 57, 0.15);
+}
+
+.form-group__input--error {
+    border-color: var(--color-danger);
+}
+
+.form-group__input--error:focus {
+    border-color: var(--color-danger);
+    box-shadow: 0 0 0 3px rgba(204, 51, 51, 0.15);
+}
+
+select.form-group__input {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23656d4a' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right var(--space-sm) center;
+    padding-right: var(--space-xl);
+}

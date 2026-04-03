@@ -19,6 +19,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
+from django.utils.text import slugify
 
 from security.models import Department, Policy, Role
 
@@ -87,6 +88,11 @@ class Command(BaseCommand):
             self._seed_customer_categories()
             self._seed_customers()
             self._seed_sales_orders()
+
+            # Phase 8: Purchasing
+            self._seed_supplier_categories()
+            self._seed_suppliers()
+            self._seed_purchase_orders()
 
         self.stdout.write()
         self.stdout.write(self.style.SUCCESS("=" * 60))
@@ -342,6 +348,8 @@ class Command(BaseCommand):
                 {"name": "Major Appliances", "code": "MAJ", "description": "Large household appliances"},
                 {"name": "Small Appliances", "code": "SML", "description": "Portable household appliances"},
                 {"name": "Kitchenware", "code": "KIT", "description": "Kitchen tools and equipment"},
+                {"name": "Cleaning & Home", "code": "CLN", "description": "Cleaning supplies and home care"},
+                {"name": "Electronics", "code": "ELC", "description": "Consumer electronics and accessories"},
             ]
 
             for cat_data in categories_data:
@@ -376,8 +384,11 @@ class Command(BaseCommand):
             maj_category = Category.objects.get(name="Major Appliances")
             sml_category = Category.objects.get(name="Small Appliances")
             kit_category = Category.objects.get(name="Kitchenware")
+            cln_category = Category.objects.get(name="Cleaning & Home")
+            elc_category = Category.objects.get(name="Electronics")
 
             products_data = [
+                # Major Appliances
                 {
                     "sku": "MAJ-FR-500",
                     "name": "Frost-Free Refrigerator 500L",
@@ -395,14 +406,6 @@ class Command(BaseCommand):
                     "location_note": "Warehouse A, Shelf 4-6",
                 },
                 {
-                    "sku": "SML-IR-STM",
-                    "name": "Steam Iron Pro",
-                    "category": sml_category,
-                    "unit_of_measure": "pcs",
-                    "description": "Professional steam iron with ceramic soleplate",
-                    "location_note": "Warehouse B, Shelf A2",
-                },
-                {
                     "sku": "MAJ-OV-ELC",
                     "name": "Electric Convection Oven",
                     "category": maj_category,
@@ -411,12 +414,96 @@ class Command(BaseCommand):
                     "location_note": "Warehouse A, Shelf 7-9",
                 },
                 {
+                    "sku": "MAJ-AC-12",
+                    "name": "Split AC 12000 BTU",
+                    "category": maj_category,
+                    "unit_of_measure": "pcs",
+                    "description": "Energy-efficient split air conditioner 12000 BTU",
+                    "location_note": "Warehouse A, Shelf 10-12",
+                },
+                # Small Appliances
+                {
+                    "sku": "SML-IR-STM",
+                    "name": "Steam Iron Pro",
+                    "category": sml_category,
+                    "unit_of_measure": "pcs",
+                    "description": "Professional steam iron with ceramic soleplate",
+                    "location_note": "Warehouse B, Shelf A2",
+                },
+                {
+                    "sku": "SML-VL-18",
+                    "name": "Vacuum Cleaner 1800W",
+                    "category": sml_category,
+                    "unit_of_measure": "pcs",
+                    "description": "Bagless vacuum cleaner 1800W with HEPA filter",
+                    "location_note": "Warehouse B, Shelf A3",
+                },
+                {
+                    "sku": "SML-HD-22",
+                    "name": "Hair Dryer 2200W",
+                    "category": sml_category,
+                    "unit_of_measure": "pcs",
+                    "description": "Professional hair dryer 2200W with ionic technology",
+                    "location_note": "Warehouse B, Shelf A4",
+                },
+                # Kitchenware
+                {
                     "sku": "KIT-BL-HSP",
                     "name": "High-Speed Blender",
                     "category": kit_category,
                     "unit_of_measure": "pcs",
                     "description": "Professional high-speed blender for smoothies",
                     "location_note": "Warehouse B, Shelf B1",
+                },
+                {
+                    "sku": "KIT-TS-4S",
+                    "name": "4-Slice Toaster",
+                    "category": kit_category,
+                    "unit_of_measure": "pcs",
+                    "description": "Stainless steel 4-slice toaster with bagel mode",
+                    "location_note": "Warehouse B, Shelf B2",
+                },
+                {
+                    "sku": "KIT-MX-5L",
+                    "name": "Stand Mixer 5L",
+                    "category": kit_category,
+                    "unit_of_measure": "pcs",
+                    "description": "5-liter stand mixer with dough hook and whisk",
+                    "location_note": "Warehouse B, Shelf B3",
+                },
+                # Cleaning & Home
+                {
+                    "sku": "CLN-AF-2L",
+                    "name": "Air Freshener 2L",
+                    "category": cln_category,
+                    "unit_of_measure": "pcs",
+                    "description": "Automatic air freshener refill 2L lavender scent",
+                    "location_note": "Warehouse C, Shelf A1",
+                },
+                {
+                    "sku": "CLN-VC-3L",
+                    "name": "Floor Cleaner 3L",
+                    "category": cln_category,
+                    "unit_of_measure": "pcs",
+                    "description": "Multi-surface floor cleaner concentrate 3L",
+                    "location_note": "Warehouse C, Shelf A2",
+                },
+                # Electronics
+                {
+                    "sku": "ELC-LED-55",
+                    "name": "LED TV 55 inch 4K",
+                    "category": elc_category,
+                    "unit_of_measure": "pcs",
+                    "description": "55-inch 4K Smart LED TV with HDR",
+                    "location_note": "Warehouse D, Shelf A1",
+                },
+                {
+                    "sku": "ELC-SB-21",
+                    "name": "Soundbar 2.1 Channel",
+                    "category": elc_category,
+                    "unit_of_measure": "pcs",
+                    "description": "2.1 channel soundbar with wireless subwoofer",
+                    "location_note": "Warehouse D, Shelf A2",
                 },
             ]
 
@@ -463,6 +550,15 @@ class Command(BaseCommand):
                 {"sku": "SML-IR-STM", "quantity": Decimal("100.0000"), "unit_cost": Decimal("25.5000")},
                 {"sku": "MAJ-OV-ELC", "quantity": Decimal("40.0000"), "unit_cost": Decimal("120.0000")},
                 {"sku": "KIT-BL-HSP", "quantity": Decimal("75.0000"), "unit_cost": Decimal("45.0000")},
+                {"sku": "MAJ-AC-12", "quantity": Decimal("25.0000"), "unit_cost": Decimal("550.0000")},
+                {"sku": "SML-VL-18", "quantity": Decimal("60.0000"), "unit_cost": Decimal("85.0000")},
+                {"sku": "SML-HD-22", "quantity": Decimal("90.0000"), "unit_cost": Decimal("35.0000")},
+                {"sku": "KIT-TS-4S", "quantity": Decimal("55.0000"), "unit_cost": Decimal("55.0000")},
+                {"sku": "KIT-MX-5L", "quantity": Decimal("35.0000"), "unit_cost": Decimal("150.0000")},
+                {"sku": "CLN-AF-2L", "quantity": Decimal("200.0000"), "unit_cost": Decimal("8.0000")},
+                {"sku": "CLN-VC-3L", "quantity": Decimal("150.0000"), "unit_cost": Decimal("12.0000")},
+                {"sku": "ELC-LED-55", "quantity": Decimal("20.0000"), "unit_cost": Decimal("350.0000")},
+                {"sku": "ELC-SB-21", "quantity": Decimal("40.0000"), "unit_cost": Decimal("95.0000")},
             ]
 
             for stock_item in stock_data:
@@ -507,6 +603,7 @@ class Command(BaseCommand):
                 {"name": "Retail", "description": "Individual retail customers"},
                 {"name": "Corporate", "description": "Corporate and business customers"},
                 {"name": "VIP", "description": "VIP and premium customers"},
+                {"name": "Wholesale", "description": "Wholesale and bulk buyers"},
             ]
 
             for cat_data in categories_data:
@@ -541,6 +638,7 @@ class Command(BaseCommand):
             retail_category = CustomerCategory.objects.get(name="Retail")
             corporate_category = CustomerCategory.objects.get(name="Corporate")
             vip_category = CustomerCategory.objects.get(name="VIP")
+            wholesale_category = CustomerCategory.objects.get(name="Wholesale")
 
             customers_data = [
                 {
@@ -565,6 +663,30 @@ class Command(BaseCommand):
                     "phone": "+20 100 999 8888",
                     "category": vip_category,
                     "shipping_address": "789 Nile Corniche, Zamalek, Cairo, Egypt",
+                    "billing_address": "Same as shipping",
+                },
+                {
+                    "name": "Sara Ali",
+                    "email": "sara.ali@example.com",
+                    "phone": "+20 111 222 3333",
+                    "category": retail_category,
+                    "shipping_address": "10 Heliopolis Ave, Cairo, Egypt",
+                    "billing_address": "Same as shipping",
+                },
+                {
+                    "name": "Delta Hotels Group",
+                    "email": "orders@deltahotels.com",
+                    "phone": "+20 2 7654 3210",
+                    "category": wholesale_category,
+                    "shipping_address": "Delta Hotels Warehouse, 6th October City, Egypt",
+                    "billing_address": "Delta Hotels HQ, Garden City, Cairo",
+                },
+                {
+                    "name": "Omar Hassan",
+                    "email": "omar.h@example.com",
+                    "phone": "+20 122 333 4444",
+                    "category": vip_category,
+                    "shipping_address": "Maadi Riverside, Cairo, Egypt",
                     "billing_address": "Same as shipping",
                 },
             ]
@@ -747,7 +869,294 @@ class Command(BaseCommand):
                 self.style.SUCCESS(f"  ✅ Created Shipped Order: {order3.order_number} ({order3.total_amount}, Paid)")
             )
 
+            # Order 4: Voided order (Sara Ali)
+            sara = Customer.objects.get(name="Sara Ali")
+            order_number4 = generate_order_number()
+            order4 = SalesOrder.objects.create(
+                order_number=order_number4,
+                customer=sara,
+                created_by=sales_rep,
+                shipping_address_snapshot=sara.shipping_address,
+                status=OrderStatus.DRAFT,
+                payment_status=PaymentStatus.PENDING,
+                notes="Customer requested cancellation",
+            )
+            SalesOrderItem.objects.create(
+                order=order4,
+                product=Product.objects.get(sku="SML-HD-22"),
+                quantity=Decimal("2.0000"),
+                snapshot_unit_price=Decimal("35.0000"),
+            )
+            subtotal, tax, total = calculate_order_totals(order4)
+            order4.subtotal = subtotal
+            order4.tax_amount = tax
+            order4.total_amount = total
+            order4.save()
+
+            # Void the order
+            from sales.operations.orders import void_order
+            void_order(order4, sales_rep, reason="Customer cancelled order")
+
+            self.stdout.write(
+                self.style.WARNING(f"  ✅ Created Voided Order: {order4.order_number} ({order4.total_amount})")
+            )
+
         except ImportError:
             self.stdout.write(self.style.WARNING("  ⚠️  Sales app not found - skipping sales orders"))
+
+        self.stdout.write()
+
+    def _seed_supplier_categories(self):
+        """
+        Seed supplier categories for purchasing.
+        """
+        self.stdout.write("🏷️  Seeding Supplier Categories...")
+
+        try:
+            from purchasing.models import SupplierCategory
+
+            categories_data = [
+                {"name": "Raw Materials", "description": "Raw material suppliers"},
+                {"name": "Electronics", "description": "Electronic component suppliers"},
+                {"name": "Packaging", "description": "Packaging material suppliers"},
+                {"name": "Logistics", "description": "Shipping and logistics providers"},
+            ]
+
+            for cat_data in categories_data:
+                category, created = SupplierCategory.objects.get_or_create(
+                    name=cat_data["name"],
+                    defaults={
+                        "code": slugify(cat_data["name"]),
+                        "description": cat_data["description"],
+                    },
+                )
+                if created:
+                    self.stdout.write(self.style.SUCCESS(f"  ✅ Created: {category.name}"))
+                else:
+                    self.stdout.write(self.style.WARNING(f"  ⚠️  Exists: {category.name}"))
+        except ImportError:
+            self.stdout.write(self.style.WARNING("  ⚠️  Purchasing app not found - skipping supplier categories"))
+
+        self.stdout.write()
+
+    def _seed_suppliers(self):
+        """
+        Seed supplier records.
+        """
+        self.stdout.write("🏭 Seeding Suppliers...")
+
+        try:
+            from purchasing.models import Supplier, SupplierCategory
+
+            # Get categories
+            raw_mat = SupplierCategory.objects.get(name="Raw Materials")
+            electronics = SupplierCategory.objects.get(name="Electronics")
+            packaging = SupplierCategory.objects.get(name="Packaging")
+            logistics = SupplierCategory.objects.get(name="Logistics")
+
+            suppliers_data = [
+                {
+                    "name": "Cairo Steel Co.",
+                    "email": "sales@cairosteel.com",
+                    "phone": "+20 2 1234 5678",
+                    "category": raw_mat,
+                    "address": "Industrial Zone, 10th of Ramadan, Egypt",
+                    "contact_person": "Mahmoud Ibrahim",
+                    "notes": "Primary steel supplier, net-30 terms",
+                },
+                {
+                    "name": "Alex Plastics",
+                    "email": "orders@alexplastics.com",
+                    "phone": "+20 3 9876 5432",
+                    "category": raw_mat,
+                    "address": "Borg El Arab, Alexandria, Egypt",
+                    "contact_person": "Fatma Nasser",
+                    "notes": "Plastic raw materials, COD",
+                },
+                {
+                    "name": "TechParts Egypt",
+                    "email": "info@techparts.eg",
+                    "phone": "+20 2 5555 1234",
+                    "category": electronics,
+                    "address": "Smart Village, 6th October City, Egypt",
+                    "contact_person": "Karim Adel",
+                    "notes": "Electronic components and circuit boards",
+                },
+                {
+                    "name": "PackRight Solutions",
+                    "email": "sales@packright.com",
+                    "phone": "+20 2 4444 5678",
+                    "category": packaging,
+                    "address": "Obour City, Cairo, Egypt",
+                    "contact_person": "Nadia Hassan",
+                    "notes": "Cardboard boxes and packaging materials",
+                },
+                {
+                    "name": "FastShip Logistics",
+                    "email": "dispatch@fastship.eg",
+                    "phone": "+20 2 3333 9999",
+                    "category": logistics,
+                    "address": "Cairo International Airport Cargo, Egypt",
+                    "contact_person": "Omar Tarek",
+                    "notes": "Express shipping and freight forwarding",
+                },
+            ]
+
+            for sup_data in suppliers_data:
+                supplier, created = Supplier.objects.get_or_create(
+                    name=sup_data["name"],
+                    defaults={
+                        "email": sup_data["email"],
+                        "phone": sup_data["phone"],
+                        "category": sup_data["category"],
+                        "address": sup_data["address"],
+                        "contact_person": sup_data["contact_person"],
+                        "notes": sup_data["notes"],
+                    },
+                )
+                if created:
+                    self.stdout.write(self.style.SUCCESS(f"  ✅ Created: {supplier.name}"))
+                else:
+                    self.stdout.write(self.style.WARNING(f"  ⚠️  Exists: {supplier.name}"))
+        except ImportError:
+            self.stdout.write(self.style.WARNING("  ⚠️  Purchasing app not found - skipping suppliers"))
+
+        self.stdout.write()
+
+    def _seed_purchase_orders(self):
+        """
+        Seed purchase orders in various states.
+        """
+        self.stdout.write("📋 Seeding Purchase Orders...")
+
+        try:
+            from decimal import Decimal as D
+            from purchasing.models import POStatus, PurchaseOrder, PurchaseOrderItem, Supplier
+            from purchasing.operations.orders import generate_po_number, issue_order, receive_items
+
+            # Idempotency: skip if POs already exist
+            if PurchaseOrder.objects.exists():
+                self.stdout.write(self.style.WARNING("  ⚠️  Purchase orders already exist - skipping"))
+                return
+
+            # Get suppliers
+            cairo_steel = Supplier.objects.get(name="Cairo Steel Co.")
+            tech_parts = Supplier.objects.get(name="TechParts Egypt")
+            packright = Supplier.objects.get(name="PackRight Solutions")
+
+            # Get owner for created_by
+            owner = Employee.objects.get(email="amw@amw.io")
+
+            # Get products
+            from inventory.models import Product
+
+            fridge = Product.objects.get(sku="MAJ-FR-500")
+            oven = Product.objects.get(sku="MAJ-OV-ELC")
+            blender = Product.objects.get(sku="KIT-BL-HSP")
+            ac_unit = Product.objects.get(sku="MAJ-AC-12")
+
+            # PO 1: Draft PO (Cairo Steel)
+            po1 = PurchaseOrder.objects.create(
+                po_number=generate_po_number(),
+                supplier=cairo_steel,
+                created_by=owner,
+                status=POStatus.DRAFT,
+                notes="Draft PO - pending approval",
+            )
+            po1_item1 = PurchaseOrderItem.objects.create(
+                order=po1,
+                product=fridge,
+                quantity=D("20.0000"),
+                unit_cost=D("400.0000"),
+            )
+            po1_item2 = PurchaseOrderItem.objects.create(
+                order=po1,
+                product=ac_unit,
+                quantity=D("15.0000"),
+                unit_cost=D("500.0000"),
+            )
+            po1.total_cost = sum(item.total_cost for item in po1.items.all())
+            po1.save()
+
+            self.stdout.write(
+                self.style.SUCCESS(f"  ✅ Created Draft PO: {po1.po_number} ({po1.total_cost})")
+            )
+
+            # PO 2: Issued PO (TechParts)
+            po2 = PurchaseOrder.objects.create(
+                po_number=generate_po_number(),
+                supplier=tech_parts,
+                created_by=owner,
+                status=POStatus.DRAFT,
+                notes="Electronic components order",
+            )
+            po2_item = PurchaseOrderItem.objects.create(
+                order=po2,
+                product=blender,
+                quantity=D("50.0000"),
+                unit_cost=D("35.0000"),
+            )
+            po2.total_cost = sum(item.total_cost for item in po2.items.all())
+            po2.save()
+
+            # Issue the PO
+            issue_order(po2, owner)
+
+            self.stdout.write(
+                self.style.SUCCESS(f"  ✅ Created Issued PO: {po2.po_number} ({po2.total_cost})")
+            )
+
+            # PO 3: In-Progress PO (PackRight)
+            po3 = PurchaseOrder.objects.create(
+                po_number=generate_po_number(),
+                supplier=packright,
+                created_by=owner,
+                status=POStatus.DRAFT,
+                notes="Packaging materials restock",
+            )
+            po3_item = PurchaseOrderItem.objects.create(
+                order=po3,
+                product=oven,
+                quantity=D("30.0000"),
+                unit_cost=D("95.0000"),
+            )
+            po3.total_cost = sum(item.total_cost for item in po3.items.all())
+            po3.save()
+
+            # Issue and partially receive (puts it in IN_PROGRESS)
+            issue_order(po3, owner)
+            receive_items(po3, [{"item_id": po3_item.id, "quantity": D("10.0000")}], owner, "Warehouse A")
+
+            self.stdout.write(
+                self.style.SUCCESS(f"  ✅ Created In-Progress PO: {po3.po_number} ({po3.total_cost})")
+            )
+
+            # PO 4: Completed PO (Cairo Steel)
+            po4 = PurchaseOrder.objects.create(
+                po_number=generate_po_number(),
+                supplier=cairo_steel,
+                created_by=owner,
+                status=POStatus.DRAFT,
+                notes="Completed steel order",
+            )
+            po4_item = PurchaseOrderItem.objects.create(
+                order=po4,
+                product=fridge,
+                quantity=D("10.0000"),
+                unit_cost=D("420.0000"),
+            )
+            po4.total_cost = sum(item.total_cost for item in po4.items.all())
+            po4.save()
+
+            # Complete the full lifecycle: issue -> receive all -> completed
+            issue_order(po4, owner)
+            receive_items(po4, [{"item_id": po4_item.id, "quantity": D("10.0000")}], owner, "Warehouse A")
+
+            self.stdout.write(
+                self.style.SUCCESS(f"  ✅ Created Completed PO: {po4.po_number} ({po4.total_cost})")
+            )
+
+        except ImportError:
+            self.stdout.write(self.style.WARNING("  ⚠️  Purchasing app not found - skipping purchase orders"))
 
         self.stdout.write()

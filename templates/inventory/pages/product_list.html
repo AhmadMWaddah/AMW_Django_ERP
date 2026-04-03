@@ -7,7 +7,7 @@
 {# Search Bar #}
 <form method="get" class="u-flex u-gap-sm u-mb-md">
     <input type="text" name="q" value="{{ query }}" placeholder="Search by SKU, name, or category..."
-           class="form-group__input" style="max-width: 400px;">
+           class="form-group__input" style="max-width: 600px;">
     <button type="submit" class="btn btn--primary">Search</button>
     {% if query %}
         <a href="{% url 'Inventory:ProductList' %}" class="btn btn--outline">Clear</a>
@@ -42,8 +42,8 @@
                     <td class="u-text-right">{{ product.wac_price }}</td>
                     <td>{{ product.unit_of_measure }}</td>
                     <td class="u-flex u-gap-xs">
-                        <a href="{% url 'Inventory:ProductDetail' product.id %}" class="btn btn--outline btn--sm">Detail</a>
-                        <a href="{% url 'Inventory:StockLedger' product.id %}" class="btn btn--outline btn--sm">Ledger</a>
+                        <a href="{% url 'Inventory:ProductDetail' product.id %}" class="btn btn--detail btn--sm">Detail</a>
+                        <a href="{% url 'Inventory:StockLedger' product.id %}" class="btn btn--ledger btn--sm">Ledger</a>
                     </td>
                 </tr>
                 {% empty %}
