@@ -5,62 +5,63 @@
 {% block topbar_title %}Dashboard{% endblock %}
 
 {% block dashboard_content %}
-<div class="card">
-    <div class="card__header">
-        <h2 class="card__title">Welcome, {{ request.user.get_full_name|default:request.user.email }}</h2>
-    </div>
-    <div class="card__body">
-        <p class="u-text-muted u-mb-md">You're logged in to {{ app_name }}.</p>
-        <p class="u-text-sm"><strong>Email:</strong> {{ request.user.email }}</p>
-        {% if request.user.department %}
-            <p class="u-text-sm"><strong>Department:</strong> {{ request.user.department.name }}</p>
-        {% endif %}
-    </div>
-    <div class="card__footer">
-        <form method="post" action="{% url 'Accounts:Logout' %}" class="u-flex u-items-center u-gap-sm">
-            {% csrf_token %}
-            {% include "_snipps_/_button_.html" with text="Logout" type="submit" class="btn btn--outline" only %}
-        </form>
+
+{# Welcome Card - Landscape Full Width #}
+<div class="card card--landscape">
+    <div class="card__body card__body--wide">
+        <div class="u-flex u-items-center u-justify-between">
+            <div>
+                <h2 class="card__title u-mb-sm">Welcome, {{ request.user.get_full_name|default:request.user.email }}</h2>
+                <p class="u-text-sm u-text-muted u-mb-xs">You're logged in to {{ app_name }}.</p>
+                <p class="u-text-xs u-text-muted">
+                    <strong>Email:</strong> {{ request.user.email }}
+                    {% if request.user.department %}
+                    &nbsp;|&nbsp; <strong>Department:</strong> {{ request.user.department.name }}
+                    {% endif %}
+                </p>
+            </div>
+            <form method="post" action="{% url 'Accounts:Logout' %}">
+                {% csrf_token %}
+                {% include "_snipps_/_button_.html" with text="Logout" type="submit" class="btn btn--outline" only %}
+            </form>
+        </div>
     </div>
 </div>
 
-{# Module Quick Links #}
-<div class="u-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--space-md);">
-    <div class="card">
-        <div class="card__body u-text-center">
-            <div class="u-flex u-justify-center u-items-center u-gap-sm u-mb-sm">
+{# Module Quick Links - 2 per row, clickable cards #}
+<div class="u-grid" style="grid-template-columns: repeat(2, 1fr); gap: var(--space-md);">
+    <a href="{% url 'Inventory:ProductList' %}" class="card card--clickable">
+        <div class="card__body u-flex u-items-center u-gap-md">
+            <div class="u-flex u-items-center u-justify-center" style="width: 48px; height: 48px; background-color: var(--color-surface-muted); border-radius: var(--radius-md); flex-shrink: 0;">
                 {% include "_snipps_/_icon_.html" with icon="package" class="" only %}
             </div>
-            <h3 class="u-text-sm u-font-semibold u-mb-xs">Inventory</h3>
-            <p class="u-text-xs u-text-muted">Products, categories, and stock management</p>
+            <div>
+                <h3 class="u-text-sm u-font-semibold">Inventory</h3>
+                <p class="u-text-xs u-text-muted">Products, stock, and adjustments</p>
+            </div>
         </div>
-    </div>
-    <div class="card">
-        <div class="card__body u-text-center">
-            <div class="u-flex u-justify-center u-items-center u-gap-sm u-mb-sm">
+    </a>
+    <a href="{% url 'Sales:CustomerList' %}" class="card card--clickable">
+        <div class="card__body u-flex u-items-center u-gap-md">
+            <div class="u-flex u-items-center u-justify-center" style="width: 48px; height: 48px; background-color: var(--color-surface-muted); border-radius: var(--radius-md); flex-shrink: 0;">
                 {% include "_snipps_/_icon_.html" with icon="shopping-cart" class="" only %}
             </div>
-            <h3 class="u-text-sm u-font-semibold u-mb-xs">Sales & CRM</h3>
-            <p class="u-text-xs u-text-muted">Customers, orders, and sales tracking</p>
+            <div>
+                <h3 class="u-text-sm u-font-semibold">Sales & CRM</h3>
+                <p class="u-text-xs u-text-muted">Customers, orders, and sales tracking</p>
+            </div>
         </div>
-    </div>
-    <div class="card">
-        <div class="card__body u-text-center">
-            <div class="u-flex u-justify-center u-items-center u-gap-sm u-mb-sm">
+    </a>
+    <a href="{% url 'Purchasing:SupplierList' %}" class="card card--clickable">
+        <div class="card__body u-flex u-items-center u-gap-md">
+            <div class="u-flex u-items-center u-justify-center" style="width: 48px; height: 48px; background-color: var(--color-surface-muted); border-radius: var(--radius-md); flex-shrink: 0;">
                 {% include "_snipps_/_icon_.html" with icon="truck" class="" only %}
             </div>
-            <h3 class="u-text-sm u-font-semibold u-mb-xs">Purchasing</h3>
-            <p class="u-text-xs u-text-muted">Suppliers, purchase orders, and receiving</p>
-        </div>
-    </div>
-    <div class="card">
-        <div class="card__body u-text-center">
-            <div class="u-flex u-justify-center u-items-center u-gap-sm u-mb-sm">
-                {% include "_snipps_/_icon_.html" with icon="shield-check" class="" only %}
+            <div>
+                <h3 class="u-text-sm u-font-semibold">Purchasing</h3>
+                <p class="u-text-xs u-text-muted">Suppliers, purchase orders, and receiving</p>
             </div>
-            <h3 class="u-text-sm u-font-semibold u-mb-xs">IAM & Security</h3>
-            <p class="u-text-xs u-text-muted">Departments, roles, and policies</p>
         </div>
-    </div>
+    </a>
 </div>
 {% endblock %}

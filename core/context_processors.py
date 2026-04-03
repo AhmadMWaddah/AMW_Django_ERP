@@ -52,35 +52,10 @@ def _build_nav_hierarchy():
             "app": "accounts",
         },
         {
-            "title": "Core",
-            "icon": "settings",
-            "children": [
-                {"title": "Admin", "url": "admin:index", "app": "admin"},
-            ],
-        },
-        {
-            "title": "Identity",
-            "icon": "users",
-            "children": [
-                {"title": "Employees", "url": "admin:accounts_employee_changelist", "app": "accounts"},
-            ],
-        },
-        {
-            "title": "IAM",
-            "icon": "shield-check",
-            "children": [
-                {"title": "Departments", "url": "admin:security_department_changelist", "app": "security"},
-                {"title": "Roles", "url": "admin:security_role_changelist", "app": "security"},
-                {"title": "Policies", "url": "admin:security_policy_changelist", "app": "security"},
-            ],
-        },
-        {
             "title": "Inventory",
             "icon": "package",
             "children": [
                 {"title": "Products", "url": "Inventory:ProductList", "app": "inventory"},
-                {"title": "Stock Adjustments", "url": "admin:inventory_stockadjustment_changelist", "app": "inventory"},
-                {"title": "Categories", "url": "admin:inventory_category_changelist", "app": "inventory"},
             ],
         },
         {
@@ -89,8 +64,6 @@ def _build_nav_hierarchy():
             "children": [
                 {"title": "Customers", "url": "Sales:CustomerList", "app": "sales"},
                 {"title": "Sales Orders", "url": "Sales:OrderList", "app": "sales"},
-                {"title": "Admin: Customers", "url": "admin:sales_customer_changelist", "app": "sales"},
-                {"title": "Admin: Orders", "url": "admin:sales_salesorder_changelist", "app": "sales"},
             ],
         },
         {
@@ -99,8 +72,13 @@ def _build_nav_hierarchy():
             "children": [
                 {"title": "Suppliers", "url": "Purchasing:SupplierList", "app": "purchasing"},
                 {"title": "Purchase Orders", "url": "Purchasing:OrderList", "app": "purchasing"},
-                {"title": "Admin: Suppliers", "url": "admin:purchasing_supplier_changelist", "app": "purchasing"},
-                {"title": "Admin: POs", "url": "admin:purchasing_purchaseorder_changelist", "app": "purchasing"},
+            ],
+        },
+        {
+            "title": "Administration",
+            "icon": "settings",
+            "children": [
+                {"title": "Admin Panel", "url": "admin:index", "app": "admin"},
             ],
         },
     ]

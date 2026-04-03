@@ -251,6 +251,29 @@
     margin-bottom: var(--space-md);
 }
 
+/* Landscape card for welcome/header sections */
+.card--landscape {
+    padding: 0;
+}
+
+.card__body--wide {
+    padding: var(--space-lg);
+}
+
+/* Clickable card (anchor wrapper) */
+a.card--clickable {
+    text-decoration: none;
+    color: inherit;
+    transition: box-shadow var(--transition-fast), border-color var(--transition-fast);
+}
+
+a.card--clickable:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--border-color-strong);
+    text-decoration: none;
+    color: inherit;
+}
+
 .card__header {
     display: flex;
     align-items: center;
@@ -494,6 +517,11 @@
 
     .card {
         padding: var(--space-md);
+    }
+
+    /* Stack module cards to 1 column on mobile */
+    .u-grid[style*="grid-template-columns: repeat(2"] {
+        grid-template-columns: 1fr !important;
     }
 
     .topbar__user-info {
