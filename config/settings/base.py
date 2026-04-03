@@ -52,6 +52,7 @@ LOCAL_APPS = [
     "audit",  # Audit logging
     "inventory",  # Inventory: Category, Product, StockTransaction, StockAdjustment
     "sales",  # Sales & CRM: Customer, SalesOrder, SalesOrderItem
+    "purchasing",  # Purchasing: Supplier, PurchaseOrder, PurchaseOrderItem
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
