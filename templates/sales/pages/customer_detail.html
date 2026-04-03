@@ -1,0 +1,95 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}{{ customer.name }} - {{ app_name }}{% endblock %}
+{% block topbar_title %}{{ customer.name }}{% endblock %}
+
+{% block dashboard_content %}
+{# Customer Info Card #}
+<div class="card">
+    <div class="card__header">
+        <h2 class="card__title">Customer Details</h2>
+    </div>
+    <div class="card__body">
+        <div class="u-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-md);">
+            <div>
+                <span class="u-text-xs u-text-muted u-uppercase">Name</span>
+                <p class="u-font-semibold">{{ customer.name }}</p>
+            </div>
+            <div>
+                <span class="u-text-xs u-text-muted u-uppercase">Email</span>
+                <p>{{ customer.email|default:"-" }}</p>
+            </div>
+            <div>
+                <span class="u-text-xs u-text-muted u-uppercase">Phone</span>
+                <p>{{ customer.phone|default:"-" }}</p>
+            </div>
+            <div>
+                <span class="u-text-xs u-text-muted u-uppercase">Category</span>
+                <p><span class="badge badge--neutral">{{ customer.category.name }}</span></p>
+            </div>
+            <div style="grid-column: span 2;">
+                <span class="u-text-xs u-text-muted u-uppercase">Shipping Address</span>
+                <p>{{ customer.shipping_address|default:"-"|linebreaks }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# Order History #}
+<div class="card">
+    <div class="card__header">
+        <h3 class="card__title">Order History ({{ orders.count }})</h3>
+    </div>
+    <div class="card__body" style="overflow-x: auto;">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Order #</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Payment</th>
+                    <th class="u-text-right">Total</th>
+                    <th class="u-text-right">Paid</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td><strong>{{ order.order_number }}</strong></td>
+                    <td class="u-text-xs">{{ order.created_at|date:"Y-m-d" }}</td>
+                    <td>
+                        <span class="badge
+                            {% if order.status == 'CONFIRMED' %}badge--success
+                            {% elif order.status == 'DRAFT' %}badge--neutral
+                            {% elif order.status == 'VOIDED' %}badge--danger
+                            {% else %}badge--info{% endif %}">
+                            {{ order.get_status_display }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="badge
+                            {% if order.payment_status == 'PAID' %}badge--success
+                            {% elif order.payment_status == 'PARTIALLY_PAID' %}badge--warning
+                            {% else %}badge--neutral{% endif %}">
+                            {{ order.get_payment_status_display }}
+                        </span>
+                    </td>
+                    <td class="u-text-right">{{ order.total_amount }}</td>
+                    <td class="u-text-right">{{ order.amount_paid }}</td>
+                    <td>
+                        <a href="{% url 'sales:order_detail' order.id %}" class="btn btn--outline btn--sm">View</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="u-text-center u-py-lg u-text-muted">No orders yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<a href="{% url 'sales:customer_list' %}" class="btn btn--outline u-mt-md">← Back to Customers</a>
+{% endblock %}

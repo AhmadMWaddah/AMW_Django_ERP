@@ -78,25 +78,29 @@ def _build_nav_hierarchy():
             "title": "Inventory",
             "icon": "package",
             "children": [
-                {"title": "Products", "url": "admin:inventory_product_changelist", "app": "inventory"},
-                {"title": "Categories", "url": "admin:inventory_category_changelist", "app": "inventory"},
+                {"title": "Products", "url": "inventory:product_list", "app": "inventory"},
                 {"title": "Stock Adjustments", "url": "admin:inventory_stockadjustment_changelist", "app": "inventory"},
+                {"title": "Categories", "url": "admin:inventory_category_changelist", "app": "inventory"},
             ],
         },
         {
             "title": "Sales & CRM",
             "icon": "shopping-cart",
             "children": [
-                {"title": "Customers", "url": "admin:sales_customer_changelist", "app": "sales"},
-                {"title": "Sales Orders", "url": "admin:sales_salesorder_changelist", "app": "sales"},
+                {"title": "Customers", "url": "sales:customer_list", "app": "sales"},
+                {"title": "Sales Orders", "url": "sales:order_list", "app": "sales"},
+                {"title": "Admin: Customers", "url": "admin:sales_customer_changelist", "app": "sales"},
+                {"title": "Admin: Orders", "url": "admin:sales_salesorder_changelist", "app": "sales"},
             ],
         },
         {
             "title": "Purchasing",
             "icon": "truck",
             "children": [
-                {"title": "Suppliers", "url": "admin:purchasing_supplier_changelist", "app": "purchasing"},
-                {"title": "Purchase Orders", "url": "admin:purchasing_purchaseorder_changelist", "app": "purchasing"},
+                {"title": "Suppliers", "url": "purchasing:supplier_list", "app": "purchasing"},
+                {"title": "Purchase Orders", "url": "purchasing:order_list", "app": "purchasing"},
+                {"title": "Admin: Suppliers", "url": "admin:purchasing_supplier_changelist", "app": "purchasing"},
+                {"title": "Admin: POs", "url": "admin:purchasing_purchaseorder_changelist", "app": "purchasing"},
             ],
         },
     ]

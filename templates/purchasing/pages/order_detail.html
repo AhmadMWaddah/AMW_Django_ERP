@@ -1,0 +1,196 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}{{ order.po_number|default:"Draft PO" }} - {{ app_name }}{% endblock %}
+{% block topbar_title %}{{ order.po_number|default:"Draft PO" }}{% endblock %}
+
+{% block dashboard_content %}
+{# PO Header #}
+<div class="card">
+    <div class="card__header">
+        <h2 class="card__title">Purchase Order Details</h2>
+        {% if order.status in 'ISSUED,IN_PROGRESS' %}
+        <button class="btn btn--primary" onclick="window.openModal('receive-modal')">
+            Receive Stock
+        </button>
+        {% endif %}
+    </div>
+    <div class="card__body">
+        <div class="u-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-md);">
+            <div>
+                <span class="u-text-xs u-text-muted u-uppercase">PO Number</span>
+                <p class="u-font-semibold">{{ order.po_number|default:"Not yet issued" }}</p>
+            </div>
+            <div>
+                <span class="u-text-xs u-text-muted u-uppercase">Supplier</span>
+                <p>{{ order.supplier.name }}</p>
+            </div>
+            <div>
+                <span class="u-text-xs u-text-muted u-uppercase">Status</span>
+                <p><span class="badge
+                    {% if order.status == 'COMPLETED' %}badge--success
+                    {% elif order.status == 'DRAFT' %}badge--neutral
+                    {% elif order.status == 'CANCELLED' %}badge--danger
+                    {% elif order.status == 'IN_PROGRESS' %}badge--warning
+                    {% else %}badge--info{% endif %}">
+                    {{ order.get_status_display }}
+                </span></p>
+            </div>
+            <div>
+                <span class="u-text-xs u-text-muted u-uppercase">Total Cost</span>
+                <p class="u-font-bold">{{ order.total_cost }}</p>
+            </div>
+            <div>
+                <span class="u-text-xs u-text-muted u-uppercase">Created</span>
+                <p>{{ order.created_at|date:"Y-m-d H:i" }}</p>
+            </div>
+            <div>
+                <span class="u-text-xs u-text-muted u-uppercase">Created By</span>
+                <p>{{ order.created_by.get_full_name|default:order.created_by.email }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# Line Items with Receiving Progress #}
+<div class="card">
+    <div class="card__header">
+        <h3 class="card__title">Line Items</h3>
+    </div>
+    <div class="card__body" style="overflow-x: auto;">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>SKU</th>
+                    <th class="u-text-right">Ordered</th>
+                    <th class="u-text-right">Received</th>
+                    <th class="u-text-right">Remaining</th>
+                    <th class="u-text-right">Unit Cost</th>
+                    <th class="u-text-right">Line Total</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in order.items.all %}
+                <tr>
+                    <td>{{ item.product.name }}</td>
+                    <td class="u-text-xs">{{ item.product.sku }}</td>
+                    <td class="u-text-right">{{ item.quantity }}</td>
+                    <td class="u-text-right">{{ item.received_quantity }}</td>
+                    <td class="u-text-right">{{ item.get_remaining_quantity }}</td>
+                    <td class="u-text-right">{{ item.unit_cost }}</td>
+                    <td class="u-text-right u-font-semibold">{{ item.total_cost }}</td>
+                    <td>
+                        {% if item.is_fully_received %}
+                            <span class="badge badge--success">Received</span>
+                        {% elif item.received_quantity > 0 %}
+                            <span class="badge badge--warning">Partial</span>
+                        {% else %}
+                            <span class="badge badge--neutral">Pending</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{# Supplier Info Snapshot #}
+{% if order.supplier_info_snapshot %}
+<div class="card">
+    <div class="card__header">
+        <h3 class="card__title">Supplier Info (Snapshot at Issue)</h3>
+    </div>
+    <div class="card__body">
+        <div class="u-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-md);">
+            <div>
+                <span class="u-text-xs u-text-muted u-uppercase">Name</span>
+                <p>{{ order.supplier_info_snapshot.name }}</p>
+            </div>
+            <div>
+                <span class="u-text-xs u-text-muted u-uppercase">Email</span>
+                <p>{{ order.supplier_info_snapshot.email|default:"-" }}</p>
+            </div>
+            <div>
+                <span class="u-text-xs u-text-muted u-uppercase">Phone</span>
+                <p>{{ order.supplier_info_snapshot.phone|default:"-" }}</p>
+            </div>
+            <div>
+                <span class="u-text-xs u-text-muted u-uppercase">Contact Person</span>
+                <p>{{ order.supplier_info_snapshot.contact_person|default:"-" }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{# Receive Stock Modal #}
+<div id="receive-modal" class="modal-overlay" style="display: none;">
+    <div class="modal">
+        <div class="modal__header">
+            <h3 class="modal__title">Receive Stock</h3>
+            <button class="modal__close" onclick="window.closeModal('receive-modal')">
+                {% include "_snipps/_icon_.html" with icon="x" only %}
+            </button>
+        </div>
+        <form id="receive-form">
+            <div class="modal__body">
+                <p class="u-text-sm u-text-muted u-mb-md">
+                    Enter the quantities received for each line item.
+                    Stock will be added and WAC recalculated automatically.
+                </p>
+                {% for item in order.items.all %}
+                    {% if not item.is_fully_received %}
+                    <div class="form-group">
+                        <label class="form-group__label">
+                            {{ item.product.sku }} - {{ item.product.name }}
+                            ({{ item.get_remaining_quantity }} remaining)
+                        </label>
+                        <input type="number"
+                               class="form-group__input receive-qty"
+                               data-item-id="{{ item.id }}"
+                               data-max="{{ item.get_remaining_quantity }}"
+                               step="0.0001"
+                               min="0"
+                               max="{{ item.get_remaining_quantity }}"
+                               placeholder="0">
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            <div class="modal__footer">
+                <button type="button" class="btn btn--outline" onclick="window.closeModal('receive-modal')">Cancel</button>
+                <button type="button" class="btn btn--primary" id="receive-submit">Receive</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.getElementById('receive-submit').addEventListener('click', function() {
+    var items = [];
+    document.querySelectorAll('.receive-qty').forEach(function(input) {
+        var qty = parseFloat(input.value);
+        if (qty > 0) {
+            items.push({
+                item_id: parseInt(input.dataset.itemId),
+                quantity: qty
+            });
+        }
+    });
+
+    if (items.length === 0) {
+        return;
+    }
+
+    htmx.ajax('POST', '{% url "purchasing:receive_stock" order.id %}', {
+        target: '#receive-result',
+        values: { items: JSON.stringify(items) },
+    });
+});
+</script>
+<div id="receive-result"></div>
+
+<a href="{% url 'purchasing:order_list' %}" class="btn btn--outline u-mt-md">← Back to Orders</a>
+{% endblock %}

@@ -18,6 +18,10 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     # Accounts / Authentication (with namespace)
     path("accounts/", include("accounts.urls", namespace="Accounts")),
+    # Module UI (Phase 7)
+    path("inventory/", include("inventory.urls", namespace="inventory")),
+    path("sales/", include("sales.urls", namespace="sales")),
+    path("purchasing/", include("purchasing.urls", namespace="purchasing")),
     # Root redirect to dashboard
     path("", RedirectView.as_view(url="/accounts/dashboard/", permanent=False)),
     # Health Check (for monitoring)

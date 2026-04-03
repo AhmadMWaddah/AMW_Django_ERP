@@ -27,22 +27,24 @@ AMW Django ERP is a comprehensive, production-ready ERP system designed for real
 | **Phase 4** | Inventory Architecture & Valuation           | ✅ **COMPLETE**  | `master`  |
 | **Phase 5** | Sales & CRM Workflows                        | ✅ **COMPLETE**  | `master`  |
 | **Phase 6** | Purchasing & Procurement                     | ✅ **COMPLETE**  | `phase-6` |
-| Phase 7     | Frontend Foundation & HTMX UI                | ⏳ NEXT          | `phase-7` |
-| Phase 8     | Async Tasks, Reporting & Hardening           | ⏳ Planned       | `phase-8` |
+| Phase 7     | Frontend Foundation & HTMX UI                | ✅ **COMPLETE**  | `phase-7` |
+| Phase 8     | Async Tasks, Reporting & Hardening           | ⏳ NEXT          | `phase-8` |
 
 **Branch Strategy:**
-- `master` - Stable production baseline (Phase 5 complete)
+- `master` - Stable production baseline (Phase 6 complete)
 - `phase-3` - Merged to master (v3.0-phase3-complete)
 - `phase-4` - Merged to master (v4.0-phase4-complete)
 - `phase-5` - Merged to master (v5.0-phase5-complete)
-- `phase-6` - Ready for merge (v6.0-phase6-complete pending)
+- `phase-6` - Merged to master (v6.0-phase6-complete)
+- `phase-7` - Ready for merge (v7.0-phase7-complete pending)
 - Future phases will be developed in `phase-X` branches and merged to `master` after approval
 
 **Version Tags:**
 - `v3.0-phase3-complete` - IAM & Security Framework
 - `v4.0-phase4-complete` - Inventory Architecture & Valuation
 - `v5.0-phase5-complete` - Sales & CRM Workflows
-- `v6.0-phase6-complete` - Purchasing & Procurement (pending merge)
+- `v6.0-phase6-complete` - Purchasing & Procurement
+- `v7.0-phase7-complete` - Frontend Foundation & HTMX UI (pending merge)
 
 **See `Architecture/Phase_5_Sales_CRM.md` for Phase 5 completion details.**
 
@@ -313,16 +315,16 @@ MIT License - See [LICENSE](LICENSE) file
 
 ## 🎯 Next Steps
 
-**Phase 7: Frontend Foundation & HTMX UI**
+**Phase 8: Async Tasks, Reporting & Hardening**
 
-- [ ] Base layouts (base.html, dashboard.html)
-- [ ] Shared atoms and components (buttons, inputs, navbar, sidebar)
-- [ ] HTMX modal and partial patterns
-- [ ] Theme alignment with Brand/ palette
-- [ ] Responsive behavior verification
+- [ ] Celery and Redis integration
+- [ ] Background report generation
+- [ ] Query optimization audit (select_related, prefetch_related)
+- [ ] Production settings lockdown
+- [ ] Value-Based Authorization (Gem's note)
 
 ---
 
 *Last Updated: 2026-04-03*
-*Phase 6 Status: ✅ COMPLETE (186 tests passing, ready for merge)*
-*Phase 7 Status: ⏳ NEXT*
+*Phase 7 Status: ✅ COMPLETE (186 tests passing, ready for merge)*
+*Phase 8 Status: ⏳ NEXT*

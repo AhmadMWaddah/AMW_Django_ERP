@@ -162,9 +162,32 @@ We will build the frontend "Inside-Out" using a **Design System** approach.
    - Output: `Context processor for global app_name and nav_hierarchy`
    - Verification: `Sidebar automatically highlights the active app/module`
 
-2. **Task 7.7:** `Establish HTMX Toast and Modal patterns`
+2. Task 7.7: `Establish HTMX Toast and Modal patterns`
    - Output: `Global listeners for HX-Trigger: showToast and showModal`
    - Verification: `Confirm toast appears when a custom HTMX header is sent`
+
+### Part 4: Core Module UI Rollout
+
+- **Goal:** `Bridge the backend operations to the new UI via functional list and detail views.`
+- **Owner:** `Qwen (Lead Developer)`
+- **Status:** `Planned`
+
+#### Tasks
+
+1. **Task 7.8:** `Inventory UI: Product List & Ledger View`
+   - Output: `Searchable product table and detailed stock movement history page`
+   - Action: `Implement HTMX modal for "Stock Adjustment" operation`
+   - Verification: `Confirm stock updates reflect in the UI without full-page reload`
+
+2. **Task 7.9:** `Sales UI: Customer Registry & Order Management`
+   - Output: `Customer list view and Sales Order dashboard`
+   - Action: `Implement HTMX "Confirm Order" button with Toast success feedback`
+   - Verification: `Verify pricing snapshots are displayed correctly in the order detail`
+
+3. **Task 7.10:** `Purchasing UI: Supplier Registry & PO Receiving`
+   - Output: `Supplier list and Purchase Order tracking views`
+   - Action: `Implement HTMX partial for "Receive Stock" (In-Progress/Complete flow)`
+   - Verification: `Verify WAC updates are triggered and logged in the UI`
 
 ---
 

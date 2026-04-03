@@ -1,0 +1,53 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}Stock Ledger - {{ product.sku }}{% endblock %}
+{% block topbar_title %}Stock Ledger - {{ product.name }}{% endblock %}
+
+{% block dashboard_content %}
+<div class="card">
+    <div class="card__header">
+        <h2 class="card__title">Stock Ledger: {{ product.sku }}</h2>
+        <a href="{% url 'inventory:product_detail' product.id %}" class="btn btn--outline btn--sm">Back to Detail</a>
+    </div>
+    <div class="card__body" style="overflow-x: auto;">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th class="u-text-right">Quantity</th>
+                    <th class="u-text-right">Unit Cost</th>
+                    <th class="u-text-right">Balance</th>
+                    <th class="u-text-right">WAC</th>
+                    <th>Reference</th>
+                    <th>By</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for txn in transactions %}
+                <tr>
+                    <td class="u-text-xs">{{ txn.created_at|date:"Y-m-d H:i" }}</td>
+                    <td>
+                        <span class="badge {% if txn.change_type in 'INTAKE,PURCHASE,ADJUST_ADD,RETURN' %}badge--success{% else %}badge--danger{% endif %}">
+                            {{ txn.get_change_type_display }}
+                        </span>
+                    </td>
+                    <td class="u-text-right u-text-xs">{{ txn.quantity }}</td>
+                    <td class="u-text-right u-text-xs">{{ txn.unit_cost|default:"-" }}</td>
+                    <td class="u-text-right u-text-xs u-font-semibold">{{ txn.balance_after }}</td>
+                    <td class="u-text-right u-text-xs">{{ txn.wac_after }}</td>
+                    <td class="u-text-xs">{{ txn.reference_type|default:"-" }}</td>
+                    <td class="u-text-xs">{{ txn.created_by.get_full_name|default:txn.created_by.email }}</td>
+                    <td class="u-text-xs u-truncate" style="max-width: 200px;" title="{{ txn.notes }}">{{ txn.notes|default:"-"|truncatechars:40 }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="9" class="u-text-center u-py-lg u-text-muted">No stock transactions yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

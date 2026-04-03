@@ -1,0 +1,136 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}{{ order.order_number }} - {{ app_name }}{% endblock %}
+{% block topbar_title %}{{ order.order_number }}{% endblock %}
+
+{% block dashboard_content %}
+{# Order Header Card #}
+<div class="card">
+    <div class="card__header">
+        <h2 class="card__title">Order Details</h2>
+        <div class="u-flex u-gap-sm">
+            {% if order.status == 'DRAFT' %}
+            <button class="btn btn--primary"
+                    hx-post="{% url 'sales:confirm_order' order.id %}"
+                    hx-swap="none">
+                Confirm Order
+            </button>
+            {% endif %}
+            {% if order.status in 'DRAFT,CONFIRMED' %}
+            <button class="btn btn--danger"
+                    hx-post="{% url 'sales:void_order' order.id %}"
+                    hx-vals='{"reason": "Voided via UI"}'
+                    hx-swap="none">
+                Void Order
+            </button>
+            {% endif %}
+        </div>
+    </div>
+    <div class="card__body">
+        <div class="u-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-md);">
+            <div>
+                <span class="u-text-xs u-text-muted u-uppercase">Order Number</span>
+                <p class="u-font-semibold">{{ order.order_number }}</p>
+            </div>
+            <div>
+                <span class="u-text-xs u-text-muted u-uppercase">Customer</span>
+                <p>{{ order.customer.name }}</p>
+            </div>
+            <div>
+                <span class="u-text-xs u-text-muted u-uppercase">Status</span>
+                <p><span class="badge
+                    {% if order.status == 'CONFIRMED' %}badge--success
+                    {% elif order.status == 'DRAFT' %}badge--neutral
+                    {% elif order.status == 'VOIDED' %}badge--danger
+                    {% else %}badge--info{% endif %}">
+                    {{ order.get_status_display }}
+                </span></p>
+            </div>
+            <div>
+                <span class="u-text-xs u-text-muted u-uppercase">Payment</span>
+                <p><span class="badge
+                    {% if order.payment_status == 'PAID' %}badge--success
+                    {% elif order.payment_status == 'PARTIALLY_PAID' %}badge--warning
+                    {% else %}badge--neutral{% endif %}">
+                    {{ order.get_payment_status_display }}
+                </span></p>
+            </div>
+            <div>
+                <span class="u-text-xs u-text-muted u-uppercase">Created</span>
+                <p>{{ order.created_at|date:"Y-m-d H:i" }}</p>
+            </div>
+            <div>
+                <span class="u-text-xs u-text-muted u-uppercase">Created By</span>
+                <p>{{ order.created_by.get_full_name|default:order.created_by.email }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# Line Items #}
+<div class="card">
+    <div class="card__header">
+        <h3 class="card__title">Line Items</h3>
+    </div>
+    <div class="card__body" style="overflow-x: auto;">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>SKU</th>
+                    <th class="u-text-right">Quantity</th>
+                    <th class="u-text-right">Unit Price (Snapshot)</th>
+                    <th class="u-text-right">Line Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in order.items.all %}
+                <tr>
+                    <td>{{ item.product.name }}</td>
+                    <td class="u-text-xs">{{ item.product.sku }}</td>
+                    <td class="u-text-right">{{ item.quantity }}</td>
+                    <td class="u-text-right">{{ item.snapshot_unit_price }}</td>
+                    <td class="u-text-right u-font-semibold">{{ item.total_price }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="4" class="u-text-right u-font-semibold">Subtotal:</td>
+                    <td class="u-text-right">{{ order.subtotal }}</td>
+                </tr>
+                <tr>
+                    <td colspan="4" class="u-text-right u-font-semibold">Tax:</td>
+                    <td class="u-text-right">{{ order.tax_amount }}</td>
+                </tr>
+                <tr>
+                    <td colspan="4" class="u-text-right u-font-bold">Total:</td>
+                    <td class="u-text-right u-font-bold">{{ order.total_amount }}</td>
+                </tr>
+                <tr>
+                    <td colspan="4" class="u-text-right">Amount Paid:</td>
+                    <td class="u-text-right">{{ order.amount_paid }}</td>
+                </tr>
+                <tr>
+                    <td colspan="4" class="u-text-right u-font-semibold">Amount Due:</td>
+                    <td class="u-text-right u-font-semibold">{{ order.get_amount_due }}</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+{# Shipping Address Snapshot #}
+{% if order.shipping_address_snapshot %}
+<div class="card">
+    <div class="card__header">
+        <h3 class="card__title">Shipping Address</h3>
+    </div>
+    <div class="card__body">
+        <p>{{ order.shipping_address_snapshot|linebreaks }}</p>
+    </div>
+</div>
+{% endif %}
+
+<a href="{% url 'sales:order_list' %}" class="btn btn--outline u-mt-md">← Back to Orders</a>
+{% endblock %}

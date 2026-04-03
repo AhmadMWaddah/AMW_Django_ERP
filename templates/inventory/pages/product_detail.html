@@ -1,0 +1,125 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}{{ product.sku }} - {{ app_name }}{% endblock %}
+{% block topbar_title %}{{ product.name }} ({{ product.sku }}){% endblock %}
+
+{% block dashboard_content %}
+{# Product Info Card #}
+<div class="card">
+    <div class="card__header">
+        <h2 class="card__title">Product Details</h2>
+    </div>
+    <div class="card__body">
+        <div class="u-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-md);">
+            <div>
+                <span class="u-text-xs u-text-muted u-uppercase">SKU</span>
+                <p class="u-font-semibold">{{ product.sku }}</p>
+            </div>
+            <div>
+                <span class="u-text-xs u-text-muted u-uppercase">Name</span>
+                <p class="u-font-semibold">{{ product.name }}</p>
+            </div>
+            <div>
+                <span class="u-text-xs u-text-muted u-uppercase">Category</span>
+                <p class="u-font-semibold">{{ product.category.name }}</p>
+            </div>
+            <div>
+                <span class="u-text-xs u-text-muted u-uppercase">UoM</span>
+                <p class="u-font-semibold">{{ product.unit_of_measure }}</p>
+            </div>
+            <div>
+                <span class="u-text-xs u-text-muted u-uppercase">Current Stock</span>
+                <p class="u-text-xl u-font-bold" id="current-stock">{{ product.current_stock }}</p>
+            </div>
+            <div>
+                <span class="u-text-xs u-text-muted u-uppercase">WAC Price</span>
+                <p class="u-text-xl u-font-bold" id="wac-price">{{ product.wac_price }}</p>
+            </div>
+            <div>
+                <span class="u-text-xs u-text-muted u-uppercase">Stock Value</span>
+                <p class="u-text-xl u-font-bold">{{ product.get_stock_value }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# HTMX Quick Adjustment #}
+<div class="card">
+    <div class="card__header">
+        <h3 class="card__title">Quick Stock Adjustment</h3>
+    </div>
+    <div class="card__body">
+        <form hx-post="{% url 'inventory:adjust_stock' product.id %}"
+              hx-target="#adjustment-result"
+              hx-swap="innerHTML"
+              class="u-flex u-flex-wrap u-gap-sm u-items-end">
+            <div class="form-group u-mb-0">
+                <label class="form-group__label">Action</label>
+                <select name="action" class="form-group__input" style="width: 140px;">
+                    <option value="in">Add Stock</option>
+                    <option value="out">Reduce Stock</option>
+                </select>
+            </div>
+            <div class="form-group u-mb-0">
+                <label class="form-group__label">Quantity</label>
+                <input type="number" name="quantity" class="form-group__input" step="0.0001" min="0"
+                       style="width: 150px;" required>
+            </div>
+            <div class="form-group u-mb-0">
+                <label class="form-group__label">Note (optional)</label>
+                <input type="text" name="location_note" class="form-group__input"
+                       style="width: 200px;" placeholder="Location">
+            </div>
+            <button type="submit" class="btn btn--primary">Adjust</button>
+        </form>
+        <div id="adjustment-result" class="u-mt-md"></div>
+    </div>
+</div>
+
+{# Stock Transactions Ledger #}
+<div class="card">
+    <div class="card__header">
+        <h3 class="card__title">Stock Ledger (Latest 50)</h3>
+        <a href="{% url 'inventory:stock_ledger' product.id %}" class="btn btn--outline btn--sm">View Full Ledger</a>
+    </div>
+    <div class="card__body" style="overflow-x: auto;">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th class="u-text-right">Quantity</th>
+                    <th class="u-text-right">Unit Cost</th>
+                    <th class="u-text-right">Balance</th>
+                    <th class="u-text-right">WAC</th>
+                    <th>By</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for txn in transactions %}
+                <tr>
+                    <td class="u-text-xs">{{ txn.created_at|date:"Y-m-d H:i" }}</td>
+                    <td>
+                        <span class="badge {% if txn.change_type in 'INTAKE,PURCHASE,ADJUST_ADD,RETURN' %}badge--success{% else %}badge--danger{% endif %}">
+                            {{ txn.get_change_type_display }}
+                        </span>
+                    </td>
+                    <td class="u-text-right u-text-xs">{{ txn.quantity }}</td>
+                    <td class="u-text-right u-text-xs">{{ txn.unit_cost|default:"-" }}</td>
+                    <td class="u-text-right u-text-xs u-font-semibold">{{ txn.balance_after }}</td>
+                    <td class="u-text-right u-text-xs">{{ txn.wac_after }}</td>
+                    <td class="u-text-xs">{{ txn.created_by.get_full_name|default:txn.created_by.email }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="u-text-center u-py-lg u-text-muted">No transactions yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{# Back link #}
+<a href="{% url 'inventory:product_list' %}" class="btn btn--outline u-mt-md">← Back to Products</a>
+{% endblock %}
