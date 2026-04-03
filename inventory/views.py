@@ -31,7 +31,9 @@ def product_list(request):
 def product_detail(request, product_id):
     """Product detail with stock movement ledger."""
     product = get_object_or_404(Product.objects.select_related("category"), pk=product_id)
-    transactions = StockTransaction.objects.filter(product=product).select_related("created_by").order_by("-created_at")[:50]
+    transactions = (
+        StockTransaction.objects.filter(product=product).select_related("created_by").order_by("-created_at")[:50]
+    )
     return render(request, "inventory/pages/product_detail.html", {"product": product, "transactions": transactions})
 
 
@@ -57,10 +59,14 @@ def category_list(request):
 def adjustment_list(request):
     """Stock adjustment list view."""
     status_filter = request.GET.get("status", "").strip()
-    adjustments = StockAdjustment.objects.select_related("product", "requested_by", "approved_by").order_by("-requested_at")
+    adjustments = StockAdjustment.objects.select_related("product", "requested_by", "approved_by").order_by(
+        "-requested_at"
+    )
     if status_filter:
         adjustments = adjustments.filter(status=status_filter)
-    return render(request, "inventory/pages/adjustment_list.html", {"adjustments": adjustments, "status_filter": status_filter})
+    return render(
+        request, "inventory/pages/adjustment_list.html", {"adjustments": adjustments, "status_filter": status_filter}
+    )
 
 
 @require_POST
@@ -75,22 +81,54 @@ def adjust_stock_htmx(request, product_id):
     try:
         quantity = Decimal(quantity_str)
     except (ValueError, InvalidOperation):
-        return JsonResponse({"error": "Invalid quantity"}, status=400, headers={"HX-Trigger": '{"showToast": {"message": "Invalid quantity entered.", "type": "error"}}'})
+        return JsonResponse(
+            {"error": "Invalid quantity"},
+            status=400,
+            headers={"HX-Trigger": '{"showToast": {"message": "Invalid quantity entered.", "type": "error"}}'},
+        )
 
     if quantity <= 0:
-        return JsonResponse({"error": "Quantity must be positive"}, status=400, headers={"HX-Trigger": '{"showToast": {"message": "Quantity must be positive.", "type": "error"}}'})
+        return JsonResponse(
+            {"error": "Quantity must be positive"},
+            status=400,
+            headers={"HX-Trigger": '{"showToast": {"message": "Quantity must be positive.", "type": "error"}}'},
+        )
 
     try:
         if action == "in":
-            stock_in(product=product, quantity=quantity, unit_cost=product.wac_price or Decimal("0"), employee=request.user, location_note=location_note or None, notes="HTMX stock adjustment (add)")
+            stock_in(
+                product=product,
+                quantity=quantity,
+                unit_cost=product.wac_price or Decimal("0"),
+                employee=request.user,
+                location_note=location_note or None,
+                notes="HTMX stock adjustment (add)",
+            )
             message = f"Added {quantity} to {product.sku}. New stock: {product.current_stock}"
         elif action == "out":
-            stock_out(product=product, quantity=quantity, employee=request.user, location_note=location_note or None, notes="HTMX stock adjustment (reduce)")
+            stock_out(
+                product=product,
+                quantity=quantity,
+                employee=request.user,
+                location_note=location_note or None,
+                notes="HTMX stock adjustment (reduce)",
+            )
             message = f"Removed {quantity} from {product.sku}. New stock: {product.current_stock}"
         else:
-            return JsonResponse({"error": "Invalid action"}, status=400, headers={"HX-Trigger": '{"showToast": {"message": "Invalid action.", "type": "error"}}'})
+            return JsonResponse(
+                {"error": "Invalid action"},
+                status=400,
+                headers={"HX-Trigger": '{"showToast": {"message": "Invalid action.", "type": "error"}}'},
+            )
 
         product.refresh_from_db()
-        return JsonResponse({"message": message, "current_stock": str(product.current_stock), "wac_price": str(product.wac_price)}, headers={"HX-Trigger": f'{{"showToast": {{"message": "{message}", "type": "success"}}}}'})
+        return JsonResponse(
+            {"message": message, "current_stock": str(product.current_stock), "wac_price": str(product.wac_price)},
+            headers={"HX-Trigger": f'{{"showToast": {{"message": "{message}", "type": "success"}}}}'},
+        )
     except ValueError as e:
-        return JsonResponse({"error": str(e)}, status=400, headers={"HX-Trigger": f'{{"showToast": {{"message": "{e}", "type": "error"}}}}'})
+        return JsonResponse(
+            {"error": str(e)},
+            status=400,
+            headers={"HX-Trigger": f'{{"showToast": {{"message": "{e}", "type": "error"}}}}'},
+        )
