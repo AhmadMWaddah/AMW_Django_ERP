@@ -23,7 +23,7 @@
         </div>
 
         {% if error_message %}
-            {% include "_snipps_/_error_message.html" with message=error_message %}
+            {% include "_snipps_/_error_message_.html" with message=error_message %}
         {% endif %}
 
         <form method="post" action="{% url 'Accounts:Login' %}">
