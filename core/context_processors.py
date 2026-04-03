@@ -48,7 +48,7 @@ def _build_nav_hierarchy():
         {
             "title": "Dashboard",
             "icon": "layout-dashboard",
-            "url": "accounts:dashboard",
+            "url": "Accounts:Dashboard",
             "app": "accounts",
         },
         {
