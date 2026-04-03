@@ -1,4 +1,5 @@
-{% load static %}<!DOCTYPE html>
+{% load static %}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -22,7 +23,7 @@
         </div>
 
         {% if error_message %}
-            {% include "_snipps/_error_message.html" with message=error_message %}
+            {% include "_snipps_/_error_message.html" with message=error_message %}
         {% endif %}
 
         <form method="post" action="{% url 'Accounts:Login' %}">
@@ -31,12 +32,12 @@
                 <input type="hidden" name="next" value="{{ next }}">
             {% endif %}
 
-            {% include "_snipps/_input_.html" with
+            {% include "_snipps_/_input_.html" with
                 field_id="email" label="Email" input_type="email"
                 name="email" placeholder="Enter your email"
                 autocomplete="email" required=True autofocus=True only %}
 
-            {% include "_snipps/_input_.html" with
+            {% include "_snipps_/_input_.html" with
                 field_id="password" label="Password" input_type="password"
                 name="password" placeholder="Enter your password"
                 autocomplete="current-password" required=True only %}

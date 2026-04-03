@@ -26,8 +26,8 @@ AMW Django ERP is a comprehensive, production-ready ERP system designed for real
 | **Phase 3** | IAM & Security Framework                     | ✅ **COMPLETE**  | `master`  |
 | **Phase 4** | Inventory Architecture & Valuation           | ✅ **COMPLETE**  | `master`  |
 | **Phase 5** | Sales & CRM Workflows                        | ✅ **COMPLETE**  | `master`  |
-| **Phase 6** | Purchasing & Procurement                     | ✅ **COMPLETE**  | `phase-6` |
-| Phase 7     | Frontend Foundation & HTMX UI                | ✅ **COMPLETE**  | `phase-7` |
+| **Phase 6** | Purchasing & Procurement                     | ✅ **COMPLETE**  | `master`  |
+| **Phase 7** | Frontend Foundation & HTMX UI                | ✅ **COMPLETE**  | `phase-7` |
 | Phase 8     | Async Tasks, Reporting & Hardening           | ⏳ NEXT          | `phase-8` |
 
 **Branch Strategy:**
@@ -45,6 +45,8 @@ AMW Django ERP is a comprehensive, production-ready ERP system designed for real
 - `v5.0-phase5-complete` - Sales & CRM Workflows
 - `v6.0-phase6-complete` - Purchasing & Procurement
 - `v7.0-phase7-complete` - Frontend Foundation & HTMX UI (pending merge)
+
+**See `Architecture/Phase_7_Frontend_HTMX.md` for Phase 7 completion details.**
 
 **See `Architecture/Phase_5_Sales_CRM.md` for Phase 5 completion details.**
 
@@ -322,6 +324,7 @@ MIT License - See [LICENSE](LICENSE) file
 - [ ] Query optimization audit (select_related, prefetch_related)
 - [ ] Production settings lockdown
 - [ ] Value-Based Authorization (Gem's note)
+- [ ] Merge Phase 7 to master
 
 ---
 

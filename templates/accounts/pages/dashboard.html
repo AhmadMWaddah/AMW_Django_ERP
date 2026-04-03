@@ -19,7 +19,7 @@
     <div class="card__footer">
         <form method="post" action="{% url 'Accounts:Logout' %}" class="u-flex u-items-center u-gap-sm">
             {% csrf_token %}
-            {% include "_snipps/_button_.html" with text="Logout" type="submit" class="btn btn--outline" only %}
+            {% include "_snipps_/_button_.html" with text="Logout" type="submit" class="btn btn--outline" only %}
         </form>
     </div>
 </div>
@@ -29,7 +29,7 @@
     <div class="card">
         <div class="card__body u-text-center">
             <div class="u-flex u-justify-center u-items-center u-gap-sm u-mb-sm">
-                {% include "_snipps/_icon_.html" with icon="package" class="" only %}
+                {% include "_snipps_/_icon_.html" with icon="package" class="" only %}
             </div>
             <h3 class="u-text-sm u-font-semibold u-mb-xs">Inventory</h3>
             <p class="u-text-xs u-text-muted">Products, categories, and stock management</p>
@@ -38,7 +38,7 @@
     <div class="card">
         <div class="card__body u-text-center">
             <div class="u-flex u-justify-center u-items-center u-gap-sm u-mb-sm">
-                {% include "_snipps/_icon_.html" with icon="shopping-cart" class="" only %}
+                {% include "_snipps_/_icon_.html" with icon="shopping-cart" class="" only %}
             </div>
             <h3 class="u-text-sm u-font-semibold u-mb-xs">Sales & CRM</h3>
             <p class="u-text-xs u-text-muted">Customers, orders, and sales tracking</p>
@@ -47,7 +47,7 @@
     <div class="card">
         <div class="card__body u-text-center">
             <div class="u-flex u-justify-center u-items-center u-gap-sm u-mb-sm">
-                {% include "_snipps/_icon_.html" with icon="truck" class="" only %}
+                {% include "_snipps_/_icon_.html" with icon="truck" class="" only %}
             </div>
             <h3 class="u-text-sm u-font-semibold u-mb-xs">Purchasing</h3>
             <p class="u-text-xs u-text-muted">Suppliers, purchase orders, and receiving</p>
@@ -56,7 +56,7 @@
     <div class="card">
         <div class="card__body u-text-center">
             <div class="u-flex u-justify-center u-items-center u-gap-sm u-mb-sm">
-                {% include "_snipps/_icon_.html" with icon="shield-check" class="" only %}
+                {% include "_snipps_/_icon_.html" with icon="shield-check" class="" only %}
             </div>
             <h3 class="u-text-sm u-font-semibold u-mb-xs">IAM & Security</h3>
             <p class="u-text-xs u-text-muted">Departments, roles, and policies</p>

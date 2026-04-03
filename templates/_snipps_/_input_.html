@@ -1,17 +1,32 @@
-{# -- AMW Django ERP - Input Field Snippet -- #}
-{# Constitution Section 7.2: Template Hierarchy - Global Atoms #}
-{# Expected context keys: field_id, label, input_type, name, placeholder, autocomplete, required, autofocus #}
-
-<div class="accounts-form-group">
-    <label class="accounts-form-group__label" for="{{ field_id|default:name }}">{{ label }}</label>
+{# -- AMW Django ERP - Input Snippet --
+ #
+ # Usage:
+ #   {% include "_snipps_/_input_.html" with
+ #      field_id="email" label="Email" input_type="email"
+ #      name="email" placeholder="Enter email" autocomplete="email"
+ #      required=True autofocus=True value="" errors=None only %}
+ #
+ # Expected context keys:
+ #   field_id, label, input_type, name, placeholder,
+ #   autocomplete (optional), required (optional), autofocus (optional),
+ #   value (optional), errors (optional)
+ #}
+<div class="form-group">
+    <label for="{{ field_id }}" class="form-group__label">
+        {{ label }}{% if required %} *{% endif %}
+    </label>
     <input
-        class="accounts-form-group__input"
-        type="{{ input_type|default:'text' }}"
-        id="{{ field_id|default:name }}"
+        type="{{ input_type }}"
+        id="{{ field_id }}"
         name="{{ name }}"
-        {% if required|default:False %}required{% endif %}
-        {% if autofocus|default:False %}autofocus{% endif %}
-        {% if autocomplete|default:'' %}autocomplete="{{ autocomplete }}"{% endif %}
-        placeholder="{{ placeholder|default:'' }}"
+        class="form-group__input{% if errors %} form-group__input--error{% endif %}"
+        placeholder="{{ placeholder }}"
+        {% if value is not None %}value="{{ value }}"{% endif %}
+        {% if autocomplete %}autocomplete="{{ autocomplete }}"{% endif %}
+        {% if required %}required{% endif %}
+        {% if autofocus %}autofocus{% endif %}
     >
+    {% if errors %}
+        {% include "_snipps_/_field_error_.html" with errors=errors only %}
+    {% endif %}
 </div>

@@ -170,7 +170,7 @@ We will build the frontend "Inside-Out" using a **Design System** approach.
 
 - **Goal:** `Bridge the backend operations to the new UI via functional list and detail views.`
 - **Owner:** `Qwen (Lead Developer)`
-- **Status:** `Planned`
+- **Status:** ✅ **COMPLETE**
 
 #### Tasks
 
@@ -254,13 +254,16 @@ We will build the frontend "Inside-Out" using a **Design System** approach.
 - `2026-04-03` - `Implementation` - `Updated dashboard.html with sidebar + topbar integration, module quick-link cards.`
 - `2026-04-03` - `Implementation` - `Updated login page with new CSS system and _input_.html snippet integration.`
 - `2026-04-03` - `Verified` - `186 tests passing, 0 lint errors, Django system check clean.`
-- `2026-04-03` - ✅ **COMPLETE** - `Phase 7 finalized. Ready for merge.`
+- `2026-04-03` - `Implementation` - `Added Part 4: Core Module UI Rollout (Tasks 7.8-7.10). Inventory UI: product list with search, detail with stock ledger, HTMX stock adjustment modal. Sales UI: customer registry, order dashboard with status filter, order detail with pricing snapshots, HTMX confirm/void with Toast feedback. Purchasing UI: supplier registry, PO tracking, order detail with receiving progress, HTMX receive stock modal. All three apps have views, URLs, and templates wired to root config/urls.py.`
+- `2026-04-03` - ✅ **COMPLETE** - `Phase 7 fully finalized with Part 4. Ready for merge.`
 
 ---
 
 ## 14. Final Summary
 
 Phase 7 successfully delivered a production-ready Frontend Foundation with:
+
+**Part 1-3: Foundation & Components**
 - ✅ Modular CSS architecture with brand-aligned design tokens (Coolors earthy brown/olive palette)
 - ✅ Flat file structure: _variables.css, _base.css, _layout.css, _utilities.css + app-specific files
 - ✅ Utility-Infused BEM: Custom BEM for structures (sidebar, topbar, cards), utility classes for spacing
@@ -274,6 +277,13 @@ Phase 7 successfully delivered a production-ready Frontend Foundation with:
 - ✅ Updated _input_.html and _form_group.html with error support
 - ✅ Dashboard with module quick-link cards (Inventory, Sales, Purchasing, IAM)
 
+**Part 4: Core Module UI Rollout**
+- ✅ **Inventory UI**: Product list with search, product detail with stock metrics, full stock ledger page, HTMX quick stock adjustment (add/reduce) with live feedback
+- ✅ **Sales UI**: Customer registry with search, customer detail with order history, sales order dashboard with status filter, order detail with pricing snapshots, HTMX confirm/void order with Toast feedback
+- ✅ **Purchasing UI**: Supplier registry with search, supplier detail with PO history, PO dashboard with status filter, PO detail with line item receiving progress, HTMX receive stock modal
+- ✅ All three apps wired to root URLs (inventory/, sales/, purchasing/)
+- ✅ Context processor updated with app-specific nav links
+
 **Gem's Notes Compliance:**
 - ✅ All styles centralized in static/styles/ (flat, underscore partials)
 - ✅ Brand colors from Brand/Dj_ERP_Colour_Pallete_CSS.scss mapped to CSS variables
@@ -281,9 +291,11 @@ Phase 7 successfully delivered a production-ready Frontend Foundation with:
 - ✅ Utility-Infused BEM approach implemented
 - ✅ 4px/8px/16px/24px spacing scale established
 
+**Test Coverage:** 186 tests passing, 2 skipped
+**Lint:** 0 errors (ruff + black clean)
+
 **Next Phase:** Phase 8 (Async Tasks, Reporting & Hardening)
 
 **Version:** v7.0-phase7-complete
 **Branch:** phase-7
 **Completion Date:** 2026-04-03
-**Test Suite:** 186 passed, 2 skipped ✅

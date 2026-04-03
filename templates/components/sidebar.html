@@ -19,7 +19,7 @@
                     <a href="{% url child.url %}"
                        class="sidebar__link {% if active_app == child.app %}sidebar__link--active{% endif %}"
                        aria-current="{% if active_app == child.app %}page{% endif %}">
-                        {% include "_snipps/_icon_.html" with icon=child.icon class="sidebar__link-icon" only %}
+                        {% include "_snipps_/_icon_.html" with icon=child.icon class="sidebar__link-icon" only %}
                         <span class="sidebar__link-text">{{ child.title }}</span>
                     </a>
                 {% endfor %}
@@ -29,7 +29,7 @@
                 <a href="{% url section.url %}"
                    class="sidebar__link {% if active_app == section.app %}sidebar__link--active{% endif %}"
                    aria-current="{% if active_app == section.app %}page{% endif %}">
-                    {% include "_snipps/_icon_.html" with icon=section.icon class="sidebar__link-icon" only %}
+                    {% include "_snipps_/_icon_.html" with icon=section.icon class="sidebar__link-icon" only %}
                     <span class="sidebar__link-text">{{ section.title }}</span>
                 </a>
             {% endif %}
