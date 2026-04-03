@@ -57,8 +57,7 @@ class Command(BaseCommand):
         """Main command entry point."""
         if not settings.DEBUG and not options["force"]:
             raise CommandError(
-                "Cannot seed data in production mode (DEBUG=False). "
-                "Use --force to override (NOT RECOMMENDED)."
+                "Cannot seed data in production mode (DEBUG=False). " "Use --force to override (NOT RECOMMENDED)."
             )
 
         self.stdout.write(self.style.SUCCESS("=" * 60))
@@ -69,8 +68,7 @@ class Command(BaseCommand):
         if options["force"]:
             self.stdout.write(
                 self.style.WARNING(
-                    "WARNING: Running in production mode! "
-                    "This will create test data in your production database."
+                    "WARNING: Running in production mode! " "This will create test data in your production database."
                 )
             )
             self.stdout.write()
@@ -381,13 +379,9 @@ class Command(BaseCommand):
             employee.save()
 
             if created:
-                self.stdout.write(
-                    self.style.SUCCESS(f"  Created: {employee.get_full_name()} ({employee.email})")
-                )
+                self.stdout.write(self.style.SUCCESS(f"  Created: {employee.get_full_name()} ({employee.email})"))
             else:
-                self.stdout.write(
-                    self.style.WARNING(f"  Updated: {employee.get_full_name()} ({employee.email})")
-                )
+                self.stdout.write(self.style.WARNING(f"  Updated: {employee.get_full_name()} ({employee.email})"))
 
         self.stdout.write()
 
@@ -439,48 +433,118 @@ class Command(BaseCommand):
             elc = Category.objects.get(name="Electronics")
 
             products_data = [
-                {"sku": "MAJ-FR-500", "name": "Frost-Free Refrigerator 500L", "category": maj,
-                 "unit_of_measure": "pcs", "description": "Energy-efficient frost-free refrigerator 500L",
-                 "location_note": "Warehouse A, Shelf 1-3"},
-                {"sku": "MAJ-WM-CR159", "name": "Washing Machine Crazy 159", "category": maj,
-                 "unit_of_measure": "pcs", "description": "Front-load washing machine 159 programs",
-                 "location_note": "Warehouse A, Shelf 4-6"},
-                {"sku": "MAJ-OV-ELC", "name": "Electric Convection Oven", "category": maj,
-                 "unit_of_measure": "pcs", "description": "Countertop electric convection oven",
-                 "location_note": "Warehouse A, Shelf 7-9"},
-                {"sku": "MAJ-AC-12", "name": "Split AC 12000 BTU", "category": maj,
-                 "unit_of_measure": "pcs", "description": "Energy-efficient split AC 12000 BTU",
-                 "location_note": "Warehouse A, Shelf 10-12"},
-                {"sku": "SML-IR-STM", "name": "Steam Iron Pro", "category": sml,
-                 "unit_of_measure": "pcs", "description": "Professional steam iron ceramic soleplate",
-                 "location_note": "Warehouse B, Shelf A2"},
-                {"sku": "SML-VL-18", "name": "Vacuum Cleaner 1800W", "category": sml,
-                 "unit_of_measure": "pcs", "description": "Bagless vacuum 1800W HEPA filter",
-                 "location_note": "Warehouse B, Shelf A3"},
-                {"sku": "SML-HD-22", "name": "Hair Dryer 2200W", "category": sml,
-                 "unit_of_measure": "pcs", "description": "Professional hair dryer 2200W ionic",
-                 "location_note": "Warehouse B, Shelf A4"},
-                {"sku": "KIT-BL-HSP", "name": "High-Speed Blender", "category": kit,
-                 "unit_of_measure": "pcs", "description": "Professional high-speed blender",
-                 "location_note": "Warehouse B, Shelf B1"},
-                {"sku": "KIT-TS-4S", "name": "4-Slice Toaster", "category": kit,
-                 "unit_of_measure": "pcs", "description": "Stainless steel 4-slice toaster bagel mode",
-                 "location_note": "Warehouse B, Shelf B2"},
-                {"sku": "KIT-MX-5L", "name": "Stand Mixer 5L", "category": kit,
-                 "unit_of_measure": "pcs", "description": "5-liter stand mixer dough hook whisk",
-                 "location_note": "Warehouse B, Shelf B3"},
-                {"sku": "CLN-AF-2L", "name": "Air Freshener 2L", "category": cln,
-                 "unit_of_measure": "pcs", "description": "Automatic air freshener 2L lavender",
-                 "location_note": "Warehouse C, Shelf A1"},
-                {"sku": "CLN-VC-3L", "name": "Floor Cleaner 3L", "category": cln,
-                 "unit_of_measure": "pcs", "description": "Multi-surface floor cleaner 3L",
-                 "location_note": "Warehouse C, Shelf A2"},
-                {"sku": "ELC-LED-55", "name": "LED TV 55 inch 4K", "category": elc,
-                 "unit_of_measure": "pcs", "description": "55-inch 4K Smart LED TV HDR",
-                 "location_note": "Warehouse D, Shelf A1"},
-                {"sku": "ELC-SB-21", "name": "Soundbar 2.1 Channel", "category": elc,
-                 "unit_of_measure": "pcs", "description": "2.1 channel soundbar wireless subwoofer",
-                 "location_note": "Warehouse D, Shelf A2"},
+                {
+                    "sku": "MAJ-FR-500",
+                    "name": "Frost-Free Refrigerator 500L",
+                    "category": maj,
+                    "unit_of_measure": "pcs",
+                    "description": "Energy-efficient frost-free refrigerator 500L",
+                    "location_note": "Warehouse A, Shelf 1-3",
+                },
+                {
+                    "sku": "MAJ-WM-CR159",
+                    "name": "Washing Machine Crazy 159",
+                    "category": maj,
+                    "unit_of_measure": "pcs",
+                    "description": "Front-load washing machine 159 programs",
+                    "location_note": "Warehouse A, Shelf 4-6",
+                },
+                {
+                    "sku": "MAJ-OV-ELC",
+                    "name": "Electric Convection Oven",
+                    "category": maj,
+                    "unit_of_measure": "pcs",
+                    "description": "Countertop electric convection oven",
+                    "location_note": "Warehouse A, Shelf 7-9",
+                },
+                {
+                    "sku": "MAJ-AC-12",
+                    "name": "Split AC 12000 BTU",
+                    "category": maj,
+                    "unit_of_measure": "pcs",
+                    "description": "Energy-efficient split AC 12000 BTU",
+                    "location_note": "Warehouse A, Shelf 10-12",
+                },
+                {
+                    "sku": "SML-IR-STM",
+                    "name": "Steam Iron Pro",
+                    "category": sml,
+                    "unit_of_measure": "pcs",
+                    "description": "Professional steam iron ceramic soleplate",
+                    "location_note": "Warehouse B, Shelf A2",
+                },
+                {
+                    "sku": "SML-VL-18",
+                    "name": "Vacuum Cleaner 1800W",
+                    "category": sml,
+                    "unit_of_measure": "pcs",
+                    "description": "Bagless vacuum 1800W HEPA filter",
+                    "location_note": "Warehouse B, Shelf A3",
+                },
+                {
+                    "sku": "SML-HD-22",
+                    "name": "Hair Dryer 2200W",
+                    "category": sml,
+                    "unit_of_measure": "pcs",
+                    "description": "Professional hair dryer 2200W ionic",
+                    "location_note": "Warehouse B, Shelf A4",
+                },
+                {
+                    "sku": "KIT-BL-HSP",
+                    "name": "High-Speed Blender",
+                    "category": kit,
+                    "unit_of_measure": "pcs",
+                    "description": "Professional high-speed blender",
+                    "location_note": "Warehouse B, Shelf B1",
+                },
+                {
+                    "sku": "KIT-TS-4S",
+                    "name": "4-Slice Toaster",
+                    "category": kit,
+                    "unit_of_measure": "pcs",
+                    "description": "Stainless steel 4-slice toaster bagel mode",
+                    "location_note": "Warehouse B, Shelf B2",
+                },
+                {
+                    "sku": "KIT-MX-5L",
+                    "name": "Stand Mixer 5L",
+                    "category": kit,
+                    "unit_of_measure": "pcs",
+                    "description": "5-liter stand mixer dough hook whisk",
+                    "location_note": "Warehouse B, Shelf B3",
+                },
+                {
+                    "sku": "CLN-AF-2L",
+                    "name": "Air Freshener 2L",
+                    "category": cln,
+                    "unit_of_measure": "pcs",
+                    "description": "Automatic air freshener 2L lavender",
+                    "location_note": "Warehouse C, Shelf A1",
+                },
+                {
+                    "sku": "CLN-VC-3L",
+                    "name": "Floor Cleaner 3L",
+                    "category": cln,
+                    "unit_of_measure": "pcs",
+                    "description": "Multi-surface floor cleaner 3L",
+                    "location_note": "Warehouse C, Shelf A2",
+                },
+                {
+                    "sku": "ELC-LED-55",
+                    "name": "LED TV 55 inch 4K",
+                    "category": elc,
+                    "unit_of_measure": "pcs",
+                    "description": "55-inch 4K Smart LED TV HDR",
+                    "location_note": "Warehouse D, Shelf A1",
+                },
+                {
+                    "sku": "ELC-SB-21",
+                    "name": "Soundbar 2.1 Channel",
+                    "category": elc,
+                    "unit_of_measure": "pcs",
+                    "description": "2.1 channel soundbar wireless subwoofer",
+                    "location_note": "Warehouse D, Shelf A2",
+                },
             ]
 
             for prod_data in products_data:
@@ -543,9 +607,7 @@ class Command(BaseCommand):
                     )
                     product.refresh_from_db()
                     self.stdout.write(
-                        self.style.SUCCESS(
-                            f"  {product.sku}: {product.current_stock} units @ WAC {product.wac_price}"
-                        )
+                        self.style.SUCCESS(f"  {product.sku}: {product.current_stock} units @ WAC {product.wac_price}")
                     )
                 except Product.DoesNotExist:
                     self.stdout.write(self.style.WARNING(f"  Product {stock_item['sku']} not found - skipping"))
@@ -600,18 +662,48 @@ class Command(BaseCommand):
             wholesale = CustomerCategory.objects.get(name="Wholesale")
 
             customers_data = [
-                {"name": "John Doe", "email": "john.doe@example.com", "phone": "+20 123 456 7890",
-                 "category": retail, "shipping_address": "123 Tahrir St, Cairo, Egypt"},
-                {"name": "ABC Corporation", "email": "purchasing@abc-corp.com", "phone": "+20 2 3456 7890",
-                 "category": corporate, "shipping_address": "456 Business Park, New Cairo, Egypt"},
-                {"name": "Ahmed Mohamed", "email": "ahmed.vip@example.com", "phone": "+20 100 999 8888",
-                 "category": vip, "shipping_address": "789 Nile Corniche, Zamalek, Cairo, Egypt"},
-                {"name": "Sara Ali", "email": "sara.ali@example.com", "phone": "+20 111 222 3333",
-                 "category": retail, "shipping_address": "10 Heliopolis Ave, Cairo, Egypt"},
-                {"name": "Delta Hotels Group", "email": "orders@deltahotels.com", "phone": "+20 2 7654 3210",
-                 "category": wholesale, "shipping_address": "Delta Hotels Warehouse, 6th October City, Egypt"},
-                {"name": "Omar Hassan", "email": "omar.h@example.com", "phone": "+20 122 333 4444",
-                 "category": vip, "shipping_address": "Maadi Riverside, Cairo, Egypt"},
+                {
+                    "name": "John Doe",
+                    "email": "john.doe@example.com",
+                    "phone": "+20 123 456 7890",
+                    "category": retail,
+                    "shipping_address": "123 Tahrir St, Cairo, Egypt",
+                },
+                {
+                    "name": "ABC Corporation",
+                    "email": "purchasing@abc-corp.com",
+                    "phone": "+20 2 3456 7890",
+                    "category": corporate,
+                    "shipping_address": "456 Business Park, New Cairo, Egypt",
+                },
+                {
+                    "name": "Ahmed Mohamed",
+                    "email": "ahmed.vip@example.com",
+                    "phone": "+20 100 999 8888",
+                    "category": vip,
+                    "shipping_address": "789 Nile Corniche, Zamalek, Cairo, Egypt",
+                },
+                {
+                    "name": "Sara Ali",
+                    "email": "sara.ali@example.com",
+                    "phone": "+20 111 222 3333",
+                    "category": retail,
+                    "shipping_address": "10 Heliopolis Ave, Cairo, Egypt",
+                },
+                {
+                    "name": "Delta Hotels Group",
+                    "email": "orders@deltahotels.com",
+                    "phone": "+20 2 7654 3210",
+                    "category": wholesale,
+                    "shipping_address": "Delta Hotels Warehouse, 6th October City, Egypt",
+                },
+                {
+                    "name": "Omar Hassan",
+                    "email": "omar.h@example.com",
+                    "phone": "+20 122 333 4444",
+                    "category": vip,
+                    "shipping_address": "Maadi Riverside, Cairo, Egypt",
+                },
             ]
 
             for cust_data in customers_data:
@@ -657,6 +749,7 @@ class Command(BaseCommand):
             sara = Customer.objects.get(name="Sara Ali")
 
             from inventory.models import Product
+
             refrigerator = Product.objects.get(sku="MAJ-FR-500")
             washing_machine = Product.objects.get(sku="MAJ-WM-CR159")
             iron = Product.objects.get(sku="SML-IR-STM")
@@ -674,10 +767,15 @@ class Command(BaseCommand):
                 payment_status=PaymentStatus.PENDING,
                 notes="Draft order - awaiting customer confirmation",
             )
-            SalesOrderItem.objects.create(order=order1, product=refrigerator,
-                                          quantity=Decimal("2.0000"), snapshot_unit_price=Decimal("450.0000"))
-            SalesOrderItem.objects.create(order=order1, product=washing_machine,
-                                          quantity=Decimal("1.0000"), snapshot_unit_price=Decimal("380.0000"))
+            SalesOrderItem.objects.create(
+                order=order1, product=refrigerator, quantity=Decimal("2.0000"), snapshot_unit_price=Decimal("450.0000")
+            )
+            SalesOrderItem.objects.create(
+                order=order1,
+                product=washing_machine,
+                quantity=Decimal("1.0000"),
+                snapshot_unit_price=Decimal("380.0000"),
+            )
             subtotal, tax, total = calculate_order_totals(order1)
             order1.subtotal, order1.tax_amount, order1.total_amount = subtotal, tax, total
             order1.save()
@@ -692,10 +790,12 @@ class Command(BaseCommand):
                 status=OrderStatus.DRAFT,
                 payment_status=PaymentStatus.PENDING,
             )
-            SalesOrderItem.objects.create(order=order2, product=iron,
-                                          quantity=Decimal("3.0000"), snapshot_unit_price=Decimal("25.5000"))
-            SalesOrderItem.objects.create(order=order2, product=blender,
-                                          quantity=Decimal("1.0000"), snapshot_unit_price=Decimal("45.0000"))
+            SalesOrderItem.objects.create(
+                order=order2, product=iron, quantity=Decimal("3.0000"), snapshot_unit_price=Decimal("25.5000")
+            )
+            SalesOrderItem.objects.create(
+                order=order2, product=blender, quantity=Decimal("1.0000"), snapshot_unit_price=Decimal("45.0000")
+            )
             subtotal, tax, total = calculate_order_totals(order2)
             order2.subtotal, order2.tax_amount, order2.total_amount = subtotal, tax, total
             order2.save()
@@ -705,7 +805,9 @@ class Command(BaseCommand):
             order2.payment_method = PaymentMethod.COD
             order2.save()
             self.stdout.write(
-                self.style.SUCCESS(f"  Created Confirmed: {order2.order_number} ({order2.total_amount}, Partially Paid)")
+                self.style.SUCCESS(
+                    f"  Created Confirmed: {order2.order_number} ({order2.total_amount}, Partially Paid)"
+                )
             )
 
             # Order 3: Shipped + Paid
@@ -717,10 +819,12 @@ class Command(BaseCommand):
                 status=OrderStatus.DRAFT,
                 payment_status=PaymentStatus.PENDING,
             )
-            SalesOrderItem.objects.create(order=order3, product=oven,
-                                          quantity=Decimal("1.0000"), snapshot_unit_price=Decimal("120.0000"))
-            SalesOrderItem.objects.create(order=order3, product=refrigerator,
-                                          quantity=Decimal("1.0000"), snapshot_unit_price=Decimal("450.0000"))
+            SalesOrderItem.objects.create(
+                order=order3, product=oven, quantity=Decimal("1.0000"), snapshot_unit_price=Decimal("120.0000")
+            )
+            SalesOrderItem.objects.create(
+                order=order3, product=refrigerator, quantity=Decimal("1.0000"), snapshot_unit_price=Decimal("450.0000")
+            )
             subtotal, tax, total = calculate_order_totals(order3)
             order3.subtotal, order3.tax_amount, order3.total_amount = subtotal, tax, total
             order3.save()
@@ -744,15 +848,14 @@ class Command(BaseCommand):
                 payment_status=PaymentStatus.PENDING,
                 notes="Customer requested cancellation",
             )
-            SalesOrderItem.objects.create(order=order4, product=hair_dryer,
-                                          quantity=Decimal("2.0000"), snapshot_unit_price=Decimal("35.0000"))
+            SalesOrderItem.objects.create(
+                order=order4, product=hair_dryer, quantity=Decimal("2.0000"), snapshot_unit_price=Decimal("35.0000")
+            )
             subtotal, tax, total = calculate_order_totals(order4)
             order4.subtotal, order4.tax_amount, order4.total_amount = subtotal, tax, total
             order4.save()
             void_order(order4, sales_mgr, reason="Customer cancelled order")
-            self.stdout.write(
-                self.style.WARNING(f"  Created Voided: {order4.order_number} ({order4.total_amount})")
-            )
+            self.stdout.write(self.style.WARNING(f"  Created Voided: {order4.order_number} ({order4.total_amount})"))
         except ImportError:
             self.stdout.write(self.style.WARNING("  Sales app not found - skipping sales orders"))
 
@@ -804,21 +907,51 @@ class Command(BaseCommand):
             logistics = SupplierCategory.objects.get(name="Logistics")
 
             suppliers_data = [
-                {"name": "Cairo Steel Co.", "email": "sales@cairosteel.com", "phone": "+20 2 1234 5678",
-                 "category": raw_mat, "address": "Industrial Zone, 10th of Ramadan, Egypt",
-                 "contact_person": "Mahmoud Ibrahim", "notes": "Primary steel supplier, net-30 terms"},
-                {"name": "Alex Plastics", "email": "orders@alexplastics.com", "phone": "+20 3 9876 5432",
-                 "category": raw_mat, "address": "Borg El Arab, Alexandria, Egypt",
-                 "contact_person": "Fatma Nasser", "notes": "Plastic raw materials, COD"},
-                {"name": "TechParts Egypt", "email": "info@techparts.eg", "phone": "+20 2 5555 1234",
-                 "category": electronics, "address": "Smart Village, 6th October City, Egypt",
-                 "contact_person": "Karim Adel", "notes": "Electronic components and circuit boards"},
-                {"name": "PackRight Solutions", "email": "sales@packright.com", "phone": "+20 2 4444 5678",
-                 "category": packaging, "address": "Obour City, Cairo, Egypt",
-                 "contact_person": "Nadia Hassan", "notes": "Cardboard boxes and packaging materials"},
-                {"name": "FastShip Logistics", "email": "dispatch@fastship.eg", "phone": "+20 2 3333 9999",
-                 "category": logistics, "address": "Cairo International Airport Cargo, Egypt",
-                 "contact_person": "Omar Tarek", "notes": "Express shipping and freight forwarding"},
+                {
+                    "name": "Cairo Steel Co.",
+                    "email": "sales@cairosteel.com",
+                    "phone": "+20 2 1234 5678",
+                    "category": raw_mat,
+                    "address": "Industrial Zone, 10th of Ramadan, Egypt",
+                    "contact_person": "Mahmoud Ibrahim",
+                    "notes": "Primary steel supplier, net-30 terms",
+                },
+                {
+                    "name": "Alex Plastics",
+                    "email": "orders@alexplastics.com",
+                    "phone": "+20 3 9876 5432",
+                    "category": raw_mat,
+                    "address": "Borg El Arab, Alexandria, Egypt",
+                    "contact_person": "Fatma Nasser",
+                    "notes": "Plastic raw materials, COD",
+                },
+                {
+                    "name": "TechParts Egypt",
+                    "email": "info@techparts.eg",
+                    "phone": "+20 2 5555 1234",
+                    "category": electronics,
+                    "address": "Smart Village, 6th October City, Egypt",
+                    "contact_person": "Karim Adel",
+                    "notes": "Electronic components and circuit boards",
+                },
+                {
+                    "name": "PackRight Solutions",
+                    "email": "sales@packright.com",
+                    "phone": "+20 2 4444 5678",
+                    "category": packaging,
+                    "address": "Obour City, Cairo, Egypt",
+                    "contact_person": "Nadia Hassan",
+                    "notes": "Cardboard boxes and packaging materials",
+                },
+                {
+                    "name": "FastShip Logistics",
+                    "email": "dispatch@fastship.eg",
+                    "phone": "+20 2 3333 9999",
+                    "category": logistics,
+                    "address": "Cairo International Airport Cargo, Egypt",
+                    "contact_person": "Omar Tarek",
+                    "notes": "Express shipping and freight forwarding",
+                },
             ]
 
             for sup_data in suppliers_data:
@@ -862,6 +995,7 @@ class Command(BaseCommand):
             owner = Employee.objects.get(email="amw@amw.io")
 
             from inventory.models import Product
+
             fridge = Product.objects.get(sku="MAJ-FR-500")
             oven = Product.objects.get(sku="MAJ-OV-ELC")
             blender = Product.objects.get(sku="KIT-BL-HSP")
@@ -889,8 +1023,7 @@ class Command(BaseCommand):
                 status=POStatus.DRAFT,
                 notes="Electronic components order",
             )
-            PurchaseOrderItem.objects.create(order=po2, product=blender,
-                                                        quantity=D("50.0000"), unit_cost=D("35.0000"))
+            PurchaseOrderItem.objects.create(order=po2, product=blender, quantity=D("50.0000"), unit_cost=D("35.0000"))
             po2.total_cost = sum(item.total_cost for item in po2.items.all())
             po2.save()
             issue_order(po2, owner)
@@ -904,8 +1037,9 @@ class Command(BaseCommand):
                 status=POStatus.DRAFT,
                 notes="Packaging materials restock",
             )
-            po3_item = PurchaseOrderItem.objects.create(order=po3, product=oven,
-                                                        quantity=D("30.0000"), unit_cost=D("95.0000"))
+            po3_item = PurchaseOrderItem.objects.create(
+                order=po3, product=oven, quantity=D("30.0000"), unit_cost=D("95.0000")
+            )
             po3.total_cost = sum(item.total_cost for item in po3.items.all())
             po3.save()
             issue_order(po3, owner)
@@ -920,8 +1054,9 @@ class Command(BaseCommand):
                 status=POStatus.DRAFT,
                 notes="Completed steel order",
             )
-            po4_item = PurchaseOrderItem.objects.create(order=po4, product=fridge,
-                                                        quantity=D("10.0000"), unit_cost=D("420.0000"))
+            po4_item = PurchaseOrderItem.objects.create(
+                order=po4, product=fridge, quantity=D("10.0000"), unit_cost=D("420.0000")
+            )
             po4.total_cost = sum(item.total_cost for item in po4.items.all())
             po4.save()
             issue_order(po4, owner)

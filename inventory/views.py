@@ -83,7 +83,9 @@ def adjust_stock_htmx(request, product_id):
         return JsonResponse(
             {"error": "Permission denied"},
             status=403,
-            headers={"HX-Trigger": '{"showToast": {"message": "You do not have permission to adjust stock.", "type": "error"}}'},
+            headers={
+                "HX-Trigger": '{"showToast": {"message": "You do not have permission to adjust stock.", "type": "error"}}'
+            },
         )
 
     product = get_object_or_404(Product, pk=product_id)
