@@ -889,7 +889,7 @@ class Command(BaseCommand):
                 status=POStatus.DRAFT,
                 notes="Electronic components order",
             )
-            po2_item = PurchaseOrderItem.objects.create(order=po2, product=blender,
+            PurchaseOrderItem.objects.create(order=po2, product=blender,
                                                         quantity=D("50.0000"), unit_cost=D("35.0000"))
             po2.total_cost = sum(item.total_cost for item in po2.items.all())
             po2.save()
