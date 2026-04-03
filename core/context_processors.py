@@ -1,12 +1,12 @@
 """
 -- AMW Django ERP - Core Context Processors --
-Version: 1.1 (Hardened for Template Safety)
+Version: 1.2 (Hardened for Template Safety + Policy Checks)
 """
 
 
 def ui_context(request):
     """
-    Provides global UI context for navigation and app identification.
+    Provides global UI context for navigation, app identification, and policy checks.
     Ensures nav_hierarchy is empty for unauthenticated users.
     """
     if not request.user.is_authenticated:
@@ -23,6 +23,7 @@ def ui_context(request):
         "app_name": "AMW ERP",
         "active_app": active_app,
         "nav_hierarchy": _build_nav_hierarchy(),
+        "can_adjust_stock": _has_inventory_adjust_policy(request.user),
     }
 
 
@@ -32,6 +33,17 @@ def _resolve_active_app(path):
     if not path_parts:
         return "dashboard"
     return path_parts[0]
+
+
+def _has_inventory_adjust_policy(user):
+    """Check if the user has 'Inventory: Adjust' policy."""
+    try:
+        from security.logic.enforcement import PolicyEngine
+
+        engine = PolicyEngine(user)
+        return engine.has_permission("inventory.stock", "adjust")
+    except Exception:
+        return False
 
 
 def _build_nav_hierarchy():

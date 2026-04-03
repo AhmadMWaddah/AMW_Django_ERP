@@ -43,38 +43,38 @@
     </div>
 </div>
 
-{# HTMX Quick Adjustment #}
+{# HTMX Quick Adjustment (Policy: Inventory: Adjust) #}
+{% if can_adjust_stock %}
 <div class="card">
     <div class="card__header">
         <h3 class="card__title">Quick Stock Adjustment</h3>
     </div>
     <div class="card__body u-flex u-justify-center">
-        <form hx-post="{% url 'Inventory:AdjustStock' product.id %}"
-              hx-target="#adjustment-result"
-              hx-swap="innerHTML"
-              class="u-flex u-flex-wrap u-gap-sm u-items-end u-justify-center">
-            <div class="form-group u-mb-0" style="width: auto;">
+        <form hx-post="{% url 'Inventory:AdjustStock' product.id %}" hx-target="#adjustment-result" hx-swap="innerHTML"
+            class="u-flex u-flex-wrap u-gap-sm u-items-end u-justify-center">
+            <div class="form-group u-mb-0 u-px-lg" style="width: auto;">
                 <label class="form-group__label">Action</label>
                 <select name="action" class="form-group__input" style="width: 140px;">
                     <option value="in">Add Stock</option>
                     <option value="out">Reduce Stock</option>
                 </select>
             </div>
-            <div class="form-group u-mb-0" style="width: auto;">
+            <div class="form-group u-mb-0 u-px-lg" style="width: auto;">
                 <label class="form-group__label">Quantity</label>
                 <input type="number" name="quantity" class="form-group__input" step="0.0001" min="0"
-                       style="width: 130px;" required>
+                    style="width: 130px;" required>
             </div>
-            <div class="form-group u-mb-0" style="width: auto;">
+            <div class="form-group u-mb-0 u-px-lg" style="width: auto;">
                 <label class="form-group__label">Note (optional)</label>
-                <input type="text" name="location_note" class="form-group__input"
-                       style="width: 180px;" placeholder="Location">
+                <input type="text" name="location_note" class="form-group__input" style="width: 180px;"
+                    placeholder="Location">
             </div>
             <button type="submit" class="btn btn--primary">Adjust</button>
         </form>
     </div>
     <div id="adjustment-result" class="u-mt-md u-text-center"></div>
 </div>
+{% endif %}
 
 {# Stock Transactions Ledger #}
 <div class="card">
@@ -100,7 +100,8 @@
                 <tr>
                     <td class="u-text-xs">{{ txn.created_at|date:"Y-m-d H:i" }}</td>
                     <td>
-                        <span class="badge {% if txn.change_type in 'INTAKE,PURCHASE,ADJUST_ADD,RETURN' %}badge--success{% else %}badge--danger{% endif %}">
+                        <span
+                            class="badge {% if txn.change_type in 'INTAKE,PURCHASE,ADJUST_ADD,RETURN' %}badge--success{% else %}badge--danger{% endif %}">
                             {{ txn.get_change_type_display }}
                         </span>
                     </td>

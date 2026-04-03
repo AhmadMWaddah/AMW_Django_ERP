@@ -72,7 +72,20 @@ def adjustment_list(request):
 @require_POST
 @login_required
 def adjust_stock_htmx(request, product_id):
-    """HTMX endpoint for stock adjustment."""
+    """HTMX endpoint for stock adjustment.
+
+    Policy: Requires 'inventory.stock' -> 'adjust' permission.
+    """
+    from security.logic.enforcement import PolicyEngine
+
+    engine = PolicyEngine(request.user)
+    if not engine.has_permission("inventory.stock", "adjust"):
+        return JsonResponse(
+            {"error": "Permission denied"},
+            status=403,
+            headers={"HX-Trigger": '{"showToast": {"message": "You do not have permission to adjust stock.", "type": "error"}}'},
+        )
+
     product = get_object_or_404(Product, pk=product_id)
     action = request.POST.get("action")
     quantity_str = request.POST.get("quantity", "0")
