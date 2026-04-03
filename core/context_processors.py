@@ -1,12 +1,13 @@
 """
 -- AMW Django ERP - Core Context Processors --
+Version: 1.1 (Hardened for Template Safety)
 """
 
 
 def ui_context(request):
     """
     Provides global UI context for navigation and app identification.
-    Returns empty nav_hierarchy for unauthenticated users.
+    Ensures nav_hierarchy is empty for unauthenticated users.
     """
     if not request.user.is_authenticated:
         return {
@@ -36,7 +37,7 @@ def _resolve_active_app(path):
 def _build_nav_hierarchy():
     """
     Build the sidebar navigation structure.
-    Every item has default 'icon' (str) and 'children' (list) to prevent template errors.
+    Every single dictionary GUARANTEES 'icon' and 'children' keys exist.
     """
     return [
         {
@@ -54,7 +55,7 @@ def _build_nav_hierarchy():
             "children": [
                 {
                     "title": "Employees",
-                    "icon": "",
+                    "icon": "users",
                     "url": "Accounts:EmployeeList",
                     "app": "accounts",
                     "children": [],
@@ -69,21 +70,21 @@ def _build_nav_hierarchy():
             "children": [
                 {
                     "title": "Departments",
-                    "icon": "",
+                    "icon": "building-2",
                     "url": "Security:DepartmentList",
                     "app": "security",
                     "children": [],
                 },
                 {
                     "title": "Roles",
-                    "icon": "",
+                    "icon": "briefcase",
                     "url": "Security:RoleList",
                     "app": "security",
                     "children": [],
                 },
                 {
                     "title": "Policies",
-                    "icon": "",
+                    "icon": "key-round",
                     "url": "Security:PolicyList",
                     "app": "security",
                     "children": [],
@@ -98,21 +99,21 @@ def _build_nav_hierarchy():
             "children": [
                 {
                     "title": "Products",
-                    "icon": "",
+                    "icon": "boxes",
                     "url": "Inventory:ProductList",
                     "app": "inventory",
                     "children": [],
                 },
                 {
                     "title": "Categories",
-                    "icon": "",
+                    "icon": "tags",
                     "url": "Inventory:CategoryList",
                     "app": "inventory",
                     "children": [],
                 },
                 {
                     "title": "Stock Adjustments",
-                    "icon": "",
+                    "icon": "arrow-left-right",
                     "url": "Inventory:AdjustmentList",
                     "app": "inventory",
                     "children": [],
@@ -127,14 +128,14 @@ def _build_nav_hierarchy():
             "children": [
                 {
                     "title": "Customers",
-                    "icon": "",
+                    "icon": "users",
                     "url": "Sales:CustomerList",
                     "app": "sales",
                     "children": [],
                 },
                 {
                     "title": "Sales Orders",
-                    "icon": "",
+                    "icon": "clipboard-list",
                     "url": "Sales:OrderList",
                     "app": "sales",
                     "children": [],
@@ -149,14 +150,14 @@ def _build_nav_hierarchy():
             "children": [
                 {
                     "title": "Suppliers",
-                    "icon": "",
+                    "icon": "user-cog",
                     "url": "Purchasing:SupplierList",
                     "app": "purchasing",
                     "children": [],
                 },
                 {
                     "title": "Purchase Orders",
-                    "icon": "",
+                    "icon": "clipboard-list",
                     "url": "Purchasing:OrderList",
                     "app": "purchasing",
                     "children": [],
