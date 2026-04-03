@@ -11,9 +11,12 @@ Security:
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 from django.shortcuts import redirect, render
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_http_methods
+
+from accounts.models import Employee
 
 
 @require_http_methods(["GET", "POST"])
@@ -89,7 +92,17 @@ def logout_view(request):
 def dashboard_view(request):
     """
     Simple dashboard view - requires authentication.
-
-    Template: accounts/pages/dashboard.html (centralized in templates/)
     """
     return render(request, "accounts/pages/dashboard.html")
+
+
+@login_required
+def employee_list(request):
+    """Employee list view with search."""
+    query = request.GET.get("q", "").strip()
+    employees = Employee.objects.all().order_by("email")
+    if query:
+        employees = employees.filter(
+            Q(email__icontains=query) | Q(first_name__icontains=query) | Q(last_name__icontains=query)
+        )
+    return render(request, "accounts/pages/employee_list.html", {"employees": employees, "query": query})

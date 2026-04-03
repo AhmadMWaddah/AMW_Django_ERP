@@ -265,6 +265,7 @@ a.card--clickable {
     text-decoration: none;
     color: inherit;
     transition: box-shadow var(--transition-fast), border-color var(--transition-fast);
+    display: block;
 }
 
 a.card--clickable:hover {
@@ -272,6 +273,31 @@ a.card--clickable:hover {
     border-color: var(--border-color-strong);
     text-decoration: none;
     color: inherit;
+}
+
+/* Dashboard Modules Grid - 2 columns */
+.dashboard-modules {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-md);
+    margin-top: var(--space-md);
+}
+
+.dashboard-modules__icon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-surface-muted);
+    border-radius: var(--radius-md);
+    flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+    .dashboard-modules {
+        grid-template-columns: 1fr;
+    }
 }
 
 .card__header {
@@ -517,11 +543,6 @@ a.card--clickable:hover {
 
     .card {
         padding: var(--space-md);
-    }
-
-    /* Stack module cards to 1 column on mobile */
-    .u-grid[style*="grid-template-columns: repeat(2"] {
-        grid-template-columns: 1fr !important;
     }
 
     .topbar__user-info {

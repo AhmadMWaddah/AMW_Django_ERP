@@ -1,0 +1,37 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}Stock Adjustments - {{ app_name }}{% endblock %}
+{% block topbar_title %}Inventory - Stock Adjustments{% endblock %}
+
+{% block dashboard_content %}
+<div class="u-flex u-gap-sm u-mb-md">
+    <a href="{% url 'Inventory:AdjustmentList' %}" class="btn {% if not status_filter %}btn--primary{% else %}btn--outline{% endif %}">All</a>
+    <a href="?status=PENDING" class="btn {% if status_filter == 'PENDING' %}btn--primary{% else %}btn--outline{% endif %}">Pending</a>
+    <a href="?status=APPROVED" class="btn {% if status_filter == 'APPROVED' %}btn--primary{% else %}btn--outline{% endif %}">Approved</a>
+    <a href="?status=EXECUTED" class="btn {% if status_filter == 'EXECUTED' %}btn--primary{% else %}btn--outline{% endif %}">Executed</a>
+    <a href="?status=REJECTED" class="btn {% if status_filter == 'REJECTED' %}btn--primary{% else %}btn--outline{% endif %}">Rejected</a>
+</div>
+<div class="card">
+    <div class="card__header"><h2 class="card__title">Stock Adjustments ({{ adjustments.count }})</h2></div>
+    <div class="card__body" style="overflow-x: auto;">
+        <table class="data-table">
+            <thead><tr><th>Product</th><th>Old Qty</th><th>New Qty</th><th>Reason</th><th>Status</th><th>Requested By</th><th>Date</th></tr></thead>
+            <tbody>
+                {% for adj in adjustments %}
+                <tr>
+                    <td><strong>{{ adj.product.sku }}</strong></td>
+                    <td class="u-text-right u-text-xs">{{ adj.old_quantity }}</td>
+                    <td class="u-text-right u-text-xs">{{ adj.new_quantity }}</td>
+                    <td class="u-text-xs">{{ adj.get_reason_display }}</td>
+                    <td><span class="badge {% if adj.status == 'APPROVED' %}badge--success{% elif adj.status == 'REJECTED' %}badge--danger{% elif adj.status == 'EXECUTED' %}badge--info{% else %}badge--warning{% endif %}">{{ adj.get_status_display }}</span></td>
+                    <td class="u-text-xs">{{ adj.requested_by.get_full_name|default:adj.requested_by.email }}</td>
+                    <td class="u-text-xs">{{ adj.requested_at|date:"Y-m-d" }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="7" class="u-text-center u-py-lg u-text-muted">No adjustments found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

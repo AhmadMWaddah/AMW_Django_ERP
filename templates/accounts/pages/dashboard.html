@@ -28,22 +28,22 @@
     </div>
 </div>
 
-{# Module Quick Links - 2 per row, clickable cards #}
-<div class="u-grid" style="grid-template-columns: repeat(2, 1fr); gap: var(--space-md);">
+{# Module Quick Links - 4 cards, 2 per row #}
+<div class="dashboard-modules">
     <a href="{% url 'Inventory:ProductList' %}" class="card card--clickable">
         <div class="card__body u-flex u-items-center u-gap-md">
-            <div class="u-flex u-items-center u-justify-center" style="width: 48px; height: 48px; background-color: var(--color-surface-muted); border-radius: var(--radius-md); flex-shrink: 0;">
+            <div class="dashboard-modules__icon">
                 {% include "_snipps_/_icon_.html" with icon="package" class="" only %}
             </div>
             <div>
                 <h3 class="u-text-sm u-font-semibold">Inventory</h3>
-                <p class="u-text-xs u-text-muted">Products, stock, and adjustments</p>
+                <p class="u-text-xs u-text-muted">Products, categories, and stock management</p>
             </div>
         </div>
     </a>
     <a href="{% url 'Sales:CustomerList' %}" class="card card--clickable">
         <div class="card__body u-flex u-items-center u-gap-md">
-            <div class="u-flex u-items-center u-justify-center" style="width: 48px; height: 48px; background-color: var(--color-surface-muted); border-radius: var(--radius-md); flex-shrink: 0;">
+            <div class="dashboard-modules__icon">
                 {% include "_snipps_/_icon_.html" with icon="shopping-cart" class="" only %}
             </div>
             <div>
@@ -54,12 +54,23 @@
     </a>
     <a href="{% url 'Purchasing:SupplierList' %}" class="card card--clickable">
         <div class="card__body u-flex u-items-center u-gap-md">
-            <div class="u-flex u-items-center u-justify-center" style="width: 48px; height: 48px; background-color: var(--color-surface-muted); border-radius: var(--radius-md); flex-shrink: 0;">
+            <div class="dashboard-modules__icon">
                 {% include "_snipps_/_icon_.html" with icon="truck" class="" only %}
             </div>
             <div>
                 <h3 class="u-text-sm u-font-semibold">Purchasing</h3>
                 <p class="u-text-xs u-text-muted">Suppliers, purchase orders, and receiving</p>
+            </div>
+        </div>
+    </a>
+    <a href="{% url 'Security:DepartmentList' %}" class="card card--clickable">
+        <div class="card__body u-flex u-items-center u-gap-md">
+            <div class="dashboard-modules__icon">
+                {% include "_snipps_/_icon_.html" with icon="shield-check" class="" only %}
+            </div>
+            <div>
+                <h3 class="u-text-sm u-font-semibold">IAM & Security</h3>
+                <p class="u-text-xs u-text-muted">Departments, roles, and policies</p>
             </div>
         </div>
     </a>

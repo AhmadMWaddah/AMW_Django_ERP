@@ -22,6 +22,7 @@ urlpatterns = [
     path("inventory/", include("inventory.urls")),
     path("sales/", include("sales.urls")),
     path("purchasing/", include("purchasing.urls")),
+    path("security/", include("security.urls")),
     # Root redirect to dashboard
     path("", RedirectView.as_view(url="/accounts/dashboard/", permanent=False)),
     # Health Check (for monitoring)

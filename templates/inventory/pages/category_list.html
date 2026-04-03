@@ -1,0 +1,32 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}Categories - {{ app_name }}{% endblock %}
+{% block topbar_title %}Inventory - Categories{% endblock %}
+
+{% block dashboard_content %}
+<form method="get" class="u-flex u-gap-sm u-mb-md">
+    <input type="text" name="q" value="{{ query }}" placeholder="Search by name or code..." class="form-group__input" style="max-width: 400px;">
+    <button type="submit" class="btn btn--primary">Search</button>
+    {% if query %}<a href="{% url 'Inventory:CategoryList' %}" class="btn btn--outline">Clear</a>{% endif %}
+</form>
+<div class="card">
+    <div class="card__header"><h2 class="card__title">Categories ({{ categories.count }})</h2></div>
+    <div class="card__body" style="overflow-x: auto;">
+        <table class="data-table">
+            <thead><tr><th>Name</th><th>Code</th><th>Parent</th><th>Products</th></tr></thead>
+            <tbody>
+                {% for cat in categories %}
+                <tr>
+                    <td><strong>{{ cat.name }}</strong></td>
+                    <td class="u-text-xs">{{ cat.code }}</td>
+                    <td class="u-text-xs">{{ cat.parent.name|default:"-" }}</td>
+                    <td class="u-text-xs">{{ cat.products.count }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4" class="u-text-center u-py-lg u-text-muted">No categories found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

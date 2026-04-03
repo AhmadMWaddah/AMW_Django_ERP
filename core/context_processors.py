@@ -1,19 +1,11 @@
 """
 -- AMW Django ERP - Core Context Processors --
-
-Injects global app state into every template context:
-- app_name: Current application name
-- nav_hierarchy: Navigation structure for sidebar rendering
-- active_app: Currently active app/module for highlighting
 """
 
 
 def ui_context(request):
     """
     Provides global UI context for navigation and app identification.
-
-    Returns:
-        dict: app_name, nav_hierarchy, active_app
     """
     path = request.path
     active_app = _resolve_active_app(path)
@@ -36,13 +28,8 @@ def _resolve_active_app(path):
 def _build_nav_hierarchy():
     """
     Build the sidebar navigation structure.
-
-    Returns a list of dicts with keys:
-    - title: Display name
-    - icon: Lucide icon name
-    - url: URL name (namespaced)
-    - app: App identifier (matches _resolve_active_app output)
-    - children: Optional sub-items
+    Admin-only links (admin:*) are excluded.
+    All other links point to custom UI pages.
     """
     return [
         {
@@ -52,10 +39,28 @@ def _build_nav_hierarchy():
             "app": "accounts",
         },
         {
+            "title": "Identity",
+            "icon": "users",
+            "children": [
+                {"title": "Employees", "url": "Accounts:EmployeeList", "app": "accounts"},
+            ],
+        },
+        {
+            "title": "IAM",
+            "icon": "shield-check",
+            "children": [
+                {"title": "Departments", "url": "Security:DepartmentList", "app": "security"},
+                {"title": "Roles", "url": "Security:RoleList", "app": "security"},
+                {"title": "Policies", "url": "Security:PolicyList", "app": "security"},
+            ],
+        },
+        {
             "title": "Inventory",
             "icon": "package",
             "children": [
                 {"title": "Products", "url": "Inventory:ProductList", "app": "inventory"},
+                {"title": "Categories", "url": "Inventory:CategoryList", "app": "inventory"},
+                {"title": "Stock Adjustments", "url": "Inventory:AdjustmentList", "app": "inventory"},
             ],
         },
         {
@@ -72,13 +77,6 @@ def _build_nav_hierarchy():
             "children": [
                 {"title": "Suppliers", "url": "Purchasing:SupplierList", "app": "purchasing"},
                 {"title": "Purchase Orders", "url": "Purchasing:OrderList", "app": "purchasing"},
-            ],
-        },
-        {
-            "title": "Administration",
-            "icon": "settings",
-            "children": [
-                {"title": "Admin Panel", "url": "admin:index", "app": "admin"},
             ],
         },
     ]
