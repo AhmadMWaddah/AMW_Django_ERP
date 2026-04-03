@@ -1,6 +1,7 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,22 +9,9 @@
     <link rel="stylesheet" href="{% static 'styles/_variables.css' %}">
     <link rel="stylesheet" href="{% static 'styles/_base.css' %}">
     <link rel="stylesheet" href="{% static 'styles/_utilities.css' %}">
-    <style>
-        .error-page {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: var(--color-surface-muted);
-        }
-        .error-code {
-            font-size: var(--font-size-4xl);
-            font-weight: var(--font-weight-bold);
-            color: var(--color-danger);
-            margin: 0;
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'styles/_error.css' %}">
 </head>
+
 <body>
     <div class="error-page">
         <div class="card u-text-center" style="max-width: 500px;">
@@ -44,4 +32,5 @@
         </div>
     </div>
 </body>
+
 </html>

@@ -1,6 +1,7 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,12 +18,12 @@
     {# App-specific styles (optional per page) #}
     {% block extra_styles %}{% endblock %}
 </head>
+
 <body class="{% block body_class %}{% endblock %}">
 
     {# Global Toast Container #}
-    <div id="toast-container" class="toast-container"
-         hx-on::htmx:showToast="window.showToast(event)"
-         aria-live="polite" aria-atomic="true"></div>
+    <div id="toast-container" class="toast-container" hx-on::htmx:showToast="window.showToast(event)" aria-live="polite"
+        aria-atomic="true"></div>
 
     {# Page Content #}
     {% block page %}{% endblock %}
@@ -31,56 +32,10 @@
     <script src="{% static 'scripts/htmx.min.js' %}"></script>
 
     {# Global Toast & Modal Script #}
-    <script>
-        // Toast notification system
-        window.showToast = function(event) {
-            const container = document.getElementById("toast-container");
-            const data = event.detail.value;
-            const message = data.message || data;
-            const type = data.type || "info";
-            const duration = data.duration || 4000;
-
-            const toast = document.createElement("div");
-            toast.className = "toast toast--" + type;
-            toast.setAttribute("role", "alert");
-            toast.innerHTML = "<span>" + message + "</span>";
-
-            container.appendChild(toast);
-
-            setTimeout(function() {
-                toast.style.animation = "toast-out 0.3s ease forwards";
-                setTimeout(function() { toast.remove(); }, 300);
-            }, duration);
-        };
-
-        // Modal open/close helpers
-        window.openModal = function(modalId) {
-            var modal = document.getElementById(modalId);
-            if (modal) { modal.style.display = "flex"; }
-        };
-
-        window.closeModal = function(modalId) {
-            var modal = document.getElementById(modalId);
-            if (modal) { modal.remove(); }
-        };
-
-        // Close modal on overlay click
-        document.addEventListener("click", function(e) {
-            if (e.target.classList.contains("modal-overlay")) {
-                e.target.remove();
-            }
-        });
-
-        // Close modal on Escape key
-        document.addEventListener("keydown", function(e) {
-            if (e.key === "Escape") {
-                var overlay = document.querySelector(".modal-overlay");
-                if (overlay) { overlay.remove(); }
-            }
-        });
-    </script>
+    <script src="{% static 'scripts/toast_modal.min.js' %}"></script>
 
     {# App-specific scripts #}
     {% block scripts %}{% endblock %}
 </body>
+
 </html>
