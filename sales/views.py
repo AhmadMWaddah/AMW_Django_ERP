@@ -4,7 +4,6 @@
 Phase 7: Customer list, order dashboard, HTMX confirm order with Toast.
 """
 
-
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.http import JsonResponse
@@ -23,9 +22,7 @@ def customer_list(request):
 
     if query:
         customers = customers.filter(
-            Q(name__icontains=query)
-            | Q(email__icontains=query)
-            | Q(category__name__icontains=query)
+            Q(name__icontains=query) | Q(email__icontains=query) | Q(category__name__icontains=query)
         )
 
     return render(
@@ -43,9 +40,7 @@ def customer_detail(request, customer_id):
         pk=customer_id,
     )
     orders = (
-        SalesOrder.objects.filter(customer=customer)
-        .prefetch_related("items", "items__product")
-        .order_by("-created_at")
+        SalesOrder.objects.filter(customer=customer).prefetch_related("items", "items__product").order_by("-created_at")
     )
 
     return render(
@@ -79,8 +74,7 @@ def order_list(request):
 def order_detail(request, order_id):
     """Order detail with line items and pricing snapshots."""
     order = get_object_or_404(
-        SalesOrder.objects.select_related("customer", "created_by")
-        .prefetch_related("items", "items__product"),
+        SalesOrder.objects.select_related("customer", "created_by").prefetch_related("items", "items__product"),
         pk=order_id,
     )
 

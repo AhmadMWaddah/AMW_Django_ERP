@@ -22,9 +22,7 @@ def product_list(request):
 
     if query:
         products = products.filter(
-            Q(sku__icontains=query)
-            | Q(name__icontains=query)
-            | Q(category__name__icontains=query)
+            Q(sku__icontains=query) | Q(name__icontains=query) | Q(category__name__icontains=query)
         )
 
     return render(
@@ -42,9 +40,7 @@ def product_detail(request, product_id):
         pk=product_id,
     )
     transactions = (
-        StockTransaction.objects.filter(product=product)
-        .select_related("created_by")
-        .order_by("-created_at")[:50]
+        StockTransaction.objects.filter(product=product).select_related("created_by").order_by("-created_at")[:50]
     )
 
     return render(
@@ -58,11 +54,7 @@ def product_detail(request, product_id):
 def stock_ledger(request, product_id):
     """Stock movement history page (ledger only)."""
     product = get_object_or_404(Product.objects.select_related("category"), pk=product_id)
-    transactions = (
-        StockTransaction.objects.filter(product=product)
-        .select_related("created_by")
-        .order_by("-created_at")
-    )
+    transactions = StockTransaction.objects.filter(product=product).select_related("created_by").order_by("-created_at")
 
     return render(
         request,

@@ -24,9 +24,7 @@ def supplier_list(request):
 
     if query:
         suppliers = suppliers.filter(
-            Q(name__icontains=query)
-            | Q(email__icontains=query)
-            | Q(category__name__icontains=query)
+            Q(name__icontains=query) | Q(email__icontains=query) | Q(category__name__icontains=query)
         )
 
     return render(
@@ -81,8 +79,7 @@ def order_list(request):
 def order_detail(request, order_id):
     """PO detail with line items and receiving status."""
     order = get_object_or_404(
-        PurchaseOrder.objects.select_related("supplier", "created_by")
-        .prefetch_related("items", "items__product"),
+        PurchaseOrder.objects.select_related("supplier", "created_by").prefetch_related("items", "items__product"),
         pk=order_id,
     )
 
@@ -107,8 +104,7 @@ def receive_stock_htmx(request, order_id):
     try:
         items_data = json.loads(items_json)
         items_to_receive = [
-            {"item_id": item["item_id"], "quantity": Decimal(str(item["quantity"]))}
-            for item in items_data
+            {"item_id": item["item_id"], "quantity": Decimal(str(item["quantity"]))} for item in items_data
         ]
     except (json.JSONDecodeError, KeyError, ValueError) as e:
         return JsonResponse(
