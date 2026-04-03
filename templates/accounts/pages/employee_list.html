@@ -5,7 +5,7 @@
 
 {% block dashboard_content %}
 <form method="get" class="u-flex u-gap-sm u-mb-md">
-    <input type="text" name="q" value="{{ query }}" placeholder="Search by name or email..." class="form-group__input" style="max-width: 400px;">
+    <input type="text" name="q" value="{{ query }}" placeholder="Search by name or email..." class="form-group__input" style="max-width: 600px;">
     <button type="submit" class="btn btn--primary">Search</button>
     {% if query %}<a href="{% url 'Accounts:EmployeeList' %}" class="btn btn--outline">Clear</a>{% endif %}
 </form>

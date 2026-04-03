@@ -3,10 +3,7 @@
     <label for="{{ field_id }}" class="form-group__label">
         {{ label }}{% if required %} *{% endif %}
     </label>
-    <input type="{{ input_type }}" id="{{ field_id }}" name="{{ name }}"
-        class="form-group__input{% if errors %} form-group__input--error{% endif %}" placeholder="{{ placeholder }}" {%
-        if value is not None %}value="{{ value }}" {% endif %} {% if autocomplete %}autocomplete="{{ autocomplete }}" {%
-        endif %} {% if required %}required{% endif %} {% if autofocus %}autofocus{% endif %}>
+    <input type="{{ input_type }}" id="{{ field_id }}" name="{{ name }}" class="form-group__input{% if errors %} form-group__input--error{% endif %}" placeholder="{{ placeholder }}" {% if value is not None %}value="{{ value }}"{% endif %}{% if autocomplete %} autocomplete="{{ autocomplete }}"{% endif %}{% if required %} required{% endif %}{% if autofocus %} autofocus{% endif %}>
     {% if errors %}
     {% include "_snipps_/_field_error_.html" with errors=errors only %}
     {% endif %}
