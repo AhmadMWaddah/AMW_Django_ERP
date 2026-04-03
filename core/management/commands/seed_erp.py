@@ -1,7 +1,7 @@
 """
 AMW Django ERP - Seed ERP Data Command
 
-Generates idempotent, persona-based dummy data for Phases 1-5.
+Generates idempotent, persona-based dummy data aligned with architecture.
 
 Usage:
     python manage.py seed_erp              # Safe mode (aborts if DEBUG=False)
@@ -11,6 +11,10 @@ Constitution Compliance:
 - Double quotes for all Python strings (Section 11.5)
 - Idempotent operations (safe for repeated execution)
 - Safety check for production environments
+
+Departments: Executive, Logistics, Commercial, Finance
+Roles: Owner (all roles), Warehouse Lead, Sales Manager, Auditor
+Policies: inventory.*, purchasing.*, sales.*, customer.*, audit.*, inventory:audit
 """
 
 from decimal import Decimal
@@ -31,11 +35,12 @@ class Command(BaseCommand):
     Management command to seed ERP system with dummy data.
 
     Creates:
-    - Employee personas (Owner, Inventory Manager, Inventory Clerk, Sales Rep)
-    - Department hierarchy (Executive, Logistics, Commercial)
-    - Policies (inventory:*, sales:*)
-    - Roles (Inventory Lead, Clerk, Sales)
-    - Product catalog foundation (Phase 4 preparation)
+    - 4 Departments (Executive, Logistics, Commercial, Finance)
+    - 4 Employee personas (Owner with ALL roles, Warehouse Lead, Sales Manager, Auditor)
+    - Policies scoped to built modules only (no HR/Accounting)
+    - Roles with proper policy assignments
+    - Product catalog, initial stock, customers, sales orders
+    - Supplier catalog, purchase orders
     """
 
     help = "Seed ERP system with dummy data for development and testing"
@@ -50,10 +55,10 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         """Main command entry point."""
-        # Safety check: abort if not in DEBUG mode unless --force is provided
         if not settings.DEBUG and not options["force"]:
             raise CommandError(
-                "Cannot seed data in production mode (DEBUG=False). " "Use --force to override (NOT RECOMMENDED)."
+                "Cannot seed data in production mode (DEBUG=False). "
+                "Use --force to override (NOT RECOMMENDED)."
             )
 
         self.stdout.write(self.style.SUCCESS("=" * 60))
@@ -64,7 +69,7 @@ class Command(BaseCommand):
         if options["force"]:
             self.stdout.write(
                 self.style.WARNING(
-                    "⚠️  WARNING: Running in production mode! "
+                    "WARNING: Running in production mode! "
                     "This will create test data in your production database."
                 )
             )
@@ -80,8 +85,6 @@ class Command(BaseCommand):
             # Phase 4: Product Catalog Foundation
             self._seed_categories()
             self._seed_products()
-
-            # Phase 4: Initial Stock Levels
             self._seed_initial_stock()
 
             # Phase 5: Sales & CRM
@@ -96,20 +99,23 @@ class Command(BaseCommand):
 
         self.stdout.write()
         self.stdout.write(self.style.SUCCESS("=" * 60))
-        self.stdout.write(self.style.SUCCESS("✅ Seed complete!"))
+        self.stdout.write(self.style.SUCCESS("Seed complete!"))
         self.stdout.write(self.style.SUCCESS("=" * 60))
         self.stdout.write()
         self.stdout.write(self.style.SUCCESS("See CREDENTIALS.md file for login credentials and test data."))
         self.stdout.write()
 
+    # -- IAM Hierarchy ---------------------------------------------------
+
     def _seed_departments(self):
-        """Create department hierarchy."""
-        self.stdout.write("📁 Seeding Departments...")
+        """Create exactly four departments."""
+        self.stdout.write("Seeding Departments...")
 
         departments_data = [
             {"name": "Executive", "description": "Executive management and ownership"},
             {"name": "Logistics", "description": "Warehouse, inventory, and shipping"},
             {"name": "Commercial", "description": "Sales and customer relations"},
+            {"name": "Finance", "description": "Financial oversight and auditing"},
         ]
 
         for dept_data in departments_data:
@@ -118,15 +124,15 @@ class Command(BaseCommand):
                 defaults=dept_data,
             )
             if created:
-                self.stdout.write(self.style.SUCCESS(f"  ✅ Created: {dept.name}"))
+                self.stdout.write(self.style.SUCCESS(f"  Created: {dept.name}"))
             else:
-                self.stdout.write(self.style.WARNING(f"  ⚠️  Exists: {dept.name}"))
+                self.stdout.write(self.style.WARNING(f"  Exists: {dept.name}"))
 
         self.stdout.write()
 
     def _seed_policies(self):
-        """Create policies for all modules."""
-        self.stdout.write("🔐 Seeding Policies...")
+        """Create policies scoped to built modules only."""
+        self.stdout.write("Seeding Policies...")
 
         policies_data = [
             # Inventory policies
@@ -151,6 +157,21 @@ class Command(BaseCommand):
                 "effect": "allow",
                 "description": "Perform inventory audits and reconciliations",
             },
+            # Purchasing policies
+            {
+                "name": "Purchasing: View",
+                "resource": "purchasing.*",
+                "action": "view",
+                "effect": "allow",
+                "description": "View purchasing data",
+            },
+            {
+                "name": "Purchasing: Manage",
+                "resource": "purchasing.*",
+                "action": "manage",
+                "effect": "allow",
+                "description": "Create and manage purchase orders",
+            },
             # Sales policies
             {
                 "name": "Sales: View",
@@ -160,13 +181,43 @@ class Command(BaseCommand):
                 "description": "View sales orders and customer data",
             },
             {
-                "name": "Sales: Create",
+                "name": "Sales: Manage",
                 "resource": "sales.*",
-                "action": "create",
+                "action": "manage",
                 "effect": "allow",
-                "description": "Create new sales orders",
+                "description": "Create and manage sales orders",
             },
-            # Executive policies (full access)
+            # Customer policies
+            {
+                "name": "Customer: View",
+                "resource": "customer.*",
+                "action": "view",
+                "effect": "allow",
+                "description": "View customer records",
+            },
+            {
+                "name": "Customer: Manage",
+                "resource": "customer.*",
+                "action": "manage",
+                "effect": "allow",
+                "description": "Create and manage customer records",
+            },
+            # Audit policies
+            {
+                "name": "Audit: View",
+                "resource": "audit.*",
+                "action": "view",
+                "effect": "allow",
+                "description": "View audit logs",
+            },
+            {
+                "name": "Audit: Manage",
+                "resource": "audit.*",
+                "action": "manage",
+                "effect": "allow",
+                "description": "Manage audit records",
+            },
+            # Executive wildcard (full access)
             {
                 "name": "Executive: Full Access",
                 "resource": "*",
@@ -187,53 +238,64 @@ class Command(BaseCommand):
                 },
             )
             if created:
-                self.stdout.write(self.style.SUCCESS(f"  ✅ Created: {policy.name}"))
+                self.stdout.write(self.style.SUCCESS(f"  Created: {policy.name}"))
             else:
-                self.stdout.write(self.style.WARNING(f"  ⚠️  Exists: {policy.name}"))
+                self.stdout.write(self.style.WARNING(f"  Exists: {policy.name}"))
 
         self.stdout.write()
 
     def _seed_roles(self):
-        """Create roles and assign policies."""
-        self.stdout.write("🎭 Seeding Roles...")
+        """Create roles with proper policy assignments."""
+        self.stdout.write("Seeding Roles...")
 
-        # Get departments
+        # Departments
         executive_dept = Department.objects.get(name="Executive")
         logistics_dept = Department.objects.get(name="Logistics")
         commercial_dept = Department.objects.get(name="Commercial")
+        finance_dept = Department.objects.get(name="Finance")
 
-        # Get policies
-        inventory_view = Policy.objects.get(name="Inventory: View")
-        inventory_adjust = Policy.objects.get(name="Inventory: Adjust")
-        inventory_audit = Policy.objects.get(name="Inventory: Audit")
+        # Policies
+        inv_view = Policy.objects.get(name="Inventory: View")
+        inv_adjust = Policy.objects.get(name="Inventory: Adjust")
+        inv_audit = Policy.objects.get(name="Inventory: Audit")
+        pur_view = Policy.objects.get(name="Purchasing: View")
+        pur_manage = Policy.objects.get(name="Purchasing: Manage")
         sales_view = Policy.objects.get(name="Sales: View")
-        sales_create = Policy.objects.get(name="Sales: Create")
-        executive_full = Policy.objects.get(name="Executive: Full Access")
+        sales_manage = Policy.objects.get(name="Sales: Manage")
+        cust_view = Policy.objects.get(name="Customer: View")
+        cust_manage = Policy.objects.get(name="Customer: Manage")
+        audit_view = Policy.objects.get(name="Audit: View")
+        audit_manage = Policy.objects.get(name="Audit: Manage")
+        exec_full = Policy.objects.get(name="Executive: Full Access")
 
         roles_data = [
+            # Owner gets ALL roles (assigned separately in _seed_employees)
             {
                 "name": "Owner",
                 "department": executive_dept,
-                "policies": [executive_full],
+                "policies": [exec_full],
                 "description": "Full system access",
             },
+            # Warehouse Lead: inventory.* + purchasing.*
             {
-                "name": "Inventory Lead",
+                "name": "Warehouse Lead",
                 "department": logistics_dept,
-                "policies": [inventory_view, inventory_adjust, inventory_audit],
-                "description": "Full inventory management access",
+                "policies": [inv_view, inv_adjust, inv_audit, pur_view, pur_manage],
+                "description": "Full inventory and purchasing access",
             },
+            # Sales Manager: sales.* + customer.*
             {
-                "name": "Clerk",
-                "department": logistics_dept,
-                "policies": [inventory_view, inventory_adjust],
-                "description": "View and adjust stock (no audit)",
-            },
-            {
-                "name": "Sales",
+                "name": "Sales Manager",
                 "department": commercial_dept,
-                "policies": [sales_view, sales_create],
-                "description": "View and create sales orders",
+                "policies": [sales_view, sales_manage, cust_view, cust_manage],
+                "description": "Sales and customer management",
+            },
+            # Auditor: audit.* + inventory:audit
+            {
+                "name": "Auditor",
+                "department": finance_dept,
+                "policies": [audit_view, audit_manage, inv_audit],
+                "description": "Audit oversight and inventory reconciliation",
             },
         ]
 
@@ -245,59 +307,62 @@ class Command(BaseCommand):
             )
             if created:
                 role.policies.set(role_data["policies"])
-                self.stdout.write(self.style.SUCCESS(f"  ✅ Created: {role.name} ({role.department.name})"))
+                self.stdout.write(self.style.SUCCESS(f"  Created: {role.name} ({role.department.name})"))
             else:
                 role.policies.set(role_data["policies"])
-                self.stdout.write(self.style.WARNING(f"  ⚠️  Exists: {role.name} ({role.department.name})"))
+                self.stdout.write(self.style.WARNING(f"  Exists: {role.name} ({role.department.name})"))
 
         self.stdout.write()
 
     def _seed_employees(self):
-        """Create employee personas with roles."""
-        self.stdout.write("👥 Seeding Employees...")
+        """Create employee personas. Owner gets ALL roles."""
+        self.stdout.write("Seeding Employees...")
 
-        # Get roles
+        # All roles
         owner_role = Role.objects.get(name="Owner", department__name="Executive")
-        inventory_lead_role = Role.objects.get(name="Inventory Lead", department__name="Logistics")
-        clerk_role = Role.objects.get(name="Clerk", department__name="Logistics")
-        sales_role = Role.objects.get(name="Sales", department__name="Commercial")
+        warehouse_role = Role.objects.get(name="Warehouse Lead", department__name="Logistics")
+        sales_role = Role.objects.get(name="Sales Manager", department__name="Commercial")
+        auditor_role = Role.objects.get(name="Auditor", department__name="Finance")
+
+        # Owner gets ALL roles
+        owner_all_roles = [owner_role, warehouse_role, sales_role, auditor_role]
 
         employees_data = [
             {
                 "email": "amw@amw.io",
                 "first_name": "Ahmad",
-                "last_name": "Manager",
+                "last_name": "Waddah",
                 "is_staff": True,
                 "is_superuser": True,
-                "roles": [owner_role],
-                "description": "The Owner - Superuser with full access",
+                "roles": owner_all_roles,
+                "password": "12",
             },
             {
-                "email": "stock.manager@amw.io",
-                "first_name": "Stock",
-                "last_name": "Manager",
+                "email": "warehouse.lead@amw.io",
+                "first_name": "Warehouse",
+                "last_name": "Lead",
                 "is_staff": False,
                 "is_superuser": False,
-                "roles": [inventory_lead_role],
-                "description": "Inventory Manager - Full inventory access",
+                "roles": [warehouse_role],
+                "password": "password123",
             },
             {
-                "email": "stock.clerk@amw.io",
-                "first_name": "Stock",
-                "last_name": "Clerk",
-                "is_staff": False,
-                "is_superuser": False,
-                "roles": [clerk_role],
-                "description": "Inventory Clerk - View and adjust only",
-            },
-            {
-                "email": "sales.rep@amw.io",
+                "email": "sales.manager@amw.io",
                 "first_name": "Sales",
-                "last_name": "Representative",
+                "last_name": "Manager",
                 "is_staff": False,
                 "is_superuser": False,
                 "roles": [sales_role],
-                "description": "Sales Representative - Sales access",
+                "password": "password123",
+            },
+            {
+                "email": "auditor@amw.io",
+                "first_name": "Finance",
+                "last_name": "Auditor",
+                "is_staff": False,
+                "is_superuser": False,
+                "roles": [auditor_role],
+                "password": "password123",
             },
         ]
 
@@ -311,35 +376,26 @@ class Command(BaseCommand):
                     "is_superuser": emp_data["is_superuser"],
                 },
             )
+            employee.roles.set(emp_data["roles"])
+            employee.set_password(emp_data["password"])
+            employee.save()
+
             if created:
-                employee.roles.set(emp_data["roles"])
-                # Set password: "12" for Owner, "password123" for others
-                if emp_data["email"] == "amw@amw.io":
-                    employee.set_password("12")
-                else:
-                    employee.set_password("password123")
-                employee.save()
-                self.stdout.write(self.style.SUCCESS(f"  ✅ Created: {employee.get_full_name()} ({employee.email})"))
+                self.stdout.write(
+                    self.style.SUCCESS(f"  Created: {employee.get_full_name()} ({employee.email})")
+                )
             else:
-                # Update roles even if exists
-                employee.roles.set(emp_data["roles"])
-                # Set password: "12" for Owner, "password123" for others
-                if emp_data["email"] == "amw@amw.io":
-                    employee.set_password("12")
-                else:
-                    employee.set_password("password123")
-                employee.save()
-                self.stdout.write(self.style.WARNING(f"  ⚠️  Exists: {employee.get_full_name()} ({employee.email})"))
+                self.stdout.write(
+                    self.style.WARNING(f"  Updated: {employee.get_full_name()} ({employee.email})")
+                )
 
         self.stdout.write()
 
-    def _seed_categories(self):
-        """
-        Seed product categories for Phase 4.
+    # -- Product Catalog -------------------------------------------------
 
-        Creates hierarchical category structure for inventory.
-        """
-        self.stdout.write("📦 Seeding Categories (Phase 4)...")
+    def _seed_categories(self):
+        """Seed product categories."""
+        self.stdout.write("Seeding Categories...")
 
         try:
             from inventory.models import Category
@@ -361,150 +417,70 @@ class Command(BaseCommand):
                     },
                 )
                 if created:
-                    self.stdout.write(self.style.SUCCESS(f"  ✅ Created: {category.name}"))
+                    self.stdout.write(self.style.SUCCESS(f"  Created: {category.name}"))
                 else:
-                    self.stdout.write(self.style.WARNING(f"  ⚠️  Exists: {category.name}"))
+                    self.stdout.write(self.style.WARNING(f"  Exists: {category.name}"))
         except ImportError:
-            self.stdout.write(self.style.WARNING("  ⚠️  Inventory app not found - skipping categories"))
+            self.stdout.write(self.style.WARNING("  Inventory app not found - skipping categories"))
 
         self.stdout.write()
 
     def _seed_products(self):
-        """
-        Seed sample products for Phase 4 WAC engine testing.
-
-        Creates products with SKU pattern: CATEGORY-SUBCATEGORY-MODEL
-        """
-        self.stdout.write("🏷️  Seeding Products (Phase 4)...")
+        """Seed sample products for WAC engine testing."""
+        self.stdout.write("Seeding Products...")
 
         try:
             from inventory.models import Category, Product
 
-            # Get categories
-            maj_category = Category.objects.get(name="Major Appliances")
-            sml_category = Category.objects.get(name="Small Appliances")
-            kit_category = Category.objects.get(name="Kitchenware")
-            cln_category = Category.objects.get(name="Cleaning & Home")
-            elc_category = Category.objects.get(name="Electronics")
+            maj = Category.objects.get(name="Major Appliances")
+            sml = Category.objects.get(name="Small Appliances")
+            kit = Category.objects.get(name="Kitchenware")
+            cln = Category.objects.get(name="Cleaning & Home")
+            elc = Category.objects.get(name="Electronics")
 
             products_data = [
-                # Major Appliances
-                {
-                    "sku": "MAJ-FR-500",
-                    "name": "Frost-Free Refrigerator 500L",
-                    "category": maj_category,
-                    "unit_of_measure": "pcs",
-                    "description": "Energy-efficient frost-free refrigerator with 500L capacity",
-                    "location_note": "Warehouse A, Shelf 1-3",
-                },
-                {
-                    "sku": "MAJ-WM-CR159",
-                    "name": "Washing Machine Crazy 159",
-                    "category": maj_category,
-                    "unit_of_measure": "pcs",
-                    "description": "Front-load washing machine with 159 programs",
-                    "location_note": "Warehouse A, Shelf 4-6",
-                },
-                {
-                    "sku": "MAJ-OV-ELC",
-                    "name": "Electric Convection Oven",
-                    "category": maj_category,
-                    "unit_of_measure": "pcs",
-                    "description": "Countertop electric convection oven with digital controls",
-                    "location_note": "Warehouse A, Shelf 7-9",
-                },
-                {
-                    "sku": "MAJ-AC-12",
-                    "name": "Split AC 12000 BTU",
-                    "category": maj_category,
-                    "unit_of_measure": "pcs",
-                    "description": "Energy-efficient split air conditioner 12000 BTU",
-                    "location_note": "Warehouse A, Shelf 10-12",
-                },
-                # Small Appliances
-                {
-                    "sku": "SML-IR-STM",
-                    "name": "Steam Iron Pro",
-                    "category": sml_category,
-                    "unit_of_measure": "pcs",
-                    "description": "Professional steam iron with ceramic soleplate",
-                    "location_note": "Warehouse B, Shelf A2",
-                },
-                {
-                    "sku": "SML-VL-18",
-                    "name": "Vacuum Cleaner 1800W",
-                    "category": sml_category,
-                    "unit_of_measure": "pcs",
-                    "description": "Bagless vacuum cleaner 1800W with HEPA filter",
-                    "location_note": "Warehouse B, Shelf A3",
-                },
-                {
-                    "sku": "SML-HD-22",
-                    "name": "Hair Dryer 2200W",
-                    "category": sml_category,
-                    "unit_of_measure": "pcs",
-                    "description": "Professional hair dryer 2200W with ionic technology",
-                    "location_note": "Warehouse B, Shelf A4",
-                },
-                # Kitchenware
-                {
-                    "sku": "KIT-BL-HSP",
-                    "name": "High-Speed Blender",
-                    "category": kit_category,
-                    "unit_of_measure": "pcs",
-                    "description": "Professional high-speed blender for smoothies",
-                    "location_note": "Warehouse B, Shelf B1",
-                },
-                {
-                    "sku": "KIT-TS-4S",
-                    "name": "4-Slice Toaster",
-                    "category": kit_category,
-                    "unit_of_measure": "pcs",
-                    "description": "Stainless steel 4-slice toaster with bagel mode",
-                    "location_note": "Warehouse B, Shelf B2",
-                },
-                {
-                    "sku": "KIT-MX-5L",
-                    "name": "Stand Mixer 5L",
-                    "category": kit_category,
-                    "unit_of_measure": "pcs",
-                    "description": "5-liter stand mixer with dough hook and whisk",
-                    "location_note": "Warehouse B, Shelf B3",
-                },
-                # Cleaning & Home
-                {
-                    "sku": "CLN-AF-2L",
-                    "name": "Air Freshener 2L",
-                    "category": cln_category,
-                    "unit_of_measure": "pcs",
-                    "description": "Automatic air freshener refill 2L lavender scent",
-                    "location_note": "Warehouse C, Shelf A1",
-                },
-                {
-                    "sku": "CLN-VC-3L",
-                    "name": "Floor Cleaner 3L",
-                    "category": cln_category,
-                    "unit_of_measure": "pcs",
-                    "description": "Multi-surface floor cleaner concentrate 3L",
-                    "location_note": "Warehouse C, Shelf A2",
-                },
-                # Electronics
-                {
-                    "sku": "ELC-LED-55",
-                    "name": "LED TV 55 inch 4K",
-                    "category": elc_category,
-                    "unit_of_measure": "pcs",
-                    "description": "55-inch 4K Smart LED TV with HDR",
-                    "location_note": "Warehouse D, Shelf A1",
-                },
-                {
-                    "sku": "ELC-SB-21",
-                    "name": "Soundbar 2.1 Channel",
-                    "category": elc_category,
-                    "unit_of_measure": "pcs",
-                    "description": "2.1 channel soundbar with wireless subwoofer",
-                    "location_note": "Warehouse D, Shelf A2",
-                },
+                {"sku": "MAJ-FR-500", "name": "Frost-Free Refrigerator 500L", "category": maj,
+                 "unit_of_measure": "pcs", "description": "Energy-efficient frost-free refrigerator 500L",
+                 "location_note": "Warehouse A, Shelf 1-3"},
+                {"sku": "MAJ-WM-CR159", "name": "Washing Machine Crazy 159", "category": maj,
+                 "unit_of_measure": "pcs", "description": "Front-load washing machine 159 programs",
+                 "location_note": "Warehouse A, Shelf 4-6"},
+                {"sku": "MAJ-OV-ELC", "name": "Electric Convection Oven", "category": maj,
+                 "unit_of_measure": "pcs", "description": "Countertop electric convection oven",
+                 "location_note": "Warehouse A, Shelf 7-9"},
+                {"sku": "MAJ-AC-12", "name": "Split AC 12000 BTU", "category": maj,
+                 "unit_of_measure": "pcs", "description": "Energy-efficient split AC 12000 BTU",
+                 "location_note": "Warehouse A, Shelf 10-12"},
+                {"sku": "SML-IR-STM", "name": "Steam Iron Pro", "category": sml,
+                 "unit_of_measure": "pcs", "description": "Professional steam iron ceramic soleplate",
+                 "location_note": "Warehouse B, Shelf A2"},
+                {"sku": "SML-VL-18", "name": "Vacuum Cleaner 1800W", "category": sml,
+                 "unit_of_measure": "pcs", "description": "Bagless vacuum 1800W HEPA filter",
+                 "location_note": "Warehouse B, Shelf A3"},
+                {"sku": "SML-HD-22", "name": "Hair Dryer 2200W", "category": sml,
+                 "unit_of_measure": "pcs", "description": "Professional hair dryer 2200W ionic",
+                 "location_note": "Warehouse B, Shelf A4"},
+                {"sku": "KIT-BL-HSP", "name": "High-Speed Blender", "category": kit,
+                 "unit_of_measure": "pcs", "description": "Professional high-speed blender",
+                 "location_note": "Warehouse B, Shelf B1"},
+                {"sku": "KIT-TS-4S", "name": "4-Slice Toaster", "category": kit,
+                 "unit_of_measure": "pcs", "description": "Stainless steel 4-slice toaster bagel mode",
+                 "location_note": "Warehouse B, Shelf B2"},
+                {"sku": "KIT-MX-5L", "name": "Stand Mixer 5L", "category": kit,
+                 "unit_of_measure": "pcs", "description": "5-liter stand mixer dough hook whisk",
+                 "location_note": "Warehouse B, Shelf B3"},
+                {"sku": "CLN-AF-2L", "name": "Air Freshener 2L", "category": cln,
+                 "unit_of_measure": "pcs", "description": "Automatic air freshener 2L lavender",
+                 "location_note": "Warehouse C, Shelf A1"},
+                {"sku": "CLN-VC-3L", "name": "Floor Cleaner 3L", "category": cln,
+                 "unit_of_measure": "pcs", "description": "Multi-surface floor cleaner 3L",
+                 "location_note": "Warehouse C, Shelf A2"},
+                {"sku": "ELC-LED-55", "name": "LED TV 55 inch 4K", "category": elc,
+                 "unit_of_measure": "pcs", "description": "55-inch 4K Smart LED TV HDR",
+                 "location_note": "Warehouse D, Shelf A1"},
+                {"sku": "ELC-SB-21", "name": "Soundbar 2.1 Channel", "category": elc,
+                 "unit_of_measure": "pcs", "description": "2.1 channel soundbar wireless subwoofer",
+                 "location_note": "Warehouse D, Shelf A2"},
             ]
 
             for prod_data in products_data:
@@ -519,31 +495,24 @@ class Command(BaseCommand):
                     },
                 )
                 if created:
-                    self.stdout.write(self.style.SUCCESS(f"  ✅ Created: {product.name} ({product.sku})"))
+                    self.stdout.write(self.style.SUCCESS(f"  Created: {product.name} ({product.sku})"))
                 else:
-                    self.stdout.write(self.style.WARNING(f"  ⚠️  Exists: {product.name} ({product.sku})"))
+                    self.stdout.write(self.style.WARNING(f"  Exists: {product.name} ({product.sku})"))
         except ImportError:
-            self.stdout.write(self.style.WARNING("  ⚠️  Inventory app not found - skipping products"))
+            self.stdout.write(self.style.WARNING("  Inventory app not found - skipping products"))
 
         self.stdout.write()
 
     def _seed_initial_stock(self):
-        """
-        Seed initial stock levels for Phase 4 products.
-
-        Uses stock_in operations to create proper transaction ledger entries
-        and set initial WAC prices.
-        """
-        self.stdout.write("📊 Seeding Initial Stock Levels (Phase 4)...")
+        """Seed initial stock levels using stock_in operations."""
+        self.stdout.write("Seeding Initial Stock Levels...")
 
         try:
             from inventory.models import Product
             from inventory.operations.stock import stock_in, StockChangeType
 
-            # Get the Owner employee for stock operations
             owner = Employee.objects.get(email="amw@amw.io")
 
-            # Initial stock data: SKU, quantity, unit_cost
             stock_data = [
                 {"sku": "MAJ-FR-500", "quantity": Decimal("50.0000"), "unit_cost": Decimal("450.0000")},
                 {"sku": "MAJ-WM-CR159", "quantity": Decimal("30.0000"), "unit_cost": Decimal("380.0000")},
@@ -564,8 +533,6 @@ class Command(BaseCommand):
             for stock_item in stock_data:
                 try:
                     product = Product.objects.get(sku=stock_item["sku"])
-
-                    # Perform stock-in operation
                     stock_in(
                         product=product,
                         quantity=stock_item["quantity"],
@@ -574,27 +541,24 @@ class Command(BaseCommand):
                         change_type=StockChangeType.INTAKE,
                         notes="Initial stock seeding",
                     )
-
                     product.refresh_from_db()
                     self.stdout.write(
                         self.style.SUCCESS(
-                            f"  ✅ {product.sku}: {product.current_stock} units @ WAC {product.wac_price}"
+                            f"  {product.sku}: {product.current_stock} units @ WAC {product.wac_price}"
                         )
                     )
                 except Product.DoesNotExist:
-                    self.stdout.write(self.style.WARNING(f"  ⚠️  Product {stock_item['sku']} not found - skipping"))
+                    self.stdout.write(self.style.WARNING(f"  Product {stock_item['sku']} not found - skipping"))
         except ImportError:
-            self.stdout.write(self.style.WARNING("  ⚠️  Inventory app not found - skipping stock levels"))
+            self.stdout.write(self.style.WARNING("  Inventory app not found - skipping stock levels"))
 
         self.stdout.write()
 
-    def _seed_customer_categories(self):
-        """
-        Seed customer categories for Phase 5.
+    # -- Sales & CRM -----------------------------------------------------
 
-        Creates hierarchical customer segments.
-        """
-        self.stdout.write("🏢 Seeding Customer Categories (Phase 5)...")
+    def _seed_customer_categories(self):
+        """Seed customer categories."""
+        self.stdout.write("Seeding Customer Categories...")
 
         try:
             from sales.models import CustomerCategory
@@ -615,80 +579,39 @@ class Command(BaseCommand):
                     },
                 )
                 if created:
-                    self.stdout.write(self.style.SUCCESS(f"  ✅ Created: {category.name}"))
+                    self.stdout.write(self.style.SUCCESS(f"  Created: {category.name}"))
                 else:
-                    self.stdout.write(self.style.WARNING(f"  ⚠️  Exists: {category.name}"))
+                    self.stdout.write(self.style.WARNING(f"  Exists: {category.name}"))
         except ImportError:
-            self.stdout.write(self.style.WARNING("  ⚠️  Sales app not found - skipping customer categories"))
+            self.stdout.write(self.style.WARNING("  Sales app not found - skipping customer categories"))
 
         self.stdout.write()
 
     def _seed_customers(self):
-        """
-        Seed customer records for Phase 5.
-
-        Creates customers with shipping addresses for order testing.
-        """
-        self.stdout.write("👥 Seeding Customers (Phase 5)...")
+        """Seed customer records."""
+        self.stdout.write("Seeding Customers...")
 
         try:
             from sales.models import Customer, CustomerCategory
 
-            # Get categories
-            retail_category = CustomerCategory.objects.get(name="Retail")
-            corporate_category = CustomerCategory.objects.get(name="Corporate")
-            vip_category = CustomerCategory.objects.get(name="VIP")
-            wholesale_category = CustomerCategory.objects.get(name="Wholesale")
+            retail = CustomerCategory.objects.get(name="Retail")
+            corporate = CustomerCategory.objects.get(name="Corporate")
+            vip = CustomerCategory.objects.get(name="VIP")
+            wholesale = CustomerCategory.objects.get(name="Wholesale")
 
             customers_data = [
-                {
-                    "name": "John Doe",
-                    "email": "john.doe@example.com",
-                    "phone": "+20 123 456 7890",
-                    "category": retail_category,
-                    "shipping_address": "123 Tahrir St, Cairo, Egypt",
-                    "billing_address": "Same as shipping",
-                },
-                {
-                    "name": "ABC Corporation",
-                    "email": "purchasing@abc-corp.com",
-                    "phone": "+20 2 3456 7890",
-                    "category": corporate_category,
-                    "shipping_address": "456 Business Park, New Cairo, Egypt",
-                    "billing_address": "Finance Dept, 789 Corporate Blvd, Cairo",
-                },
-                {
-                    "name": "Ahmed Mohamed",
-                    "email": "ahmed.vip@example.com",
-                    "phone": "+20 100 999 8888",
-                    "category": vip_category,
-                    "shipping_address": "789 Nile Corniche, Zamalek, Cairo, Egypt",
-                    "billing_address": "Same as shipping",
-                },
-                {
-                    "name": "Sara Ali",
-                    "email": "sara.ali@example.com",
-                    "phone": "+20 111 222 3333",
-                    "category": retail_category,
-                    "shipping_address": "10 Heliopolis Ave, Cairo, Egypt",
-                    "billing_address": "Same as shipping",
-                },
-                {
-                    "name": "Delta Hotels Group",
-                    "email": "orders@deltahotels.com",
-                    "phone": "+20 2 7654 3210",
-                    "category": wholesale_category,
-                    "shipping_address": "Delta Hotels Warehouse, 6th October City, Egypt",
-                    "billing_address": "Delta Hotels HQ, Garden City, Cairo",
-                },
-                {
-                    "name": "Omar Hassan",
-                    "email": "omar.h@example.com",
-                    "phone": "+20 122 333 4444",
-                    "category": vip_category,
-                    "shipping_address": "Maadi Riverside, Cairo, Egypt",
-                    "billing_address": "Same as shipping",
-                },
+                {"name": "John Doe", "email": "john.doe@example.com", "phone": "+20 123 456 7890",
+                 "category": retail, "shipping_address": "123 Tahrir St, Cairo, Egypt"},
+                {"name": "ABC Corporation", "email": "purchasing@abc-corp.com", "phone": "+20 2 3456 7890",
+                 "category": corporate, "shipping_address": "456 Business Park, New Cairo, Egypt"},
+                {"name": "Ahmed Mohamed", "email": "ahmed.vip@example.com", "phone": "+20 100 999 8888",
+                 "category": vip, "shipping_address": "789 Nile Corniche, Zamalek, Cairo, Egypt"},
+                {"name": "Sara Ali", "email": "sara.ali@example.com", "phone": "+20 111 222 3333",
+                 "category": retail, "shipping_address": "10 Heliopolis Ave, Cairo, Egypt"},
+                {"name": "Delta Hotels Group", "email": "orders@deltahotels.com", "phone": "+20 2 7654 3210",
+                 "category": wholesale, "shipping_address": "Delta Hotels Warehouse, 6th October City, Egypt"},
+                {"name": "Omar Hassan", "email": "omar.h@example.com", "phone": "+20 122 333 4444",
+                 "category": vip, "shipping_address": "Maadi Riverside, Cairo, Egypt"},
             ]
 
             for cust_data in customers_data:
@@ -699,26 +622,20 @@ class Command(BaseCommand):
                         "phone": cust_data["phone"],
                         "category": cust_data["category"],
                         "shipping_address": cust_data["shipping_address"],
-                        "billing_address": cust_data["billing_address"],
                     },
                 )
                 if created:
-                    self.stdout.write(self.style.SUCCESS(f"  ✅ Created: {customer.name}"))
+                    self.stdout.write(self.style.SUCCESS(f"  Created: {customer.name}"))
                 else:
-                    self.stdout.write(self.style.WARNING(f"  ⚠️  Exists: {customer.name}"))
+                    self.stdout.write(self.style.WARNING(f"  Exists: {customer.name}"))
         except ImportError:
-            self.stdout.write(self.style.WARNING("  ⚠️  Sales app not found - skipping customers"))
+            self.stdout.write(self.style.WARNING("  Sales app not found - skipping customers"))
 
         self.stdout.write()
 
     def _seed_sales_orders(self):
-        """
-        Seed sales orders for Phase 5.
-
-        Creates orders in different states (Draft, Confirmed, Shipped) to test workflows.
-        Uses confirm_order() operation to test business logic.
-        """
-        self.stdout.write("📦 Seeding Sales Orders (Phase 5)...")
+        """Seed sales orders in various states."""
+        self.stdout.write("Seeding Sales Orders...")
 
         try:
             from sales.models import (
@@ -729,188 +646,123 @@ class Command(BaseCommand):
                 SalesOrder,
                 SalesOrderItem,
             )
-            from sales.operations.orders import confirm_order, generate_order_number
+            from sales.logic.pricing import calculate_order_totals
+            from sales.operations.orders import confirm_order, generate_order_number, void_order
 
-            # Get sales rep
-            sales_rep = Employee.objects.get(email="sales.rep@amw.io")
+            sales_mgr = Employee.objects.get(email="sales.manager@amw.io")
 
-            # Get customers
             john = Customer.objects.get(name="John Doe")
             abc_corp = Customer.objects.get(name="ABC Corporation")
             ahmed = Customer.objects.get(name="Ahmed Mohamed")
+            sara = Customer.objects.get(name="Sara Ali")
 
-            # Get products
             from inventory.models import Product
-
             refrigerator = Product.objects.get(sku="MAJ-FR-500")
             washing_machine = Product.objects.get(sku="MAJ-WM-CR159")
             iron = Product.objects.get(sku="SML-IR-STM")
             oven = Product.objects.get(sku="MAJ-OV-ELC")
             blender = Product.objects.get(sku="KIT-BL-HSP")
+            hair_dryer = Product.objects.get(sku="SML-HD-22")
 
-            # Order 1: Draft order (ABC Corporation)
-            order_number1 = generate_order_number()
+            # Order 1: Draft
             order1 = SalesOrder.objects.create(
-                order_number=order_number1,
+                order_number=generate_order_number(),
                 customer=abc_corp,
-                created_by=sales_rep,
+                created_by=sales_mgr,
                 shipping_address_snapshot=abc_corp.shipping_address,
                 status=OrderStatus.DRAFT,
                 payment_status=PaymentStatus.PENDING,
                 notes="Draft order - awaiting customer confirmation",
             )
-            SalesOrderItem.objects.create(
-                order=order1,
-                product=refrigerator,
-                quantity=Decimal("2.0000"),
-                snapshot_unit_price=Decimal("450.0000"),
-            )
-            SalesOrderItem.objects.create(
-                order=order1,
-                product=washing_machine,
-                quantity=Decimal("1.0000"),
-                snapshot_unit_price=Decimal("380.0000"),
-            )
-            # Calculate totals
-            from sales.logic.pricing import calculate_order_totals
-
+            SalesOrderItem.objects.create(order=order1, product=refrigerator,
+                                          quantity=Decimal("2.0000"), snapshot_unit_price=Decimal("450.0000"))
+            SalesOrderItem.objects.create(order=order1, product=washing_machine,
+                                          quantity=Decimal("1.0000"), snapshot_unit_price=Decimal("380.0000"))
             subtotal, tax, total = calculate_order_totals(order1)
-            order1.subtotal = subtotal
-            order1.tax_amount = tax
-            order1.total_amount = total
+            order1.subtotal, order1.tax_amount, order1.total_amount = subtotal, tax, total
             order1.save()
+            self.stdout.write(self.style.SUCCESS(f"  Created Draft: {order1.order_number} ({order1.total_amount})"))
 
-            self.stdout.write(
-                self.style.SUCCESS(f"  ✅ Created Draft Order: {order1.order_number} ({order1.total_amount})")
-            )
-
-            # Order 2: Confirmed order (John Doe) - USE confirm_order() operation
-            order_number2 = generate_order_number()
+            # Order 2: Confirmed + Partially Paid
             order2 = SalesOrder.objects.create(
-                order_number=order_number2,
+                order_number=generate_order_number(),
                 customer=john,
-                created_by=sales_rep,
+                created_by=sales_mgr,
                 shipping_address_snapshot=john.shipping_address,
                 status=OrderStatus.DRAFT,
                 payment_status=PaymentStatus.PENDING,
             )
-            SalesOrderItem.objects.create(
-                order=order2,
-                product=iron,
-                quantity=Decimal("3.0000"),
-                snapshot_unit_price=Decimal("25.5000"),
-            )
-            SalesOrderItem.objects.create(
-                order=order2,
-                product=blender,
-                quantity=Decimal("1.0000"),
-                snapshot_unit_price=Decimal("45.0000"),
-            )
-            # Calculate totals
+            SalesOrderItem.objects.create(order=order2, product=iron,
+                                          quantity=Decimal("3.0000"), snapshot_unit_price=Decimal("25.5000"))
+            SalesOrderItem.objects.create(order=order2, product=blender,
+                                          quantity=Decimal("1.0000"), snapshot_unit_price=Decimal("45.0000"))
             subtotal, tax, total = calculate_order_totals(order2)
-            order2.subtotal = subtotal
-            order2.tax_amount = tax
-            order2.total_amount = total
+            order2.subtotal, order2.tax_amount, order2.total_amount = subtotal, tax, total
             order2.save()
-
-            # CONFIRM THE ORDER using operation (tests business logic)
-            confirm_order(order2, sales_rep)
-
-            # Add partial payment
+            confirm_order(order2, sales_mgr)
             order2.amount_paid = Decimal("50.0000")
             order2.payment_status = PaymentStatus.PARTIALLY_PAID
             order2.payment_method = PaymentMethod.COD
             order2.save()
-
             self.stdout.write(
-                self.style.SUCCESS(
-                    f"  ✅ Created Confirmed Order: {order2.order_number} ({order2.total_amount}, Partially Paid)"
-                )
+                self.style.SUCCESS(f"  Created Confirmed: {order2.order_number} ({order2.total_amount}, Partially Paid)")
             )
 
-            # Order 3: Shipped order (Ahmed Mohamed - VIP)
-            order_number3 = generate_order_number()
+            # Order 3: Shipped + Paid
             order3 = SalesOrder.objects.create(
-                order_number=order_number3,
+                order_number=generate_order_number(),
                 customer=ahmed,
-                created_by=sales_rep,
+                created_by=sales_mgr,
                 shipping_address_snapshot=ahmed.shipping_address,
                 status=OrderStatus.DRAFT,
                 payment_status=PaymentStatus.PENDING,
             )
-            SalesOrderItem.objects.create(
-                order=order3,
-                product=oven,
-                quantity=Decimal("1.0000"),
-                snapshot_unit_price=Decimal("120.0000"),
-            )
-            SalesOrderItem.objects.create(
-                order=order3,
-                product=refrigerator,
-                quantity=Decimal("1.0000"),
-                snapshot_unit_price=Decimal("450.0000"),
-            )
-            # Calculate totals
+            SalesOrderItem.objects.create(order=order3, product=oven,
+                                          quantity=Decimal("1.0000"), snapshot_unit_price=Decimal("120.0000"))
+            SalesOrderItem.objects.create(order=order3, product=refrigerator,
+                                          quantity=Decimal("1.0000"), snapshot_unit_price=Decimal("450.0000"))
             subtotal, tax, total = calculate_order_totals(order3)
-            order3.subtotal = subtotal
-            order3.tax_amount = tax
-            order3.total_amount = total
+            order3.subtotal, order3.tax_amount, order3.total_amount = subtotal, tax, total
             order3.save()
-
-            # Confirm and ship
-            confirm_order(order3, sales_rep)
+            confirm_order(order3, sales_mgr)
             order3.status = OrderStatus.SHIPPED
             order3.payment_status = PaymentStatus.PAID
             order3.payment_method = PaymentMethod.CREDIT_CARD
             order3.amount_paid = total
             order3.save()
-
             self.stdout.write(
-                self.style.SUCCESS(f"  ✅ Created Shipped Order: {order3.order_number} ({order3.total_amount}, Paid)")
+                self.style.SUCCESS(f"  Created Shipped: {order3.order_number} ({order3.total_amount}, Paid)")
             )
 
-            # Order 4: Voided order (Sara Ali)
-            sara = Customer.objects.get(name="Sara Ali")
-            order_number4 = generate_order_number()
+            # Order 4: Voided
             order4 = SalesOrder.objects.create(
-                order_number=order_number4,
+                order_number=generate_order_number(),
                 customer=sara,
-                created_by=sales_rep,
+                created_by=sales_mgr,
                 shipping_address_snapshot=sara.shipping_address,
                 status=OrderStatus.DRAFT,
                 payment_status=PaymentStatus.PENDING,
                 notes="Customer requested cancellation",
             )
-            SalesOrderItem.objects.create(
-                order=order4,
-                product=Product.objects.get(sku="SML-HD-22"),
-                quantity=Decimal("2.0000"),
-                snapshot_unit_price=Decimal("35.0000"),
-            )
+            SalesOrderItem.objects.create(order=order4, product=hair_dryer,
+                                          quantity=Decimal("2.0000"), snapshot_unit_price=Decimal("35.0000"))
             subtotal, tax, total = calculate_order_totals(order4)
-            order4.subtotal = subtotal
-            order4.tax_amount = tax
-            order4.total_amount = total
+            order4.subtotal, order4.tax_amount, order4.total_amount = subtotal, tax, total
             order4.save()
-
-            # Void the order
-            from sales.operations.orders import void_order
-            void_order(order4, sales_rep, reason="Customer cancelled order")
-
+            void_order(order4, sales_mgr, reason="Customer cancelled order")
             self.stdout.write(
-                self.style.WARNING(f"  ✅ Created Voided Order: {order4.order_number} ({order4.total_amount})")
+                self.style.WARNING(f"  Created Voided: {order4.order_number} ({order4.total_amount})")
             )
-
         except ImportError:
-            self.stdout.write(self.style.WARNING("  ⚠️  Sales app not found - skipping sales orders"))
+            self.stdout.write(self.style.WARNING("  Sales app not found - skipping sales orders"))
 
         self.stdout.write()
 
+    # -- Purchasing ------------------------------------------------------
+
     def _seed_supplier_categories(self):
-        """
-        Seed supplier categories for purchasing.
-        """
-        self.stdout.write("🏷️  Seeding Supplier Categories...")
+        """Seed supplier categories."""
+        self.stdout.write("Seeding Supplier Categories...")
 
         try:
             from purchasing.models import SupplierCategory
@@ -931,75 +783,42 @@ class Command(BaseCommand):
                     },
                 )
                 if created:
-                    self.stdout.write(self.style.SUCCESS(f"  ✅ Created: {category.name}"))
+                    self.stdout.write(self.style.SUCCESS(f"  Created: {category.name}"))
                 else:
-                    self.stdout.write(self.style.WARNING(f"  ⚠️  Exists: {category.name}"))
+                    self.stdout.write(self.style.WARNING(f"  Exists: {category.name}"))
         except ImportError:
-            self.stdout.write(self.style.WARNING("  ⚠️  Purchasing app not found - skipping supplier categories"))
+            self.stdout.write(self.style.WARNING("  Purchasing app not found - skipping supplier categories"))
 
         self.stdout.write()
 
     def _seed_suppliers(self):
-        """
-        Seed supplier records.
-        """
-        self.stdout.write("🏭 Seeding Suppliers...")
+        """Seed supplier records."""
+        self.stdout.write("Seeding Suppliers...")
 
         try:
             from purchasing.models import Supplier, SupplierCategory
 
-            # Get categories
             raw_mat = SupplierCategory.objects.get(name="Raw Materials")
             electronics = SupplierCategory.objects.get(name="Electronics")
             packaging = SupplierCategory.objects.get(name="Packaging")
             logistics = SupplierCategory.objects.get(name="Logistics")
 
             suppliers_data = [
-                {
-                    "name": "Cairo Steel Co.",
-                    "email": "sales@cairosteel.com",
-                    "phone": "+20 2 1234 5678",
-                    "category": raw_mat,
-                    "address": "Industrial Zone, 10th of Ramadan, Egypt",
-                    "contact_person": "Mahmoud Ibrahim",
-                    "notes": "Primary steel supplier, net-30 terms",
-                },
-                {
-                    "name": "Alex Plastics",
-                    "email": "orders@alexplastics.com",
-                    "phone": "+20 3 9876 5432",
-                    "category": raw_mat,
-                    "address": "Borg El Arab, Alexandria, Egypt",
-                    "contact_person": "Fatma Nasser",
-                    "notes": "Plastic raw materials, COD",
-                },
-                {
-                    "name": "TechParts Egypt",
-                    "email": "info@techparts.eg",
-                    "phone": "+20 2 5555 1234",
-                    "category": electronics,
-                    "address": "Smart Village, 6th October City, Egypt",
-                    "contact_person": "Karim Adel",
-                    "notes": "Electronic components and circuit boards",
-                },
-                {
-                    "name": "PackRight Solutions",
-                    "email": "sales@packright.com",
-                    "phone": "+20 2 4444 5678",
-                    "category": packaging,
-                    "address": "Obour City, Cairo, Egypt",
-                    "contact_person": "Nadia Hassan",
-                    "notes": "Cardboard boxes and packaging materials",
-                },
-                {
-                    "name": "FastShip Logistics",
-                    "email": "dispatch@fastship.eg",
-                    "phone": "+20 2 3333 9999",
-                    "category": logistics,
-                    "address": "Cairo International Airport Cargo, Egypt",
-                    "contact_person": "Omar Tarek",
-                    "notes": "Express shipping and freight forwarding",
-                },
+                {"name": "Cairo Steel Co.", "email": "sales@cairosteel.com", "phone": "+20 2 1234 5678",
+                 "category": raw_mat, "address": "Industrial Zone, 10th of Ramadan, Egypt",
+                 "contact_person": "Mahmoud Ibrahim", "notes": "Primary steel supplier, net-30 terms"},
+                {"name": "Alex Plastics", "email": "orders@alexplastics.com", "phone": "+20 3 9876 5432",
+                 "category": raw_mat, "address": "Borg El Arab, Alexandria, Egypt",
+                 "contact_person": "Fatma Nasser", "notes": "Plastic raw materials, COD"},
+                {"name": "TechParts Egypt", "email": "info@techparts.eg", "phone": "+20 2 5555 1234",
+                 "category": electronics, "address": "Smart Village, 6th October City, Egypt",
+                 "contact_person": "Karim Adel", "notes": "Electronic components and circuit boards"},
+                {"name": "PackRight Solutions", "email": "sales@packright.com", "phone": "+20 2 4444 5678",
+                 "category": packaging, "address": "Obour City, Cairo, Egypt",
+                 "contact_person": "Nadia Hassan", "notes": "Cardboard boxes and packaging materials"},
+                {"name": "FastShip Logistics", "email": "dispatch@fastship.eg", "phone": "+20 2 3333 9999",
+                 "category": logistics, "address": "Cairo International Airport Cargo, Egypt",
+                 "contact_person": "Omar Tarek", "notes": "Express shipping and freight forwarding"},
             ]
 
             for sup_data in suppliers_data:
@@ -1015,47 +834,40 @@ class Command(BaseCommand):
                     },
                 )
                 if created:
-                    self.stdout.write(self.style.SUCCESS(f"  ✅ Created: {supplier.name}"))
+                    self.stdout.write(self.style.SUCCESS(f"  Created: {supplier.name}"))
                 else:
-                    self.stdout.write(self.style.WARNING(f"  ⚠️  Exists: {supplier.name}"))
+                    self.stdout.write(self.style.WARNING(f"  Exists: {supplier.name}"))
         except ImportError:
-            self.stdout.write(self.style.WARNING("  ⚠️  Purchasing app not found - skipping suppliers"))
+            self.stdout.write(self.style.WARNING("  Purchasing app not found - skipping suppliers"))
 
         self.stdout.write()
 
     def _seed_purchase_orders(self):
-        """
-        Seed purchase orders in various states.
-        """
-        self.stdout.write("📋 Seeding Purchase Orders...")
+        """Seed purchase orders in various states."""
+        self.stdout.write("Seeding Purchase Orders...")
 
         try:
             from decimal import Decimal as D
             from purchasing.models import POStatus, PurchaseOrder, PurchaseOrderItem, Supplier
             from purchasing.operations.orders import generate_po_number, issue_order, receive_items
 
-            # Idempotency: skip if POs already exist
             if PurchaseOrder.objects.exists():
-                self.stdout.write(self.style.WARNING("  ⚠️  Purchase orders already exist - skipping"))
+                self.stdout.write(self.style.WARNING("  Purchase orders already exist - skipping"))
                 return
 
-            # Get suppliers
             cairo_steel = Supplier.objects.get(name="Cairo Steel Co.")
             tech_parts = Supplier.objects.get(name="TechParts Egypt")
             packright = Supplier.objects.get(name="PackRight Solutions")
 
-            # Get owner for created_by
             owner = Employee.objects.get(email="amw@amw.io")
 
-            # Get products
             from inventory.models import Product
-
             fridge = Product.objects.get(sku="MAJ-FR-500")
             oven = Product.objects.get(sku="MAJ-OV-ELC")
             blender = Product.objects.get(sku="KIT-BL-HSP")
             ac_unit = Product.objects.get(sku="MAJ-AC-12")
 
-            # PO 1: Draft PO (Cairo Steel)
+            # PO 1: Draft
             po1 = PurchaseOrder.objects.create(
                 po_number=generate_po_number(),
                 supplier=cairo_steel,
@@ -1063,26 +875,13 @@ class Command(BaseCommand):
                 status=POStatus.DRAFT,
                 notes="Draft PO - pending approval",
             )
-            po1_item1 = PurchaseOrderItem.objects.create(
-                order=po1,
-                product=fridge,
-                quantity=D("20.0000"),
-                unit_cost=D("400.0000"),
-            )
-            po1_item2 = PurchaseOrderItem.objects.create(
-                order=po1,
-                product=ac_unit,
-                quantity=D("15.0000"),
-                unit_cost=D("500.0000"),
-            )
+            PurchaseOrderItem.objects.create(order=po1, product=fridge, quantity=D("20.0000"), unit_cost=D("400.0000"))
+            PurchaseOrderItem.objects.create(order=po1, product=ac_unit, quantity=D("15.0000"), unit_cost=D("500.0000"))
             po1.total_cost = sum(item.total_cost for item in po1.items.all())
             po1.save()
+            self.stdout.write(self.style.SUCCESS(f"  Created Draft PO: {po1.po_number} ({po1.total_cost})"))
 
-            self.stdout.write(
-                self.style.SUCCESS(f"  ✅ Created Draft PO: {po1.po_number} ({po1.total_cost})")
-            )
-
-            # PO 2: Issued PO (TechParts)
+            # PO 2: Issued
             po2 = PurchaseOrder.objects.create(
                 po_number=generate_po_number(),
                 supplier=tech_parts,
@@ -1090,23 +889,14 @@ class Command(BaseCommand):
                 status=POStatus.DRAFT,
                 notes="Electronic components order",
             )
-            po2_item = PurchaseOrderItem.objects.create(
-                order=po2,
-                product=blender,
-                quantity=D("50.0000"),
-                unit_cost=D("35.0000"),
-            )
+            po2_item = PurchaseOrderItem.objects.create(order=po2, product=blender,
+                                                        quantity=D("50.0000"), unit_cost=D("35.0000"))
             po2.total_cost = sum(item.total_cost for item in po2.items.all())
             po2.save()
-
-            # Issue the PO
             issue_order(po2, owner)
+            self.stdout.write(self.style.SUCCESS(f"  Created Issued PO: {po2.po_number} ({po2.total_cost})"))
 
-            self.stdout.write(
-                self.style.SUCCESS(f"  ✅ Created Issued PO: {po2.po_number} ({po2.total_cost})")
-            )
-
-            # PO 3: In-Progress PO (PackRight)
+            # PO 3: In-Progress (partially received)
             po3 = PurchaseOrder.objects.create(
                 po_number=generate_po_number(),
                 supplier=packright,
@@ -1114,24 +904,15 @@ class Command(BaseCommand):
                 status=POStatus.DRAFT,
                 notes="Packaging materials restock",
             )
-            po3_item = PurchaseOrderItem.objects.create(
-                order=po3,
-                product=oven,
-                quantity=D("30.0000"),
-                unit_cost=D("95.0000"),
-            )
+            po3_item = PurchaseOrderItem.objects.create(order=po3, product=oven,
+                                                        quantity=D("30.0000"), unit_cost=D("95.0000"))
             po3.total_cost = sum(item.total_cost for item in po3.items.all())
             po3.save()
-
-            # Issue and partially receive (puts it in IN_PROGRESS)
             issue_order(po3, owner)
             receive_items(po3, [{"item_id": po3_item.id, "quantity": D("10.0000")}], owner, "Warehouse A")
+            self.stdout.write(self.style.SUCCESS(f"  Created In-Progress PO: {po3.po_number} ({po3.total_cost})"))
 
-            self.stdout.write(
-                self.style.SUCCESS(f"  ✅ Created In-Progress PO: {po3.po_number} ({po3.total_cost})")
-            )
-
-            # PO 4: Completed PO (Cairo Steel)
+            # PO 4: Completed (fully received)
             po4 = PurchaseOrder.objects.create(
                 po_number=generate_po_number(),
                 supplier=cairo_steel,
@@ -1139,24 +920,15 @@ class Command(BaseCommand):
                 status=POStatus.DRAFT,
                 notes="Completed steel order",
             )
-            po4_item = PurchaseOrderItem.objects.create(
-                order=po4,
-                product=fridge,
-                quantity=D("10.0000"),
-                unit_cost=D("420.0000"),
-            )
+            po4_item = PurchaseOrderItem.objects.create(order=po4, product=fridge,
+                                                        quantity=D("10.0000"), unit_cost=D("420.0000"))
             po4.total_cost = sum(item.total_cost for item in po4.items.all())
             po4.save()
-
-            # Complete the full lifecycle: issue -> receive all -> completed
             issue_order(po4, owner)
             receive_items(po4, [{"item_id": po4_item.id, "quantity": D("10.0000")}], owner, "Warehouse A")
-
-            self.stdout.write(
-                self.style.SUCCESS(f"  ✅ Created Completed PO: {po4.po_number} ({po4.total_cost})")
-            )
+            self.stdout.write(self.style.SUCCESS(f"  Created Completed PO: {po4.po_number} ({po4.total_cost})"))
 
         except ImportError:
-            self.stdout.write(self.style.WARNING("  ⚠️  Purchasing app not found - skipping purchase orders"))
+            self.stdout.write(self.style.WARNING("  Purchasing app not found - skipping purchase orders"))
 
         self.stdout.write()
