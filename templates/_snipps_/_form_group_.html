@@ -1,8 +1,4 @@
-{# comment #}
-AMW Django ERP - Form Group Snippet
-A complete form field wrapper with label, input, and optional errors.
-Usage: include "_snipps_/_form_group_.html" with field_id="email" label="Email" type="email" name="email" placeholder="Enter email" value="" required=True errors=None only
-{# endcomment #}
+{# -- AMW Django ERP - Form Group Snippet -- #}
 <div class="form-group">
     <label for="{{ field_id }}" class="form-group__label">
         {{ label }}{% if required %} *{% endif %}

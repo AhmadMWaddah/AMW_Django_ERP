@@ -1,8 +1,4 @@
-{# comment #}
-AMW Django ERP - Field Error Snippet
-Renders validation errors in a consistent format for HTMX-driven forms.
-Expects context: errors (a Django form field errors list or list of strings)
-{# endcomment #}
+{# -- AMW Django ERP - Field Error Snippet -- #}
 {% if errors %}
 <div class="form-group__error" role="alert">
     {% for error in errors %}

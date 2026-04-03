@@ -1,8 +1,5 @@
-{# comment #}
-AMW Django ERP - Icon Snippet (Lucide-Icons)
-Renders inline SVG icons based on the icon name. All icons from Lucide Icons.
-{# endcomment #}
-
+{# -- AMW Django ERP - Icon Snippet (Lucide-Icons) -- #}
+{# Renders inline SVG icons based on the icon name. #}
 {% if icon == "layout-dashboard" %}
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
     stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{{ class|default:'' }}" aria-hidden="true"
@@ -12,7 +9,6 @@ Renders inline SVG icons based on the icon name. All icons from Lucide Icons.
     <rect width="7" height="9" x="14" y="12" rx="1" />
     <rect width="7" height="5" x="3" y="16" rx="1" />
 </svg>
-
 {% elif icon == "users" %}
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
     stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{{ class|default:'' }}" aria-hidden="true"
@@ -22,7 +18,6 @@ Renders inline SVG icons based on the icon name. All icons from Lucide Icons.
     <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
     <path d="M16 3.13a4 4 0 0 1 0 7.75" />
 </svg>
-
 {% elif icon == "shield-check" %}
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
     stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{{ class|default:'' }}" aria-hidden="true"
@@ -31,7 +26,6 @@ Renders inline SVG icons based on the icon name. All icons from Lucide Icons.
         d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
     <path d="m9 12 2 2 4-4" />
 </svg>
-
 {% elif icon == "settings" %}
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
     stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{{ class|default:'' }}" aria-hidden="true"
@@ -40,7 +34,6 @@ Renders inline SVG icons based on the icon name. All icons from Lucide Icons.
         d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
     <circle cx="12" cy="12" r="3" />
 </svg>
-
 {% elif icon == "package" %}
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
     stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{{ class|default:'' }}" aria-hidden="true"
@@ -51,7 +44,6 @@ Renders inline SVG icons based on the icon name. All icons from Lucide Icons.
     <path d="m3.3 7 8.7 5 8.7-5" />
     <path d="M12 22V12" />
 </svg>
-
 {% elif icon == "shopping-cart" %}
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
     stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{{ class|default:'' }}" aria-hidden="true"
@@ -60,7 +52,6 @@ Renders inline SVG icons based on the icon name. All icons from Lucide Icons.
     <circle cx="19" cy="21" r="1" />
     <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
 </svg>
-
 {% elif icon == "truck" %}
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
     stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{{ class|default:'' }}" aria-hidden="true"
@@ -71,7 +62,6 @@ Renders inline SVG icons based on the icon name. All icons from Lucide Icons.
     <circle cx="17" cy="18" r="2" />
     <circle cx="7" cy="18" r="2" />
 </svg>
-
 {% elif icon == "x" %}
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
     stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{{ class|default:'' }}" aria-hidden="true"
@@ -79,16 +69,13 @@ Renders inline SVG icons based on the icon name. All icons from Lucide Icons.
     <path d="M18 6 6 18" />
     <path d="m6 6 12 12" />
 </svg>
-
 {% elif icon == "chevron-down" %}
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
     stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{{ class|default:'' }}" aria-hidden="true"
     focusable="false">
     <path d="m6 9 6 6 6-6" />
 </svg>
-
 {% else %}
-{# Fallback: render nothing or a placeholder dot #}
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
     stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{{ class|default:'' }}" aria-hidden="true"
     focusable="false">
