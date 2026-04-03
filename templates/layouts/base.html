@@ -46,6 +46,17 @@
                 });
             }
         });
+
+        // Close dropdown when clicking outside
+        document.addEventListener("click", function (e) {
+            var dropdowns = document.querySelectorAll(".topbar__dropdown");
+            var buttons = document.querySelectorAll(".topbar__profile-btn");
+            dropdowns.forEach(function (dropdown, i) {
+                if (!dropdown.contains(e.target) && !buttons[i].contains(e.target)) {
+                    dropdown.classList.remove("topbar__dropdown--open");
+                }
+            });
+        });
     </script>
 
     {# App-specific scripts #}

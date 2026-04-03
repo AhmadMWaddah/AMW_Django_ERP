@@ -2,12 +2,13 @@
 <nav class="sidebar" role="navigation" aria-label="Main navigation">
 
     {# Brand Header #}
-    <div class="sidebar__brand">
+    <a href="{% url 'Accounts:Dashboard' %}" class="sidebar__brand">
+        <img src="{% static 'images/AMW_DJ_ERP_Fav_Icon.png' %}" alt="AMW ERP Logo" class="sidebar__brand-logo-img">
         <div>
             <div class="sidebar__brand-logo">{{ app_name }}</div>
             <div class="sidebar__brand-sub">Enterprise Resource Planning</div>
         </div>
-    </div>
+    </a>
 
     {# Navigation Links #}
     <div class="sidebar__nav">

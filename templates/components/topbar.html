@@ -5,18 +5,39 @@
     </div>
 
     <div class="topbar__right">
-        {# User Info #}
+        {# User Profile Dropdown #}
         {% if request.user.is_authenticated %}
-            <div class="topbar__user-info">
-                <span class="topbar__user-name">
-                    {{ request.user.get_full_name|default:request.user.email }}
-                </span>
-                {% if request.user.department %}
-                    <span class="topbar__user-role">{{ request.user.department.name }}</span>
-                {% endif %}
-            </div>
-            <div class="topbar__avatar" aria-hidden="true">
-                {{ request.user.first_name|default:"U"|make_list|first|upper }}
+            <div class="topbar__profile-dropdown">
+                <button class="topbar__profile-btn" onclick="this.nextElementSibling.classList.toggle('topbar__dropdown--open')" aria-haspopup="true" aria-expanded="false">
+                    <div class="topbar__avatar" aria-hidden="true">
+                        {{ request.user.first_name|default:"U"|make_list|first|upper }}
+                    </div>
+                    <span class="topbar__user-name u-hide-mobile">
+                        {{ request.user.get_full_name|default:request.user.email }}
+                    </span>
+                    {% include "_snipps_/_icon_.html" with icon="chevron-down" class="topbar__dropdown-icon" only %}
+                </button>
+                <div class="topbar__dropdown">
+                    <div class="topbar__dropdown-header">
+                        <p class="topbar__dropdown-name">{{ request.user.get_full_name|default:request.user.email }}</p>
+                        {% if request.user.department %}
+                            <p class="topbar__dropdown-role">{{ request.user.department.name }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="topbar__dropdown-divider"></div>
+                    <a href="{% url 'Accounts:Dashboard' %}" class="topbar__dropdown-item">
+                        {% include "_snipps_/_icon_.html" with icon="layout-dashboard" class="topbar__dropdown-icon" only %}
+                        Dashboard
+                    </a>
+                    <div class="topbar__dropdown-divider"></div>
+                    <form method="post" action="{% url 'Accounts:Logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="topbar__dropdown-item topbar__dropdown-item--logout">
+                            {% include "_snipps_/_icon_.html" with icon="x" class="topbar__dropdown-icon" only %}
+                            Logout
+                        </button>
+                    </form>
+                </div>
             </div>
         {% endif %}
     </div>

@@ -15,6 +15,7 @@
 .app-shell {
     display: flex;
     min-height: 100vh;
+    width: 100%;
     background-color: var(--color-surface-muted);
 }
 
@@ -68,6 +69,19 @@
     gap: var(--space-sm);
     padding: var(--space-lg);
     border-bottom: 1px solid rgba(182, 173, 144, 0.15);
+    text-decoration: none;
+    color: inherit;
+    transition: background-color var(--transition-fast);
+}
+
+.sidebar__brand:hover {
+    background-color: rgba(182, 173, 144, 0.1);
+}
+
+.sidebar__brand-logo-img {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
 }
 
 .sidebar__brand-logo {
@@ -95,8 +109,8 @@
     font-weight: var(--font-weight-semibold);
     text-transform: uppercase;
     letter-spacing: var(--letter-spacing-wide);
-    color: var(--color-text-muted);
-    opacity: 0.6;
+    color: var(--color-surface-base);
+    opacity: 0.5;
 }
 
 .sidebar__link {
@@ -108,7 +122,7 @@
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-normal);
     transition: background-color var(--transition-fast),
-                color var(--transition-fast);
+        color var(--transition-fast);
 }
 
 .sidebar__link:hover {
@@ -134,6 +148,12 @@
 
 .sidebar__link--active .sidebar__link-icon {
     opacity: 1;
+}
+
+/* Fix SVG icons in sidebar - override base.css display: block */
+.sidebar__link-icon svg {
+    display: inline-block;
+    vertical-align: middle;
 }
 
 .sidebar__link-text {
@@ -191,9 +211,38 @@
     gap: var(--space-md);
 }
 
+/* Profile Dropdown */
+.topbar__profile-dropdown {
+    position: relative;
+}
+
+.topbar__profile-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-xs) var(--space-sm);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-text-primary);
+    border-radius: var(--radius-md);
+    transition: background-color var(--transition-fast);
+}
+
+.topbar__profile-btn:hover {
+    background-color: var(--color-surface-muted);
+}
+
+.topbar__dropdown-icon {
+    width: 16px;
+    height: 16px;
+    transition: transform var(--transition-fast);
+    flex-shrink: 0;
+}
+
 .topbar__avatar {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     border-radius: var(--radius-full);
     background-color: var(--color-brand-primary-light);
     color: var(--color-surface-base);
@@ -202,24 +251,76 @@
     justify-content: center;
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-semibold);
+    flex-shrink: 0;
 }
 
-.topbar__user-info {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
+.topbar__dropdown {
+    position: absolute;
+    top: calc(100% + var(--space-xs));
+    right: 0;
+    min-width: 220px;
+    background-color: var(--color-surface-base);
+    border: var(--border-width) solid var(--border-color);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    display: none;
+    z-index: 50;
 }
 
-.topbar__user-name {
+.topbar__dropdown--open {
+    display: block;
+}
+
+.topbar__dropdown-header {
+    padding: var(--space-sm) var(--space-md);
+}
+
+.topbar__dropdown-name {
     font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-medium);
+    font-weight: var(--font-weight-semibold);
     color: var(--color-text-primary);
-    line-height: 1.2;
+    margin: 0;
 }
 
-.topbar__user-role {
+.topbar__dropdown-role {
     font-size: var(--font-size-xs);
     color: var(--color-text-muted);
+    margin: 0;
+}
+
+.topbar__dropdown-divider {
+    height: 1px;
+    background-color: var(--border-color);
+}
+
+.topbar__dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    transition: background-color var(--transition-fast);
+    border: none;
+    background: none;
+    width: 100%;
+    cursor: pointer;
+    text-align: left;
+}
+
+.topbar__dropdown-item:hover {
+    background-color: var(--color-surface-muted);
+    color: var(--color-text-primary);
+}
+
+.topbar__dropdown-item--logout {
+    color: var(--color-danger);
+}
+
+.topbar__dropdown-item--logout:hover {
+    background-color: var(--color-danger-light);
+    color: var(--color-danger);
 }
 
 /* ============================================================
@@ -412,6 +513,7 @@ a.card--clickable:hover {
         opacity: 0;
         transform: translateX(100%);
     }
+
     to {
         opacity: 1;
         transform: translateX(0);
@@ -423,6 +525,7 @@ a.card--clickable:hover {
         opacity: 1;
         transform: translateX(0);
     }
+
     to {
         opacity: 0;
         transform: translateX(100%);
@@ -496,8 +599,13 @@ a.card--clickable:hover {
 }
 
 @keyframes fade-in {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 @keyframes modal-in {
@@ -505,6 +613,7 @@ a.card--clickable:hover {
         opacity: 0;
         transform: scale(0.95) translateY(-10px);
     }
+
     to {
         opacity: 1;
         transform: scale(1) translateY(0);
@@ -577,8 +686,8 @@ a.card--clickable:hover {
     border: var(--border-width) solid transparent;
     cursor: pointer;
     transition: background-color var(--transition-fast),
-                border-color var(--transition-fast),
-                color var(--transition-fast);
+        border-color var(--transition-fast),
+        color var(--transition-fast);
     white-space: nowrap;
 }
 
@@ -589,19 +698,20 @@ a.card--clickable:hover {
 }
 
 .btn--primary:hover {
-    background-color: var(--color-brand-primary-light);
-    border-color: var(--color-brand-primary-light);
+    background-color: var(--color-brand-accent);
+    border-color: var(--color-brand-accent);
 }
 
 .btn--outline {
     background-color: transparent;
-    color: var(--color-text-secondary);
-    border-color: var(--border-color);
+    color: var(--color-brand-primary);
+    border-color: var(--color-brand-primary);
 }
 
 .btn--outline:hover {
-    background-color: var(--color-surface-muted);
-    border-color: var(--border-color-strong);
+    background-color: var(--color-brand-primary);
+    color: var(--color-surface-base);
+    border-color: var(--color-brand-primary);
 }
 
 .btn--danger {
