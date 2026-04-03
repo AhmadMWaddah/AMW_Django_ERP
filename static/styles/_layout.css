@@ -35,6 +35,31 @@
     flex-direction: column;
     transition: transform var(--transition-base);
     overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* Custom Scrollbar for Sidebar */
+.sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background-color: rgba(182, 173, 144, 0.2);
+    border-radius: 3px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(182, 173, 144, 0.4);
+}
+
+/* Firefox Scrollbar */
+.sidebar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(182, 173, 144, 0.2) transparent;
 }
 
 .sidebar__brand {
@@ -103,6 +128,8 @@
     height: 20px;
     flex-shrink: 0;
     opacity: 0.8;
+    display: inline-block;
+    vertical-align: middle;
 }
 
 .sidebar__link--active .sidebar__link-icon {
