@@ -224,17 +224,6 @@ pytest --cov=. --cov-report=html
 - **Immutable Stock Ledger** - All stock movements recorded with full traceability
 - **Stock Adjustment Workflow** - Approval-based corrections with rejection comments
 
-### Completed Modules
-
-| Module                   | Status        | Models                                               | Operations                                    |
-|--------------------------|---------------|------------------------------------------------------|-----------------------------------------------|
-| **Employee Identity**    | ✅ Production | Employee (custom user model)                         | Authentication, Role assignment               |
-| **IAM & Security**       | ✅ Production | Department, Role, Policy                             | Policy enforcement engine                     |
-| **Audit Logging**        | ✅ Production | AuditLog                                             | Operation decorator, state capture            |
-| **Inventory Management** | ✅ Production | Category, Product, StockTransaction, StockAdjustment | stock_in, stock_out, adjust_stock, WAC engine |
-| **Sales & CRM**          | ✅ Production | Customer, CustomerCategory, SalesOrder, SalesOrderItem | confirm_order, void_order, payment tracking |
-| **Purchasing**           | ✅ Production | Supplier, SupplierCategory, PurchaseOrder, PurchaseOrderItem | issue_order, receive_items, cancel_order |
-
 ### Technology Stack
 
 | Layer           | Technology                       |

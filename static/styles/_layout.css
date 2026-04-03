@@ -234,7 +234,7 @@
 }
 
 .main-content__inner {
-    max-width: var(--content-max-width);
+    max-width: 100%;
     padding: var(--space-lg);
 }
 
@@ -281,6 +281,7 @@ a.card--clickable:hover {
     grid-template-columns: repeat(2, 1fr);
     gap: var(--space-md);
     margin-top: var(--space-md);
+    width: 100%;
 }
 
 .dashboard-modules__icon {
