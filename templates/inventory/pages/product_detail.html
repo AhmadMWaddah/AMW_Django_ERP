@@ -49,7 +49,7 @@
         <h3 class="card__title">Quick Stock Adjustment</h3>
     </div>
     <div class="card__body">
-        <form hx-post="{% url 'inventory:adjust_stock' product.id %}"
+        <form hx-post="{% url 'Inventory:AdjustStock' product.id %}"
               hx-target="#adjustment-result"
               hx-swap="innerHTML"
               class="u-flex u-flex-wrap u-gap-sm u-items-end">
@@ -80,7 +80,7 @@
 <div class="card">
     <div class="card__header">
         <h3 class="card__title">Stock Ledger (Latest 50)</h3>
-        <a href="{% url 'inventory:stock_ledger' product.id %}" class="btn btn--outline btn--sm">View Full Ledger</a>
+        <a href="{% url 'Inventory:StockLedger' product.id %}" class="btn btn--outline btn--sm">View Full Ledger</a>
     </div>
     <div class="card__body" style="overflow-x: auto;">
         <table class="data-table">
@@ -121,5 +121,5 @@
 </div>
 
 {# Back link #}
-<a href="{% url 'inventory:product_list' %}" class="btn btn--outline u-mt-md">← Back to Products</a>
+<a href="{% url 'Inventory:ProductList' %}" class="btn btn--outline u-mt-md">← Back to Products</a>
 {% endblock %}

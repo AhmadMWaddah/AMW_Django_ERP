@@ -10,7 +10,7 @@
            class="form-group__input" style="max-width: 400px;">
     <button type="submit" class="btn btn--primary">Search</button>
     {% if query %}
-        <a href="{% url 'sales:customer_list' %}" class="btn btn--outline">Clear</a>
+        <a href="{% url 'Sales:CustomerList' %}" class="btn btn--outline">Clear</a>
     {% endif %}
 </form>
 
@@ -40,7 +40,7 @@
                     <td><span class="badge badge--neutral">{{ customer.category.name }}</span></td>
                     <td class="u-text-xs u-truncate" style="max-width: 200px;">{{ customer.shipping_address|default:"-" }}</td>
                     <td>
-                        <a href="{% url 'sales:customer_detail' customer.id %}" class="btn btn--outline btn--sm">View</a>
+                        <a href="{% url 'Sales:CustomerDetail' customer.id %}" class="btn btn--outline btn--sm">View</a>
                     </td>
                 </tr>
                 {% empty %}

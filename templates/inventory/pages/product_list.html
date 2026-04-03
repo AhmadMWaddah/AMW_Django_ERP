@@ -10,7 +10,7 @@
            class="form-group__input" style="max-width: 400px;">
     <button type="submit" class="btn btn--primary">Search</button>
     {% if query %}
-        <a href="{% url 'inventory:product_list' %}" class="btn btn--outline">Clear</a>
+        <a href="{% url 'Inventory:ProductList' %}" class="btn btn--outline">Clear</a>
     {% endif %}
 </form>
 
@@ -42,8 +42,8 @@
                     <td class="u-text-right">{{ product.wac_price }}</td>
                     <td>{{ product.unit_of_measure }}</td>
                     <td class="u-flex u-gap-xs">
-                        <a href="{% url 'inventory:product_detail' product.id %}" class="btn btn--outline btn--sm">Detail</a>
-                        <a href="{% url 'inventory:stock_ledger' product.id %}" class="btn btn--outline btn--sm">Ledger</a>
+                        <a href="{% url 'Inventory:ProductDetail' product.id %}" class="btn btn--outline btn--sm">Detail</a>
+                        <a href="{% url 'Inventory:StockLedger' product.id %}" class="btn btn--outline btn--sm">Ledger</a>
                     </td>
                 </tr>
                 {% empty %}

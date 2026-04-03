@@ -184,7 +184,7 @@ document.getElementById('receive-submit').addEventListener('click', function() {
         return;
     }
 
-    htmx.ajax('POST', '{% url "purchasing:receive_stock" order.id %}', {
+    htmx.ajax('POST', '{% url "Purchasing:ReceiveStock" order.id %}', {
         target: '#receive-result',
         values: { items: JSON.stringify(items) },
     });
@@ -192,5 +192,5 @@ document.getElementById('receive-submit').addEventListener('click', function() {
 </script>
 <div id="receive-result"></div>
 
-<a href="{% url 'purchasing:order_list' %}" class="btn btn--outline u-mt-md">← Back to Orders</a>
+<a href="{% url 'Purchasing:OrderList' %}" class="btn btn--outline u-mt-md">← Back to Orders</a>
 {% endblock %}

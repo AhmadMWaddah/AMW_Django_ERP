@@ -11,14 +11,14 @@
         <div class="u-flex u-gap-sm">
             {% if order.status == 'DRAFT' %}
             <button class="btn btn--primary"
-                    hx-post="{% url 'sales:confirm_order' order.id %}"
+                    hx-post="{% url 'Sales:ConfirmOrder' order.id %}"
                     hx-swap="none">
                 Confirm Order
             </button>
             {% endif %}
             {% if order.status in 'DRAFT,CONFIRMED' %}
             <button class="btn btn--danger"
-                    hx-post="{% url 'sales:void_order' order.id %}"
+                    hx-post="{% url 'Sales:VoidOrder' order.id %}"
                     hx-vals='{"reason": "Voided via UI"}'
                     hx-swap="none">
                 Void Order
@@ -132,5 +132,5 @@
 </div>
 {% endif %}
 
-<a href="{% url 'sales:order_list' %}" class="btn btn--outline u-mt-md">← Back to Orders</a>
+<a href="{% url 'Sales:OrderList' %}" class="btn btn--outline u-mt-md">← Back to Orders</a>
 {% endblock %}

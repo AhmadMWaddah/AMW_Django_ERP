@@ -72,7 +72,7 @@
                     </td>
                     <td class="u-text-right">{{ order.total_cost }}</td>
                     <td>
-                        <a href="{% url 'purchasing:order_detail' order.id %}" class="btn btn--outline btn--sm">View</a>
+                        <a href="{% url 'Purchasing:OrderDetail' order.id %}" class="btn btn--outline btn--sm">View</a>
                     </td>
                 </tr>
                 {% empty %}
@@ -85,5 +85,5 @@
     </div>
 </div>
 
-<a href="{% url 'purchasing:supplier_list' %}" class="btn btn--outline u-mt-md">← Back to Suppliers</a>
+<a href="{% url 'Purchasing:SupplierList' %}" class="btn btn--outline u-mt-md">← Back to Suppliers</a>
 {% endblock %}

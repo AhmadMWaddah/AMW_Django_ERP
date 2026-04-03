@@ -6,7 +6,7 @@
 {% block dashboard_content %}
 {# Status Filter #}
 <div class="u-flex u-gap-sm u-mb-md">
-    <a href="{% url 'purchasing:order_list' %}"
+    <a href="{% url 'Purchasing:OrderList' %}"
        class="btn {% if not status_filter %}btn--primary{% else %}btn--outline{% endif %}">All</a>
     <a href="?status=DRAFT"
        class="btn {% if status_filter == 'DRAFT' %}btn--primary{% else %}btn--outline{% endif %}">Draft</a>
@@ -55,7 +55,7 @@
                     </td>
                     <td class="u-text-right">{{ order.total_cost }}</td>
                     <td>
-                        <a href="{% url 'purchasing:order_detail' order.id %}" class="btn btn--outline btn--sm">View</a>
+                        <a href="{% url 'Purchasing:OrderDetail' order.id %}" class="btn btn--outline btn--sm">View</a>
                     </td>
                 </tr>
                 {% empty %}

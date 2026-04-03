@@ -6,7 +6,7 @@
 {% block dashboard_content %}
 {# Status Filter #}
 <div class="u-flex u-gap-sm u-mb-md">
-    <a href="{% url 'sales:order_list' %}"
+    <a href="{% url 'Sales:OrderList' %}"
        class="btn {% if not status_filter %}btn--primary{% else %}btn--outline{% endif %}">All</a>
     <a href="?status=DRAFT"
        class="btn {% if status_filter == 'DRAFT' %}btn--primary{% else %}btn--outline{% endif %}">Draft</a>
@@ -61,10 +61,10 @@
                     </td>
                     <td class="u-text-right">{{ order.total_amount }}</td>
                     <td class="u-flex u-gap-xs">
-                        <a href="{% url 'sales:order_detail' order.id %}" class="btn btn--outline btn--sm">View</a>
+                        <a href="{% url 'Sales:OrderDetail' order.id %}" class="btn btn--outline btn--sm">View</a>
                         {% if order.status == 'DRAFT' %}
                         <button class="btn btn--primary btn--sm"
-                                hx-post="{% url 'sales:confirm_order' order.id %}"
+                                hx-post="{% url 'Sales:ConfirmOrder' order.id %}"
                                 hx-swap="none"
                                 hx-on::after-request="if(event.detail.successful) { /* page refreshes via HX-Refresh */ }">
                             Confirm
