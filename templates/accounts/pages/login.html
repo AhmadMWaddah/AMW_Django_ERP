@@ -1,6 +1,7 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,45 +14,48 @@
     <link rel="stylesheet" href="{% static 'styles/_utilities.css' %}">
     <link rel="stylesheet" href="{% static 'styles/accounts.css' %}">
 </head>
+
 <body>
 
-<div class="auth-page">
-    <div class="auth-card">
-        <div class="auth-card__header">
-            <div class="auth-card__logo">{{ app_name }}</div>
-            <p class="auth-card__subtitle">Sign in with your employee credentials</p>
-        </div>
+    <div class="auth-page">
+        <div class="auth-card">
+            <div class="auth-card__header">
+                <img src="{% static 'images/AMW_DJ_ERP_Logo.png' %}" alt="AMW ERP Logo" class="sidebar__brand-logo-img">
+                <div class="auth-card__logo">{{ app_name }}</div>
+                <p class="auth-card__subtitle">Sign in with your employee credentials</p>
+            </div>
 
-        {% if error_message %}
+            {% if error_message %}
             {% include "_snipps_/_error_message_.html" with message=error_message %}
-        {% endif %}
-
-        <form method="post" action="{% url 'Accounts:Login' %}">
-            {% csrf_token %}
-            {% if next %}
-                <input type="hidden" name="next" value="{{ next }}">
             {% endif %}
 
-            {% include "_snipps_/_input_.html" with
+            <form method="post" action="{% url 'Accounts:Login' %}">
+                {% csrf_token %}
+                {% if next %}
+                <input type="hidden" name="next" value="{{ next }}">
+                {% endif %}
+
+                {% include "_snipps_/_input_.html" with
                 field_id="email" label="Email" input_type="email"
                 name="email" placeholder="Enter your email"
                 autocomplete="email" required=True autofocus=True only %}
 
-            {% include "_snipps_/_input_.html" with
+                {% include "_snipps_/_input_.html" with
                 field_id="password" label="Password" input_type="password"
                 name="password" placeholder="Enter your password"
                 autocomplete="current-password" required=True only %}
 
-            <div class="auth-actions">
-                <button type="submit" class="auth-actions__submit">Sign In</button>
-            </div>
-        </form>
+                <div class="auth-actions">
+                    <button type="submit" class="auth-actions__submit">Sign In</button>
+                </div>
+            </form>
 
-        <div class="auth-footer">
-            Secure employee identity gateway for AMW internal operations.
+            <div class="auth-footer">
+                Secure employee identity gateway for AMW internal operations.
+            </div>
         </div>
     </div>
-</div>
 
 </body>
+
 </html>

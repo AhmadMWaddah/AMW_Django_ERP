@@ -9,9 +9,10 @@
 {# Welcome Card - Landscape Full Width #}
 <div class="card card--landscape">
     <div class="card__body card__body--wide">
-        <div class="u-flex u-items-center u-justify-between" style="gap: var(--space-lg);">
+        <div class="u-flex u-items-center u-justify-between u-p-lg" style="gap: var(--space-lg);">
             <div>
-                <h2 class="card__title u-mb-sm">Welcome, {{ request.user.get_full_name|default:request.user.email }}</h2>
+                <h2 class="card__title u-mb-sm">Welcome, {{ request.user.get_full_name|default:request.user.email }}
+                </h2>
                 <p class="u-text-sm u-text-muted u-mb-xs">You're logged in to {{ app_name }}.</p>
                 <p class="u-text-xs u-text-muted">
                     <strong>Email:</strong> {{ request.user.email }}
@@ -22,7 +23,7 @@
             </div>
             <form method="post" action="{% url 'Accounts:Logout' %}">
                 {% csrf_token %}
-                {% include "_snipps_/_button_.html" with text="Logout" type="submit" class="btn btn--outline" only %}
+                {% include "_snipps_/_button_.html" with text="Logout" type="submit" class="btn btn--primary" only %}
             </form>
         </div>
     </div>

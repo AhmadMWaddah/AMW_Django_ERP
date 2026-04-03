@@ -79,8 +79,9 @@
 }
 
 .sidebar__brand-logo-img {
-    width: 32px;
-    height: 32px;
+    margin: 0 auto;
+    width: 45px;
+    height: 45px;
     flex-shrink: 0;
 }
 
