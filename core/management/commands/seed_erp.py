@@ -395,20 +395,17 @@ class Command(BaseCommand):
             from inventory.models import Category
 
             categories_data = [
-                {"name": "Major Appliances", "code": "MAJ", "description": "Large household appliances"},
-                {"name": "Small Appliances", "code": "SML", "description": "Portable household appliances"},
-                {"name": "Kitchenware", "code": "KIT", "description": "Kitchen tools and equipment"},
-                {"name": "Cleaning & Home", "code": "CLN", "description": "Cleaning supplies and home care"},
-                {"name": "Electronics", "code": "ELC", "description": "Consumer electronics and accessories"},
+                {"name": "Major Appliances", "description": "Large household appliances"},
+                {"name": "Small Appliances", "description": "Portable household appliances"},
+                {"name": "Kitchenware", "description": "Kitchen tools and equipment"},
+                {"name": "Cleaning & Home", "description": "Cleaning supplies and home care"},
+                {"name": "Electronics", "description": "Consumer electronics and accessories"},
             ]
 
             for cat_data in categories_data:
                 category, created = Category.objects.get_or_create(
                     name=cat_data["name"],
-                    defaults={
-                        "code": cat_data["code"],
-                        "description": cat_data["description"],
-                    },
+                    defaults={"description": cat_data["description"]},
                 )
                 if created:
                     self.stdout.write(self.style.SUCCESS(f"  Created: {category.name}"))
@@ -635,10 +632,7 @@ class Command(BaseCommand):
             for cat_data in categories_data:
                 category, created = CustomerCategory.objects.get_or_create(
                     name=cat_data["name"],
-                    defaults={
-                        "code": cat_data["name"].lower(),
-                        "description": cat_data["description"],
-                    },
+                    defaults={"description": cat_data["description"]},
                 )
                 if created:
                     self.stdout.write(self.style.SUCCESS(f"  Created: {category.name}"))
@@ -880,10 +874,7 @@ class Command(BaseCommand):
             for cat_data in categories_data:
                 category, created = SupplierCategory.objects.get_or_create(
                     name=cat_data["name"],
-                    defaults={
-                        "code": slugify(cat_data["name"]),
-                        "description": cat_data["description"],
-                    },
+                    defaults={"description": cat_data["description"]},
                 )
                 if created:
                     self.stdout.write(self.style.SUCCESS(f"  Created: {category.name}"))
