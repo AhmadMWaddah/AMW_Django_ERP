@@ -72,10 +72,34 @@ def adjustment_list(request):
 @require_POST
 @login_required
 def adjust_stock_htmx(request, product_id):
-    """HTMX endpoint for stock adjustment.
+    """HTMX endpoint for stock adjustment by product ID."""
+    return _adjust_stock_common(request, product_id=None)
 
-    Policy: Requires 'inventory.stock' -> 'adjust' permission.
-    """
+
+@require_POST
+@login_required
+def adjust_stock_by_sku_htmx(request):
+    """HTMX endpoint for stock adjustment by SKU (used from product list modal)."""
+    sku = request.POST.get("sku", "").strip()
+    if not sku:
+        return JsonResponse(
+            {"error": "SKU is required"},
+            status=400,
+            headers={"HX-Trigger": '{"showToast": {"message": "SKU is required.", "type": "error"}}'},
+        )
+    try:
+        product = Product.objects.get(sku=sku)
+    except Product.DoesNotExist:
+        return JsonResponse(
+            {"error": f"Product with SKU '{sku}' not found"},
+            status=404,
+            headers={"HX-Trigger": '{"showToast": {"message": f"Product \'{sku}\' not found.", "type": "error"}}'},
+        )
+    return _adjust_stock_common(request, product)
+
+
+def _adjust_stock_common(request, product_id=None, product=None):
+    """Shared stock adjustment logic. Policy: Requires 'inventory.stock' -> 'adjust' permission."""
     from security.logic.enforcement import PolicyEngine
 
     engine = PolicyEngine(request.user)
@@ -88,7 +112,9 @@ def adjust_stock_htmx(request, product_id):
             },
         )
 
-    product = get_object_or_404(Product, pk=product_id)
+    if product is None:
+        product = get_object_or_404(Product, pk=product_id)
+
     action = request.POST.get("action")
     quantity_str = request.POST.get("quantity", "0")
     location_note = request.POST.get("location_note", "")

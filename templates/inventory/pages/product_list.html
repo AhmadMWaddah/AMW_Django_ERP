@@ -72,7 +72,7 @@
                 {% include "_snipps_/_icon_.html" with icon="x" only %}
             </button>
         </div>
-        <form hx-post="" id="adjust-form">
+        <form hx-post="{% url 'Inventory:AdjustStockBySKU' 'PLACEHOLDER' %}" hx-target="#adjust-result" hx-swap="innerHTML" id="adjust-form">
             <div class="modal__body">
                 <p class="u-text-sm u-text-muted u-mb-md">
                     Select a product and enter the quantity to adjust.
@@ -80,7 +80,7 @@
                 </p>
                 <div class="form-group">
                     <label class="form-group__label">Product SKU</label>
-                    <input type="text" name="sku" class="form-group__input" placeholder="e.g., WM-CR-159" required>
+                    <input type="text" name="sku" id="adjust-sku-input" class="form-group__input" placeholder="e.g., WM-CR-159" required>
                 </div>
                 <div class="form-group">
                     <label class="form-group__label">Action</label>
@@ -103,6 +103,24 @@
                 <button type="submit" class="btn btn--primary">Adjust</button>
             </div>
         </form>
+        <div id="adjust-result"></div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var skuInput = document.getElementById('adjust-sku-input');
+    var form = document.getElementById('adjust-form');
+    if (skuInput && form) {
+        skuInput.addEventListener('input', function() {
+            var sku = skuInput.value.trim();
+            if (sku) {
+                form.setAttribute('hx-post', '/inventory/adjust-stock/sku/' + sku + '/');
+            } else {
+                form.setAttribute('hx-post', "{% url 'Inventory:AdjustStockBySKU' 'PLACEHOLDER' %}");
+            }
+        });
+    }
+});
+</script>
 {% endblock %}

@@ -1,8 +1,9 @@
 {# -- AMW Django ERP - Icon Snippet (Lucide-Icons) -- #}
 {# Renders inline SVG icons based on the icon name. #}
+{% with icon_class=class|default:'' %}
 {% if icon == "layout-dashboard" %}
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{{ class|default:'' }}" aria-hidden="true"
+    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{{ icon_class }}" aria-hidden="true"
     focusable="false">
     <rect width="7" height="9" x="3" y="3" rx="1" />
     <rect width="7" height="5" x="14" y="3" rx="1" />
@@ -11,7 +12,7 @@
 </svg>
 {% elif icon == "users" %}
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{{ class|default:'' }}" aria-hidden="true"
+    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{{ icon_class }}" aria-hidden="true"
     focusable="false">
     <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
     <circle cx="9" cy="7" r="4" />
@@ -20,21 +21,21 @@
 </svg>
 {% elif icon == "shield-check" %}
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{{ class|default:'' }}" aria-hidden="true"
+    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{{ icon_class }}" aria-hidden="true"
     focusable="false">
     <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
     <path d="m9 12 2 2 4-4" />
 </svg>
 {% elif icon == "settings" %}
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{{ class|default:'' }}" aria-hidden="true"
+    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{{ icon_class }}" aria-hidden="true"
     focusable="false">
     <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
     <circle cx="12" cy="12" r="3" />
 </svg>
 {% elif icon == "package" %}
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{{ class|default:'' }}" aria-hidden="true"
+    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{{ icon_class }}" aria-hidden="true"
     focusable="false">
     <path d="m7.5 4.27 9 5.15" />
     <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
@@ -43,7 +44,7 @@
 </svg>
 {% elif icon == "shopping-cart" %}
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{{ class|default:'' }}" aria-hidden="true"
+    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{{ icon_class }}" aria-hidden="true"
     focusable="false">
     <circle cx="8" cy="21" r="1" />
     <circle cx="19" cy="21" r="1" />
@@ -51,7 +52,7 @@
 </svg>
 {% elif icon == "truck" %}
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{{ class|default:'' }}" aria-hidden="true"
+    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{{ icon_class }}" aria-hidden="true"
     focusable="false">
     <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2" />
     <path d="M15 18H9" />
@@ -61,20 +62,20 @@
 </svg>
 {% elif icon == "x" %}
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{{ class|default:'' }}" aria-hidden="true"
+    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{{ icon_class }}" aria-hidden="true"
     focusable="false">
     <path d="M18 6 6 18" />
     <path d="m6 6 12 12" />
 </svg>
 {% elif icon == "chevron-down" %}
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{{ class|default:'' }}" aria-hidden="true"
+    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{{ icon_class }}" aria-hidden="true"
     focusable="false">
     <path d="m6 9 6 6 6-6" />
 </svg>
 {% elif icon == "building-2" %}
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{{ class|default:'' }}" aria-hidden="true"
+    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{{ icon_class }}" aria-hidden="true"
     focusable="false">
     <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z" />
     <path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2" />
@@ -86,7 +87,7 @@
 </svg>
 {% elif icon == "briefcase" %}
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{{ class|default:'' }}" aria-hidden="true"
+    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{{ icon_class }}" aria-hidden="true"
     focusable="false">
     <path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
     <rect width="20" height="14" x="2" y="6" rx="2" />
@@ -95,14 +96,14 @@
 </svg>
 {% elif icon == "key-round" %}
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{{ class|default:'' }}" aria-hidden="true"
+    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{{ icon_class }}" aria-hidden="true"
     focusable="false">
     <path d="M2 18v3c0 .6.4 1 1 1h4v-3h3v-3h2l1.4-1.4a6.5 6.5 0 1 0-4-4Z" />
     <circle cx="16.5" cy="7.5" r=".5" fill="currentColor" />
 </svg>
 {% elif icon == "boxes" %}
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{{ class|default:'' }}" aria-hidden="true"
+    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{{ icon_class }}" aria-hidden="true"
     focusable="false">
     <path d="M7.5 4.27 9 5.11" />
     <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
@@ -115,14 +116,14 @@
 </svg>
 {% elif icon == "tags" %}
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{{ class|default:'' }}" aria-hidden="true"
+    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{{ icon_class }}" aria-hidden="true"
     focusable="false">
     <path d="m15 5 6.3 6.3a2.4 2.4 0 0 1 0 3.4L17 19" />
     <path d="M9 21H2v-7l6.3-6.3a2.4 2.4 0 0 1 3.4 0L19 15" />
 </svg>
 {% elif icon == "arrow-left-right" %}
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{{ class|default:'' }}" aria-hidden="true"
+    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{{ icon_class }}" aria-hidden="true"
     focusable="false">
     <path d="M8 3v3a2 2 0 0 1-2 2H3" />
     <path d="m4 7 3-3-3-3" />
@@ -131,7 +132,7 @@
 </svg>
 {% elif icon == "clipboard-list" %}
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{{ class|default:'' }}" aria-hidden="true"
+    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{{ icon_class }}" aria-hidden="true"
     focusable="false">
     <rect width="8" height="4" x="8" y="2" rx="1" ry="1" />
     <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
@@ -142,7 +143,7 @@
 </svg>
 {% elif icon == "user-cog" %}
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{{ class|default:'' }}" aria-hidden="true"
+    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{{ icon_class }}" aria-hidden="true"
     focusable="false">
     <circle cx="18" cy="15" r="3" />
     <circle cx="9" cy="7" r="4" />
@@ -158,8 +159,9 @@
 </svg>
 {% else %}
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{{ class|default:'' }}" aria-hidden="true"
+    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="{{ icon_class }}" aria-hidden="true"
     focusable="false">
     <circle cx="12" cy="12" r="4" />
 </svg>
 {% endif %}
+{% endwith %}

@@ -19,7 +19,7 @@
                 <tr>
                     <td><strong>{{ dept.name }}</strong></td>
                     <td class="u-text-xs">{{ dept.code }}</td>
-                    <td class="u-text-xs">{{ dept.parent.name|default:"-" }}</td>
+                    <td class="u-text-xs">{% if dept.parent %}{{ dept.parent.name }}{% else %}-{% endif %}</td>
                 </tr>
                 {% empty %}
                 <tr><td colspan="3" class="u-text-center u-py-lg u-text-muted">No departments found.</td></tr>
