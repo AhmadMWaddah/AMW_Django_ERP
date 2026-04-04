@@ -43,13 +43,13 @@ class TestSupplierCategoryModel:
         )
 
         assert category.name == "Raw Materials"
-        assert category.code == "raw-materials"
+        assert category.slug == "raw-materials"
         assert category.description == "Basic raw materials"
 
     def test_category_auto_slug(self):
         """Test automatic slug generation."""
         category = SupplierCategory.objects.create(name="Electronics Suppliers")
-        assert category.code == "electronics-suppliers"
+        assert category.slug == "electronics-suppliers"
 
     def test_category_hierarchy(self):
         """Test parent-child category relationships."""

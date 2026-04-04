@@ -28,19 +28,19 @@ class TestDepartmentModel:
         dept = Department.objects.create(name="Information Technology", description="IT department")
 
         assert dept.name == "Information Technology"
-        assert dept.code == "information-technology"
+        assert dept.slug == "information-technology"
         assert dept.parent is None
         assert dept.is_active is True
 
     def test_department_auto_slug(self):
         """Test that department code is auto-generated from name."""
         dept = Department.objects.create(name="Human Resources")
-        assert dept.code == "human-resources"
+        assert dept.slug == "human-resources"
 
     def test_department_custom_slug(self):
         """Test that custom department code is preserved."""
-        dept = Department.objects.create(name="Research and Development", code="rnd")
-        assert dept.code == "rnd"
+        dept = Department.objects.create(name="Research and Development", slug="rnd")
+        assert dept.slug == "rnd"
 
     def test_department_hierarchy(self):
         """Test parent-child department relationships."""
@@ -93,7 +93,7 @@ class TestPolicyModel:
         )
 
         assert policy.name == "Stock Adjustment"
-        assert policy.code == "stock-adjustment"
+        assert policy.slug == "stock-adjustment"
         assert policy.resource == "inventory.stock"
         assert policy.action == "adjust"
         assert policy.effect == "allow"
@@ -101,7 +101,7 @@ class TestPolicyModel:
     def test_policy_auto_slug(self):
         """Test that policy code is auto-generated."""
         policy = Policy.objects.create(name="Create Sales Order", resource="sales.order", action="create")
-        assert policy.code == "create-sales-order"
+        assert policy.slug == "create-sales-order"
 
     def test_policy_deny_effect(self):
         """Test creating a deny policy."""
@@ -166,7 +166,7 @@ class TestRoleModel:
         role = Role.objects.create(name="Developer", department=dept, description="Software developer role")
 
         assert role.name == "Developer"
-        assert role.code == "developer"
+        assert role.slug == "developer"
         assert role.department == dept
         assert role.is_active is True
 
@@ -183,8 +183,8 @@ class TestRoleModel:
         it_dept = Department.objects.create(name="IT")
         sales_dept = Department.objects.create(name="Sales")
 
-        it_manager = Role.objects.create(name="Manager", department=it_dept, code="it-manager")
-        sales_manager = Role.objects.create(name="Manager", department=sales_dept, code="sales-manager")
+        it_manager = Role.objects.create(name="Manager", department=it_dept, slug="it-manager")
+        sales_manager = Role.objects.create(name="Manager", department=sales_dept, slug="sales-manager")
 
         assert it_manager != sales_manager
         assert it_manager.department != sales_manager.department

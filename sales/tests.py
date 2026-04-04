@@ -48,14 +48,14 @@ class TestCustomerCategoryModel:
         )
 
         assert category.name == "Corporate"
-        assert category.code == "corporate"
+        assert category.slug == "corporate"
         assert category.description == "Enterprise customers"
         assert category.parent is None
 
     def test_category_auto_slug(self):
         """Test automatic slug generation."""
         category = CustomerCategory.objects.create(name="Small Business")
-        assert category.code == "small-business"
+        assert category.slug == "small-business"
 
     def test_category_hierarchy(self):
         """Test parent-child category relationships."""

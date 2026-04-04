@@ -26,14 +26,14 @@ class TestCategoryModel:
         category = Category.objects.create(name="Test Category", description="Test description")
 
         assert category.name == "Test Category"
-        assert category.code == "test-category"
+        assert category.slug == "test-category"
         assert category.description == "Test description"
         assert category.parent is None
 
     def test_category_auto_slug(self):
         """Test automatic slug generation."""
         category = Category.objects.create(name="Major Appliances")
-        assert category.code == "major-appliances"
+        assert category.slug == "major-appliances"
 
     def test_category_hierarchy(self):
         """Test parent-child category relationships."""
