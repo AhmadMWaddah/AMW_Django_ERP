@@ -21,14 +21,14 @@ from sales.models import (
 class CustomerCategoryAdmin(admin.ModelAdmin):
     """Admin interface for CustomerCategory model."""
 
-    list_display = ["name", "code", "parent", "deleted_at_display"]
+    list_display = ["name", "slug", "parent", "deleted_at_display"]
     list_filter = ["parent"]
-    search_fields = ["name", "code", "description"]
+    search_fields = ["name", "slug", "description"]
     ordering = ["name"]
     readonly_fields = ["created_at", "modified_at", "deleted_at"]
 
     fieldsets = (
-        ("Category Details", {"fields": ("name", "code", "parent", "description")}),
+        ("Category Details", {"fields": ("name", "slug", "parent", "description")}),
         ("Status", {"fields": ("deleted_at", "created_at", "modified_at")}),
     )
 

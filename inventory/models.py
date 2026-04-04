@@ -20,6 +20,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.timezone import now
+from django.utils.text import slugify
 
 from core.models import SoftDeleteModel
 
@@ -39,10 +40,10 @@ class Category(SoftDeleteModel):
         unique=True,
         help_text="Category name (e.g., 'Major Appliances')",
     )
-    code = models.SlugField(
+    slug = models.SlugField(
         unique=True,
         blank=True,
-        help_text="Auto-generated slug code (e.g., 'major-appliances')",
+        help_text="URL-friendly slug (e.g., 'major-appliances')",
     )
     parent = models.ForeignKey(
         "self",
@@ -68,11 +69,15 @@ class Category(SoftDeleteModel):
         return self.name
 
     def save(self, *args, **kwargs):
-        # Auto-generate code from name if not provided
-        if not self.code:
-            from django.utils.text import slugify
-
-            self.code = slugify(self.name)
+        # Auto-generate slug from name if not provided
+        if not self.slug:
+            self.slug = slugify(self.name)
+            # Ensure uniqueness by appending random suffix if needed
+            base_slug = self.slug
+            counter = 1
+            while Category.objects.filter(slug=self.slug).exclude(pk=self.pk).exists():
+                self.slug = f"{base_slug}-{counter}"
+                counter += 1
         super().save(*args, **kwargs)
 
     def clean(self):
@@ -107,6 +112,11 @@ class Product(SoftDeleteModel):
         max_length=50,
         unique=True,
         help_text="Unique SKU code (e.g., 'WM-CR-159' for Washing Machine Crazy 159)",
+    )
+    slug = models.SlugField(
+        unique=True,
+        blank=True,
+        help_text="URL-friendly slug (e.g., 'wm-cr-159')",
     )
     name = models.CharField(
         max_length=200,
@@ -179,6 +189,18 @@ class Product(SoftDeleteModel):
 
     def __str__(self):
         return f"{self.sku} - {self.name}"
+
+    def save(self, *args, **kwargs):
+        # Auto-generate slug from SKU if not provided
+        if not self.slug:
+            self.slug = slugify(self.sku)
+            # Ensure uniqueness by appending random suffix if needed
+            base_slug = self.slug
+            counter = 1
+            while Product.objects.filter(slug=self.slug).exclude(pk=self.pk).exists():
+                self.slug = f"{base_slug}-{counter}"
+                counter += 1
+        super().save(*args, **kwargs)
 
     def clean(self):
         # Validate SKU format (should contain at least one hyphen)

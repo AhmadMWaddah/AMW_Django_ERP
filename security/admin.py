@@ -13,14 +13,14 @@ from security.models import Department, Policy, Role
 class DepartmentAdmin(admin.ModelAdmin):
     """Admin interface for Department model."""
 
-    list_display = ["name", "code", "parent", "is_active", "created_at"]
+    list_display = ["name", "slug", "parent", "is_active", "created_at"]
     list_filter = ["parent", "is_active"]
-    search_fields = ["name", "code", "description"]
+    search_fields = ["name", "slug", "description"]
     ordering = ["name"]
     readonly_fields = ["created_at", "updated_at"]
 
     fieldsets = (
-        ("Department Details", {"fields": ("name", "code", "parent", "description")}),
+        ("Department Details", {"fields": ("name", "slug", "parent", "description")}),
         ("Status", {"fields": ("is_active", "created_at", "updated_at")}),
     )
 
@@ -29,9 +29,9 @@ class DepartmentAdmin(admin.ModelAdmin):
 class PolicyAdmin(admin.ModelAdmin):
     """Admin interface for Policy model."""
 
-    list_display = ["name", "code", "resource", "action", "effect", "is_active"]
+    list_display = ["name", "slug", "resource", "action", "effect", "is_active"]
     list_filter = ["effect", "is_active", "resource"]
-    search_fields = ["name", "code", "description", "resource", "action"]
+    search_fields = ["name", "slug", "description", "resource", "action"]
     ordering = ["name"]
     readonly_fields = ["created_at", "updated_at"]
 
@@ -41,7 +41,7 @@ class PolicyAdmin(admin.ModelAdmin):
             {
                 "fields": (
                     "name",
-                    "code",
+                    "slug",
                     "description",
                     "resource",
                     "action",
@@ -59,13 +59,13 @@ class RoleAdmin(admin.ModelAdmin):
 
     list_display = ["name", "department", "is_active", "created_at"]
     list_filter = ["department", "is_active"]
-    search_fields = ["name", "code", "description"]
+    search_fields = ["name", "slug", "description"]
     ordering = ["department__name", "name"]
     readonly_fields = ["created_at", "updated_at"]
     filter_horizontal = ["policies"]
 
     fieldsets = (
-        ("Role Details", {"fields": ("name", "code", "department", "description")}),
+        ("Role Details", {"fields": ("name", "slug", "department", "description")}),
         ("Policies", {"fields": ("policies",)}),
         ("Status", {"fields": ("is_active", "created_at", "updated_at")}),
     )

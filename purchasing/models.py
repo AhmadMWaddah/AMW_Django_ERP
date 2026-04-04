@@ -15,6 +15,7 @@ Models:
 - PurchaseOrderItem: Order line items with unit cost
 """
 
+import uuid
 from decimal import Decimal
 
 from django.conf import settings
@@ -38,10 +39,10 @@ class SupplierCategory(SoftDeleteModel):
         unique=True,
         help_text="Category name (e.g., 'Raw Materials', 'Electronics')",
     )
-    code = models.SlugField(
+    slug = models.SlugField(
         unique=True,
         blank=True,
-        help_text="Auto-generated slug code",
+        help_text="URL-friendly slug code",
     )
     parent = models.ForeignKey(
         "self",
@@ -67,8 +68,14 @@ class SupplierCategory(SoftDeleteModel):
         return self.name
 
     def save(self, *args, **kwargs):
-        if not self.code:
-            self.code = slugify(self.name)
+        if not self.slug:
+            self.slug = slugify(self.name)
+            # Ensure uniqueness
+            base_slug = self.slug
+            counter = 1
+            while SupplierCategory.objects.filter(slug=self.slug).exclude(pk=self.pk).exists():
+                self.slug = f"{base_slug}-{counter}"
+                counter += 1
         super().save(*args, **kwargs)
 
     def clean(self):
@@ -96,6 +103,11 @@ class Supplier(SoftDeleteModel):
     name = models.CharField(
         max_length=200,
         help_text="Supplier name (individual or company)",
+    )
+    slug = models.SlugField(
+        unique=True,
+        blank=True,
+        help_text="URL-friendly slug (auto-generated from name)",
     )
     email = models.EmailField(
         blank=True,
@@ -146,6 +158,19 @@ class Supplier(SoftDeleteModel):
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        # Auto-generate slug from name + random suffix if not provided
+        if not self.slug:
+            base_slug = slugify(self.name)
+            if not base_slug:
+                base_slug = "supplier"
+            self.slug = f"{base_slug}-{uuid.uuid4().hex[:6]}"
+            counter = 1
+            while Supplier.objects.filter(slug=self.slug).exclude(pk=self.pk).exists():
+                self.slug = f"{base_slug}-{uuid.uuid4().hex[:6]}-{counter}"
+                counter += 1
+        super().save(*args, **kwargs)
 
     def clean(self):
         if not self.name.strip():

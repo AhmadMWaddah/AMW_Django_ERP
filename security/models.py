@@ -24,7 +24,7 @@ class Department(models.Model):
     """
 
     name = models.CharField(max_length=100, unique=True)
-    code = models.SlugField(unique=True, blank=True)
+    slug = models.SlugField(unique=True, blank=True)
     parent = models.ForeignKey(
         "self",
         on_delete=models.CASCADE,
@@ -48,8 +48,14 @@ class Department(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        if not self.code:
-            self.code = slugify(self.name)
+        if not self.slug:
+            self.slug = slugify(self.name)
+            # Ensure uniqueness
+            base = self.slug
+            counter = 1
+            while Department.objects.filter(slug=self.slug).exclude(pk=self.pk).exists():
+                self.slug = f"{base}-{counter}"
+                counter += 1
         super().save(*args, **kwargs)
 
     def get_all_children(self):
@@ -74,7 +80,7 @@ class Policy(models.Model):
     ]
 
     name = models.CharField(max_length=100, unique=True)
-    code = models.SlugField(unique=True, blank=True)
+    slug = models.SlugField(unique=True, blank=True)
     description = models.TextField(blank=True, help_text="What this policy permits or denies")
     effect = models.CharField(
         max_length=10, choices=EFFECT_CHOICES, default="allow", help_text="Allow or Deny this action"
@@ -95,8 +101,13 @@ class Policy(models.Model):
         return f"{self.name} ({self.effect})"
 
     def save(self, *args, **kwargs):
-        if not self.code:
-            self.code = slugify(self.name)
+        if not self.slug:
+            self.slug = slugify(self.name)
+            base = self.slug
+            counter = 1
+            while Policy.objects.filter(slug=self.slug).exclude(pk=self.pk).exists():
+                self.slug = f"{base}-{counter}"
+                counter += 1
         super().save(*args, **kwargs)
 
     def matches(self, resource, action):
@@ -121,7 +132,7 @@ class Role(models.Model):
     """
 
     name = models.CharField(max_length=100)
-    code = models.SlugField(unique=True, blank=True)
+    slug = models.SlugField(unique=True, blank=True)
     department = models.ForeignKey(
         Department, on_delete=models.CASCADE, related_name="roles", help_text="Department this role belongs to"
     )
@@ -142,8 +153,13 @@ class Role(models.Model):
         return f"{self.name} ({self.department.name})"
 
     def save(self, *args, **kwargs):
-        if not self.code:
-            self.code = slugify(self.name)
+        if not self.slug:
+            self.slug = slugify(self.name)
+            base = self.slug
+            counter = 1
+            while Role.objects.filter(slug=self.slug).exclude(pk=self.pk).exists():
+                self.slug = f"{base}-{counter}"
+                counter += 1
         super().save(*args, **kwargs)
 
     def get_all_policies(self):

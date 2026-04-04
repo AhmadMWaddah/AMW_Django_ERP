@@ -13,14 +13,14 @@ from inventory.models import Category, Product, StockAdjustment, StockTransactio
 class CategoryAdmin(admin.ModelAdmin):
     """Admin interface for Category model."""
 
-    list_display = ["name", "code", "parent", "created_at"]
+    list_display = ["name", "slug", "parent", "created_at"]
     list_filter = ["parent"]
-    search_fields = ["name", "code", "description"]
+    search_fields = ["name", "slug", "description"]
     ordering = ["name"]
     readonly_fields = ["created_at", "modified_at", "deleted_at"]
 
     fieldsets = (
-        ("Category Details", {"fields": ("name", "code", "parent", "description")}),
+        ("Category Details", {"fields": ("name", "slug", "parent", "description")}),
         ("Status", {"fields": ("deleted_at", "created_at", "modified_at")}),
     )
 

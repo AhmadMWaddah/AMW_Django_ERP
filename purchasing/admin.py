@@ -11,9 +11,9 @@ from purchasing.models import PurchaseOrder, PurchaseOrderItem, Supplier, Suppli
 
 @admin.register(SupplierCategory)
 class SupplierCategoryAdmin(admin.ModelAdmin):
-    list_display = ["name", "code", "parent", "is_deleted"]
+    list_display = ["name", "slug", "parent", "is_deleted"]
     list_filter = ["parent"]
-    search_fields = ["name", "code"]
+    search_fields = ["name", "slug"]
     ordering = ["name"]
 
 

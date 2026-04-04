@@ -22,7 +22,10 @@ def customer_list(request):
 
     if query:
         customers = customers.filter(
-            Q(name__icontains=query) | Q(email__icontains=query) | Q(category__name__icontains=query)
+            Q(name__icontains=query)
+            | Q(email__icontains=query)
+            | Q(slug__icontains=query)
+            | Q(category__name__icontains=query)
         )
 
     return render(
@@ -33,11 +36,11 @@ def customer_list(request):
 
 
 @login_required
-def customer_detail(request, customer_id):
+def customer_detail(request, slug):
     """Customer detail with order history."""
     customer = get_object_or_404(
         Customer.objects.select_related("category"),
-        pk=customer_id,
+        slug=slug,
     )
     orders = (
         SalesOrder.objects.filter(customer=customer).prefetch_related("items", "items__product").order_by("-created_at")
