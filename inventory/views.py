@@ -28,9 +28,9 @@ def product_list(request):
 
 
 @login_required
-def product_detail(request, product_id):
+def product_detail(request, slug):
     """Product detail with stock movement ledger."""
-    product = get_object_or_404(Product.objects.select_related("category"), pk=product_id)
+    product = get_object_or_404(Product.objects.select_related("category"), slug=slug)
     transactions = (
         StockTransaction.objects.filter(product=product).select_related("created_by").order_by("-created_at")[:50]
     )
@@ -38,9 +38,9 @@ def product_detail(request, product_id):
 
 
 @login_required
-def stock_ledger(request, product_id):
+def stock_ledger(request, slug):
     """Stock movement history page (ledger only)."""
-    product = get_object_or_404(Product.objects.select_related("category"), pk=product_id)
+    product = get_object_or_404(Product.objects.select_related("category"), slug=slug)
     transactions = StockTransaction.objects.filter(product=product).select_related("created_by").order_by("-created_at")
     return render(request, "inventory/pages/stock_ledger.html", {"product": product, "transactions": transactions})
 
@@ -51,7 +51,7 @@ def category_list(request):
     query = request.GET.get("q", "").strip()
     categories = Category.objects.all().order_by("name")
     if query:
-        categories = categories.filter(Q(name__icontains=query) | Q(code__icontains=query))
+        categories = categories.filter(Q(name__icontains=query) | Q(slug__icontains=query))
     return render(request, "inventory/pages/category_list.html", {"categories": categories, "query": query})
 
 
@@ -71,8 +71,8 @@ def adjustment_list(request):
 
 @require_POST
 @login_required
-def adjust_stock_htmx(request, product_id):
-    """HTMX endpoint for stock adjustment.
+def adjust_stock_htmx(request, slug):
+    """HTMX endpoint for stock adjustment by slug.
 
     Policy: Requires 'inventory.stock' -> 'adjust' permission.
     """
@@ -88,7 +88,7 @@ def adjust_stock_htmx(request, product_id):
             },
         )
 
-    product = get_object_or_404(Product, pk=product_id)
+    product = get_object_or_404(Product, slug=slug)
     action = request.POST.get("action")
     quantity_str = request.POST.get("quantity", "0")
     location_note = request.POST.get("location_note", "")

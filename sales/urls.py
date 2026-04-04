@@ -10,7 +10,7 @@ app_name = "Sales"
 
 urlpatterns = [
     path("customers/", views.customer_list, name="CustomerList"),
-    path("customers/<int:customer_id>/", views.customer_detail, name="CustomerDetail"),
+    path("customers/<slug:slug>/", views.customer_detail, name="CustomerDetail"),
     path("orders/", views.order_list, name="OrderList"),
     path("orders/<int:order_id>/", views.order_detail, name="OrderDetail"),
     path("orders/<int:order_id>/confirm/", views.confirm_order_htmx, name="ConfirmOrder"),

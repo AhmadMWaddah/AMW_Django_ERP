@@ -42,8 +42,8 @@
                     <td class="u-text-right">{{ product.wac_price }}</td>
                     <td>{{ product.unit_of_measure }}</td>
                     <td class="u-flex u-gap-xs">
-                        <a href="{% url 'Inventory:ProductDetail' product.id %}" class="btn btn--detail btn--sm">Detail</a>
-                        <a href="{% url 'Inventory:StockLedger' product.id %}" class="btn btn--ledger btn--sm">Ledger</a>
+                        <a href="{% url 'Inventory:ProductDetail' product.slug %}" class="btn btn--detail btn--sm">Detail</a>
+                        <a href="{% url 'Inventory:StockLedger' product.slug %}" class="btn btn--ledger btn--sm">Ledger</a>
                     </td>
                 </tr>
                 {% empty %}
@@ -53,56 +53,6 @@
                 {% endfor %}
             </tbody>
         </table>
-    </div>
-</div>
-
-{# Stock Adjustment Modal Trigger #}
-<div class="u-mt-md">
-    <button class="btn btn--primary" onclick="window.openModal('adjust-modal')">
-        Stock Adjustment
-    </button>
-</div>
-
-{# Stock Adjustment Modal #}
-<div id="adjust-modal" class="modal-overlay" style="display: none;">
-    <div class="modal">
-        <div class="modal__header">
-            <h3 class="modal__title">Stock Adjustment</h3>
-            <button class="modal__close" onclick="window.closeModal('adjust-modal')">
-                {% include "_snipps_/_icon_.html" with icon="x" only %}
-            </button>
-        </div>
-        <form hx-post="" id="adjust-form">
-            <div class="modal__body">
-                <p class="u-text-sm u-text-muted u-mb-md">
-                    Select a product and enter the quantity to adjust.
-                    This will create a stock transaction and update WAC if applicable.
-                </p>
-                <div class="form-group">
-                    <label class="form-group__label">Product SKU</label>
-                    <input type="text" name="sku" class="form-group__input" placeholder="e.g., WM-CR-159" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-group__label">Action</label>
-                    <select name="action" class="form-group__input" required>
-                        <option value="in">Add Stock</option>
-                        <option value="out">Reduce Stock</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-group__label">Quantity</label>
-                    <input type="number" name="quantity" class="form-group__input" step="0.0001" min="0" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-group__label">Location Note (optional)</label>
-                    <input type="text" name="location_note" class="form-group__input" placeholder="e.g., Warehouse A">
-                </div>
-            </div>
-            <div class="modal__footer">
-                <button type="button" class="btn btn--outline" onclick="window.closeModal('adjust-modal')">Cancel</button>
-                <button type="submit" class="btn btn--primary">Adjust</button>
-            </div>
-        </form>
     </div>
 </div>
 {% endblock %}

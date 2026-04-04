@@ -24,7 +24,10 @@ def supplier_list(request):
 
     if query:
         suppliers = suppliers.filter(
-            Q(name__icontains=query) | Q(email__icontains=query) | Q(category__name__icontains=query)
+            Q(name__icontains=query)
+            | Q(email__icontains=query)
+            | Q(slug__icontains=query)
+            | Q(category__name__icontains=query)
         )
 
     return render(
@@ -35,11 +38,11 @@ def supplier_list(request):
 
 
 @login_required
-def supplier_detail(request, supplier_id):
+def supplier_detail(request, slug):
     """Supplier detail with PO history."""
     supplier = get_object_or_404(
         Supplier.objects.select_related("category"),
-        pk=supplier_id,
+        slug=slug,
     )
     orders = (
         PurchaseOrder.objects.filter(supplier=supplier)
