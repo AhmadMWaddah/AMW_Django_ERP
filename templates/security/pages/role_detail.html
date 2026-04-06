@@ -1,0 +1,113 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}Role Detail - {{ app_name }}{% endblock %}
+{% block topbar_title %}IAM - Role Detail{% endblock %}
+
+{% block dashboard_content %}
+<div class="card">
+    <div class="card__header">
+        <h2 class="card__title">{{ role.name }}</h2>
+        <a href="{% url 'Security:RoleList' %}" class="btn btn--outline">Back to Roles</a>
+    </div>
+    <div class="card__body">
+        {# Basic Information #}
+        <h3 class="u-mb-md">Basic Information</h3>
+        <div class="u-mb-lg" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
+            <div>
+                <div class="u-text-xs u-text-muted u-uppercase u-mb-xs">Role Name</div>
+                <div class="u-text-lg">{{ role.name }}</div>
+            </div>
+            <div>
+                <div class="u-text-xs u-text-muted u-uppercase u-mb-xs">Department</div>
+                <div class="u-text-sm">{{ role.department.name }}</div>
+                <a href="{% url 'Security:DepartmentDetail' role.department.slug %}" class="u-text-xs">View Department</a>
+            </div>
+            <div>
+                <div class="u-text-xs u-text-muted u-uppercase u-mb-xs">Status</div>
+                {% if role.is_active %}
+                <span class="badge badge--success">Active</span>
+                {% else %}
+                <span class="badge badge--danger">Inactive</span>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if role.description %}
+        <div class="u-mb-lg">
+            <div class="u-text-xs u-text-muted u-uppercase u-mb-xs">Description</div>
+            <div class="u-text-sm">{{ role.description }}</div>
+        </div>
+        {% endif %}
+
+        {# Policies #}
+        <h3 class="u-mb-md">Policies</h3>
+        <div class="u-mb-lg">
+            {% if role.policies.all %}
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Policy Name</th>
+                        <th>Resource</th>
+                        <th>Action</th>
+                        <th>Effect</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for policy in role.policies.all %}
+                    <tr>
+                        <td><strong>{{ policy.name }}</strong></td>
+                        <td class="u-text-xs"><code>{{ policy.resource }}</code></td>
+                        <td class="u-text-xs"><code>{{ policy.action }}</code></td>
+                        <td>
+                            <span class="badge {% if policy.effect == 'allow' %}badge--success{% else %}badge--danger{% endif %}">
+                                {{ policy.get_effect_display }}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{% url 'Security:PolicyDetail' policy.slug %}" class="btn btn--detail btn--sm">Detail</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="u-text-muted">No policies assigned.</p>
+            {% endif %}
+        </div>
+
+        {# Employees with this Role #}
+        <h3 class="u-mb-md">Employees with this Role</h3>
+        <div class="u-mb-lg">
+            {% if role.employees.all %}
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Staff</th>
+                        <th>Active</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for emp in role.employees.all %}
+                    <tr>
+                        <td><strong>{{ emp.get_full_name|default:"-" }}</strong></td>
+                        <td class="u-text-xs">{{ emp.email }}</td>
+                        <td>{% if emp.is_staff %}<span class="badge badge--success">Yes</span>{% else %}<span class="badge badge--neutral">No</span>{% endif %}</td>
+                        <td>{% if emp.is_active %}<span class="badge badge--success">Active</span>{% else %}<span class="badge badge--danger">Inactive</span>{% endif %}</td>
+                        <td>
+                            <a href="{% url "Accounts:EmployeeDetail" emp.slug %}" class="btn btn--detail btn--sm">Detail</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="u-text-muted">No employees have this role.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

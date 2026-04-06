@@ -17,6 +17,7 @@ Fields:
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
 from django.utils import timezone
+from django.utils.text import slugify
 
 
 class EmployeeManager(BaseUserManager):
@@ -80,6 +81,15 @@ class Employee(AbstractBaseUser, PermissionsMixin):
         "Staff Status", default=False, help_text="Designates whether the employee can log into admin."
     )
 
+    # -- Slug Field --
+    slug = models.SlugField(
+        "Slug",
+        max_length=150,
+        unique=True,
+        blank=True,
+        help_text="URL-friendly identifier. Auto-generated from name or email.",
+    )
+
     # -- Timestamps --
     date_joined = models.DateTimeField(
         "Date Joined", default=timezone.now, help_text="Date/time when the employee account was created."
@@ -126,3 +136,27 @@ class Employee(AbstractBaseUser, PermissionsMixin):
     def get_short_name(self):
         """Return the short name of the employee (first name or email)."""
         return self.first_name if self.first_name else self.email
+
+    def _generate_slug(self):
+        """Generate a unique slug from name or email."""
+        if self.first_name and self.last_name:
+            base_slug = slugify(f"{self.first_name}-{self.last_name}")
+        else:
+            base_slug = slugify(self.email.split("@")[0])
+
+        if not base_slug:
+            base_slug = slugify(self.email.replace("@", "-").replace(".", "-"))
+
+        slug = base_slug
+        counter = 1
+        while Employee.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+            slug = f"{base_slug}-{counter}"
+            counter += 1
+
+        self.slug = slug
+
+    def save(self, *args, **kwargs):
+        """Auto-generate slug if not set."""
+        if not self.slug:
+            self._generate_slug()
+        super().save(*args, **kwargs)

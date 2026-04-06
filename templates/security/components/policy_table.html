@@ -1,0 +1,35 @@
+{# -- Security - Policy Table Rows -- #}
+{# Receives: policies (queryset) #}
+
+<thead>
+    <tr>
+        <th>Name</th>
+        <th>Resource</th>
+        <th>Action</th>
+        <th>Effect</th>
+        <th>Roles</th>
+        <th>Actions</th>
+    </tr>
+</thead>
+<tbody>
+{% for policy in policies %}
+<tr>
+    <td><strong>{{ policy.name }}</strong></td>
+    <td class="u-text-xs"><code>{{ policy.resource|default:"*" }}</code></td>
+    <td class="u-text-xs"><code>{{ policy.action|default:"*" }}</code></td>
+    <td>
+        <span class="badge {% if policy.effect == "allow" %}badge--success{% else %}badge--danger{% endif %}">
+            {{ policy.get_effect_display }}
+        </span>
+    </td>
+    <td class="u-text-xs">{{ policy.roles_count }}</td>
+    <td>
+        <a href="{% url "Security:PolicyDetail" policy.slug %}" class="btn btn--detail btn--sm">Detail</a>
+    </td>
+</tr>
+{% empty %}
+<tr>
+    <td colspan="6" class="u-text-center u-py-lg u-text-muted">No policies found.</td>
+</tr>
+{% endfor %}
+</tbody>

@@ -15,4 +15,5 @@ urlpatterns = [
     path("logout/", views.logout_view, name="Logout"),
     path("dashboard/", views.dashboard_view, name="Dashboard"),
     path("employees/", views.employee_list, name="EmployeeList"),
+    path("employees/<slug:slug>/", views.employee_detail, name="EmployeeDetail"),
 ]

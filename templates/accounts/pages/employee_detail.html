@@ -1,0 +1,120 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}Employee Profile - {{ app_name }}{% endblock %}
+{% block topbar_title %}Identity - Employee Profile{% endblock %}
+
+{% block dashboard_content %}
+<div class="card">
+    <div class="card__header">
+        <h2 class="card__title">Employee Profile</h2>
+        <a href="{% url 'Accounts:EmployeeList' %}" class="btn btn--outline">Back to Employees</a>
+    </div>
+    <div class="card__body">
+        {# Basic Information #}
+        <h3 class="u-mb-md">Basic Information</h3>
+        <div class="u-mb-lg" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
+            <div>
+                <div class="u-text-xs u-text-muted u-uppercase u-mb-xs">Full Name</div>
+                <div class="u-text-lg">{{ employee.get_full_name|default:"-" }}</div>
+            </div>
+            <div>
+                <div class="u-text-xs u-text-muted u-uppercase u-mb-xs">Email</div>
+                <div class="u-text-sm">{{ employee.email }}</div>
+            </div>
+            <div>
+                <div class="u-text-xs u-text-muted u-uppercase u-mb-xs">Date Joined</div>
+                <div class="u-text-sm">{{ employee.date_joined|date:"Y-m-d H:i" }}</div>
+            </div>
+        </div>
+
+        {# Department & Roles #}
+        <h3 class="u-mb-md">Department & Roles</h3>
+        <div class="u-mb-lg" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
+            <div>
+                <div class="u-text-xs u-text-muted u-uppercase u-mb-xs">Department</div>
+                {% if employee.department %}
+                <div class="u-text-sm">{{ employee.department.name }}</div>
+                <a href="{% url 'Security:DepartmentDetail' employee.department.slug %}" class="u-text-xs">View Department</a>
+                {% else %}
+                <div class="u-text-muted">Not assigned</div>
+                {% endif %}
+            </div>
+            <div style="grid-column: span 2;">
+                <div class="u-text-xs u-text-muted u-uppercase u-mb-xs">Roles</div>
+                {% if employee.roles.all %}
+                <div class="u-flex u-gap-xs u-flex-wrap">
+                    {% for role in employee.roles.all %}
+                    <a href="{% url 'Security:RoleDetail' role.slug %}" class="badge badge--info">{{ role.name }}</a>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="u-text-muted">No roles assigned</div>
+                {% endif %}
+            </div>
+        </div>
+
+        {# Account Status #}
+        <h3 class="u-mb-md">Account Status</h3>
+        <div class="u-mb-lg" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
+            <div>
+                <div class="u-text-xs u-text-muted u-uppercase u-mb-xs">Staff Status</div>
+                {% if employee.is_staff %}
+                <span class="badge badge--success">Staff Member</span>
+                {% else %}
+                <span class="badge badge--neutral">Regular User</span>
+                {% endif %}
+            </div>
+            <div>
+                <div class="u-text-xs u-text-muted u-uppercase u-mb-xs">Account Status</div>
+                {% if employee.is_active %}
+                <span class="badge badge--success">Active</span>
+                {% else %}
+                <span class="badge badge--danger">Inactive</span>
+                {% endif %}
+            </div>
+            <div>
+                <div class="u-text-xs u-text-muted u-uppercase u-mb-xs">Superuser</div>
+                {% if employee.is_superuser %}
+                <span class="badge badge--danger">Yes</span>
+                {% else %}
+                <span class="badge badge--neutral">No</span>
+                {% endif %}
+            </div>
+        </div>
+
+        {# Recent Activity #}
+        <h3 class="u-mb-md">Recent Activity</h3>
+        <div class="u-mb-lg">
+            {% with audit_logs=employee.audit_logs.all|slice:":10" %}
+            {% if audit_logs %}
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>Action</th>
+                        <th>Target</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in audit_logs %}
+                    <tr>
+                        <td class="u-text-sm">{{ log.timestamp|date:"Y-m-d H:i" }}</td>
+                        <td>
+                            <span class="badge badge--{% if log.action == 'create' %}success{% elif log.action == 'delete' %}danger{% elif log.action == 'update' %}info{% else %}warning{% endif %}">
+                                {{ log.get_action_display }}
+                            </span>
+                            <div class="u-text-xs u-text-muted">{{ log.action_code }}</div>
+                        </td>
+                        <td class="u-text-sm">{{ log.object_repr|truncatechars:50 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="u-text-muted">No recent activity.</p>
+            {% endif %}
+            {% endwith %}
+        </div>
+    </div>
+</div>
+{% endblock %}

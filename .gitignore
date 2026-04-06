@@ -94,3 +94,5 @@ ScreenShots/
 .qwen/
 logs/
 !Architecture/*.md
+.codex/
+.gemini/

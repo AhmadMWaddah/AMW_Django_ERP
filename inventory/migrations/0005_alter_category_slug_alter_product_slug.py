@@ -6,18 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('inventory', '0004_slug_unique_and_remove_code'),
+        ("inventory", "0004_slug_unique_and_remove_code"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='category',
-            name='slug',
+            model_name="category",
+            name="slug",
             field=models.SlugField(blank=True, help_text="URL-friendly slug (e.g., 'major-appliances')", unique=True),
         ),
         migrations.AlterField(
-            model_name='product',
-            name='slug',
+            model_name="product",
+            name="slug",
             field=models.SlugField(blank=True, help_text="URL-friendly slug (e.g., 'wm-cr-159')", unique=True),
         ),
     ]

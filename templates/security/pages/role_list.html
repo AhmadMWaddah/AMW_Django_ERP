@@ -4,28 +4,13 @@
 {% block topbar_title %}IAM - Roles{% endblock %}
 
 {% block dashboard_content %}
+<div id="main-content">
 <form method="get" class="u-flex u-gap-sm u-mb-md">
-    <input type="text" name="q" value="{{ query }}" placeholder="Search by name or department..." class="form-group__input" style="max-width: 600px;">
+    <input type="text" name="q" value="{{ query }}" placeholder="Search by name or department..." class="form-group__input" style="max-width: 500px;">
     <button type="submit" class="btn btn--primary">Search</button>
     {% if query %}<a href="{% url 'Security:RoleList' %}" class="btn btn--outline">Clear</a>{% endif %}
 </form>
-<div class="card">
-    <div class="card__header"><h2 class="card__title">Roles ({{ roles.count }})</h2></div>
-    <div class="card__body" style="overflow-x: auto;">
-        <table class="data-table">
-            <thead><tr><th>Name</th><th>Department</th><th>Policies</th></tr></thead>
-            <tbody>
-                {% for role in roles %}
-                <tr>
-                    <td><strong>{{ role.name }}</strong></td>
-                    <td class="u-text-xs">{{ role.department.name|default:"-" }}</td>
-                    <td class="u-text-xs">{{ role.policies.count }}</td>
-                </tr>
-                {% empty %}
-                <tr><td colspan="3" class="u-text-center u-py-lg u-text-muted">No roles found.</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+
+{% include "components/table_frame.html" %}
 </div>
 {% endblock %}

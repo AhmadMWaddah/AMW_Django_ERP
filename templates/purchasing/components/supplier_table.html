@@ -1,0 +1,31 @@
+{# -- Purchasing - Supplier Table Rows -- #}
+{# Receives: suppliers (queryset) #}
+
+<thead>
+    <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Category</th>
+        <th>Contact Person</th>
+        <th>Actions</th>
+    </tr>
+</thead>
+<tbody>
+{% for supplier in suppliers %}
+<tr>
+    <td><strong>{{ supplier.name }}</strong></td>
+    <td class="u-text-xs">{{ supplier.email|default:"-" }}</td>
+    <td class="u-text-xs">{{ supplier.phone|default:"-" }}</td>
+    <td><span class="badge badge--neutral">{{ supplier.category.name }}</span></td>
+    <td class="u-text-xs">{{ supplier.contact_person|default:"-" }}</td>
+    <td>
+        <a href="{% url "Purchasing:SupplierDetail" supplier.slug %}" class="btn btn--outline btn--sm">View</a>
+    </td>
+</tr>
+{% empty %}
+<tr>
+    <td colspan="6" class="u-text-center u-py-lg u-text-muted">No suppliers found.</td>
+</tr>
+{% endfor %}
+</tbody>

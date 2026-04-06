@@ -1,0 +1,169 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}Audit Log Detail - {{ app_name }}{% endblock %}
+{% block topbar_title %}Audit - Log Detail{% endblock %}
+
+{% block dashboard_content %}
+<div class="card">
+    <div class="card__header">
+        <h2 class="card__title">Audit Log Details</h2>
+        <a href="{% url 'audit:AuditLogList' %}" class="btn btn--outline">Back to Logs</a>
+    </div>
+    <div class="card__body">
+        {# Basic Information #}
+        <h3 class="u-mb-md">Basic Information</h3>
+        <div class="u-mb-lg" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
+            <div>
+                <div class="u-text-xs u-text-muted u-uppercase u-mb-xs">Timestamp</div>
+                <div class="u-text-sm">{{ log.timestamp|date:"Y-m-d H:i:s" }}</div>
+                <div class="u-text-xs u-text-muted">{{ log.timestamp|timesince }} ago</div>
+            </div>
+            <div>
+                <div class="u-text-xs u-text-muted u-uppercase u-mb-xs">Action</div>
+                <span class="badge badge--{% if log.action == 'create' %}success{% elif log.action == 'delete' %}danger{% elif log.action == 'update' %}info{% elif log.action == 'approve' %}success{% elif log.action == 'reject' %}danger{% else %}warning{% endif %}">
+                    {{ log.get_action_display }}
+                </span>
+            </div>
+            <div>
+                <div class="u-text-xs u-text-muted u-uppercase u-mb-xs">Action Code</div>
+                <div class="u-text-sm">{{ log.action_code }}</div>
+            </div>
+            {% if log.action_description %}
+            <div>
+                <div class="u-text-xs u-text-muted u-uppercase u-mb-xs">Description</div>
+                <div class="u-text-sm">{{ log.action_description }}</div>
+            </div>
+            {% endif %}
+        </div>
+
+        {# Actor Information #}
+        <h3 class="u-mb-md">Actor</h3>
+        <div class="u-mb-lg" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
+            <div>
+                <div class="u-text-xs u-text-muted u-uppercase u-mb-xs">Name</div>
+                <div class="u-text-sm">{{ log.actor_name }}</div>
+            </div>
+            <div>
+                <div class="u-text-xs u-text-muted u-uppercase u-mb-xs">Email</div>
+                <div class="u-text-sm">{{ log.actor_email }}</div>
+            </div>
+            {% if log.actor %}
+            <div>
+                <div class="u-text-xs u-text-muted u-uppercase u-mb-xs">Employee</div>
+                <a href="{% url "Accounts:EmployeeDetail" log.actor.slug %}" class="u-text-sm">{{ log.actor.get_full_name|default:log.actor.email }}</a>
+            </div>
+            {% endif %}
+        </div>
+
+        {# Target Information #}
+        <h3 class="u-mb-md">Target</h3>
+        <div class="u-mb-lg" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
+            <div>
+                <div class="u-text-xs u-text-muted u-uppercase u-mb-xs">Content Type</div>
+                <div class="u-text-sm">{{ log.content_type }}</div>
+            </div>
+            <div>
+                <div class="u-text-xs u-text-muted u-uppercase u-mb-xs">Object ID</div>
+                <div class="u-text-sm">{{ log.object_id }}</div>
+            </div>
+            <div style="grid-column: 1 / -1;">
+                <div class="u-text-xs u-text-muted u-uppercase u-mb-xs">Object Representation</div>
+                <div class="u-text-sm">{{ log.object_repr }}</div>
+            </div>
+        </div>
+
+        {# Request Metadata #}
+        {% if log.ip_address or log.user_agent %}
+        <h3 class="u-mb-md">Request Metadata</h3>
+        <div class="u-mb-lg" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
+            {% if log.ip_address %}
+            <div>
+                <div class="u-text-xs u-text-muted u-uppercase u-mb-xs">IP Address</div>
+                <div class="u-text-sm">{{ log.ip_address }}</div>
+            </div>
+            {% endif %}
+            {% if log.user_agent %}
+            <div style="grid-column: 1 / -1;">
+                <div class="u-text-xs u-text-muted u-uppercase u-mb-xs">User Agent</div>
+                <div class="u-text-sm" style="word-break: break-all;">{{ log.user_agent }}</div>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {# Before Data #}
+        {% if log.before_data %}
+        <h3 class="u-mb-md">Before State</h3>
+        <div class="u-mb-lg">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th style="width: 200px;">Field</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for key, value in log.before_data.items %}
+                    <tr>
+                        <td><code>{{ key }}</code></td>
+                        <td>
+                            {% if value is None %}
+                                <span class="u-text-muted">None</span>
+                            {% elif value is dict %}
+                                <pre style="margin: 0; white-space: pre-wrap; word-break: break-all;">{{ value|pprint }}</pre>
+                            {% elif value is list %}
+                                <pre style="margin: 0; white-space: pre-wrap; word-break: break-all;">{{ value|pprint }}</pre>
+                            {% else %}
+                                <span class="u-text-sm">{{ value }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+
+        {# After Data #}
+        {% if log.after_data %}
+        <h3 class="u-mb-md">After State</h3>
+        <div class="u-mb-lg">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th style="width: 200px;">Field</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for key, value in log.after_data.items %}
+                    <tr>
+                        <td><code>{{ key }}</code></td>
+                        <td>
+                            {% if value is None %}
+                                <span class="u-text-muted">None</span>
+                            {% elif value is dict %}
+                                <pre style="margin: 0; white-space: pre-wrap; word-break: break-all;">{{ value|pprint }}</pre>
+                            {% elif value is list %}
+                                <pre style="margin: 0; white-space: pre-wrap; word-break: break-all;">{{ value|pprint }}</pre>
+                            {% else %}
+                                <span class="u-text-sm">{{ value }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+
+        {# Extra Data #}
+        {% if log.extra_data %}
+        <h3 class="u-mb-md">Additional Data</h3>
+        <div class="u-mb-lg">
+            <pre style="background: var(--color-surface-muted); padding: var(--space-md); border-radius: var(--radius-sm); overflow-x: auto;">{{ log.extra_data|pprint }}</pre>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

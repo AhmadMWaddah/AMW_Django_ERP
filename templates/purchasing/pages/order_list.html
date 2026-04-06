@@ -4,67 +4,21 @@
 {% block topbar_title %}Purchase Orders{% endblock %}
 
 {% block dashboard_content %}
-{# Status Filter #}
-<div class="u-flex u-gap-sm u-mb-md">
-    <a href="{% url 'Purchasing:OrderList' %}"
-       class="btn {% if not status_filter %}btn--primary{% else %}btn--outline{% endif %}">All</a>
-    <a href="?status=DRAFT"
-       class="btn {% if status_filter == 'DRAFT' %}btn--primary{% else %}btn--outline{% endif %}">Draft</a>
-    <a href="?status=ISSUED"
-       class="btn {% if status_filter == 'ISSUED' %}btn--primary{% else %}btn--outline{% endif %}">Issued</a>
-    <a href="?status=IN_PROGRESS"
-       class="btn {% if status_filter == 'IN_PROGRESS' %}btn--primary{% else %}btn--outline{% endif %}">In-Progress</a>
-    <a href="?status=COMPLETED"
-       class="btn {% if status_filter == 'COMPLETED' %}btn--primary{% else %}btn--outline{% endif %}">Completed</a>
-    <a href="?status=CANCELLED"
-       class="btn {% if status_filter == 'CANCELLED' %}btn--primary{% else %}btn--outline{% endif %}">Cancelled</a>
-</div>
+<div id="main-content">
+<form method="get" class="u-flex u-gap-sm u-mb-md">
+    <input type="text" name="q" value="{{ query }}" placeholder="Search by PO # or supplier..." class="form-group__input" style="max-width: 400px;">
+    <select name="status" class="form-group__input" style="max-width: 180px;">
+        <option value="">All Status</option>
+        <option value="DRAFT" {% if status_filter == "DRAFT" %}selected{% endif %}>Draft</option>
+        <option value="ISSUED" {% if status_filter == "ISSUED" %}selected{% endif %}>Issued</option>
+        <option value="IN_PROGRESS" {% if status_filter == "IN_PROGRESS" %}selected{% endif %}>In-Progress</option>
+        <option value="COMPLETED" {% if status_filter == "COMPLETED" %}selected{% endif %}>Completed</option>
+        <option value="CANCELLED" {% if status_filter == "CANCELLED" %}selected{% endif %}>Cancelled</option>
+    </select>
+    <button type="submit" class="btn btn--primary">Search</button>
+    {% if query or status_filter %}<a href="{% url 'Purchasing:OrderList' %}" class="btn btn--outline">Clear</a>{% endif %}
+</form>
 
-{# PO Table #}
-<div class="card">
-    <div class="card__header">
-        <h2 class="card__title">Purchase Orders ({{ orders.count }})</h2>
-    </div>
-    <div class="card__body" style="overflow-x: auto;">
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>PO #</th>
-                    <th>Supplier</th>
-                    <th>Date</th>
-                    <th>Status</th>
-                    <th class="u-text-right">Total Cost</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for order in orders %}
-                <tr>
-                    <td><strong>{{ order.po_number|default:"Draft" }}</strong></td>
-                    <td>{{ order.supplier.name }}</td>
-                    <td class="u-text-xs">{{ order.created_at|date:"Y-m-d" }}</td>
-                    <td>
-                        <span class="badge
-                            {% if order.status == 'COMPLETED' %}badge--success
-                            {% elif order.status == 'DRAFT' %}badge--neutral
-                            {% elif order.status == 'CANCELLED' %}badge--danger
-                            {% elif order.status == 'IN_PROGRESS' %}badge--warning
-                            {% else %}badge--info{% endif %}">
-                            {{ order.get_status_display }}
-                        </span>
-                    </td>
-                    <td class="u-text-right">{{ order.total_cost }}</td>
-                    <td>
-                        <a href="{% url 'Purchasing:OrderDetail' order.id %}" class="btn btn--outline btn--sm">View</a>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="6" class="u-text-center u-py-lg u-text-muted">No purchase orders found.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+{% include "components/table_frame.html" %}
 </div>
 {% endblock %}

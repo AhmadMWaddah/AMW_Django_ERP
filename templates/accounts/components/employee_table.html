@@ -1,0 +1,39 @@
+{# -- Accounts - Employee Table Rows -- #}
+{# Receives: employees (queryset) #}
+
+<thead>
+    <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Department</th>
+        <th>Roles</th>
+        <th>Staff</th>
+        <th>Active</th>
+        <th>Actions</th>
+    </tr>
+</thead>
+<tbody>
+{% for emp in employees %}
+<tr>
+    <td><strong>{{ emp.get_full_name|default:"-" }}</strong></td>
+    <td class="u-text-xs">{{ emp.email }}</td>
+    <td class="u-text-xs">{{ emp.department.name|default:"-" }}</td>
+    <td class="u-text-xs">
+        {% for role in emp.roles.all|slice:":2" %}
+        <span class="badge badge--info u-mr-xs">{{ role.name }}</span>
+        {% empty %}
+        <span class="u-text-muted">-</span>
+        {% endfor %}
+    </td>
+    <td>{% if emp.is_staff %}<span class="badge badge--success">Yes</span>{% else %}<span class="badge badge--neutral">No</span>{% endif %}</td>
+    <td>{% if emp.is_active %}<span class="badge badge--success">Active</span>{% else %}<span class="badge badge--danger">Inactive</span>{% endif %}</td>
+    <td>
+        <a href="{% url "Accounts:EmployeeDetail" emp.slug %}" class="btn btn--detail btn--sm">Detail</a>
+    </td>
+</tr>
+{% empty %}
+<tr>
+    <td colspan="7" class="u-text-center u-py-lg u-text-muted">No employees found.</td>
+</tr>
+{% endfor %}
+</tbody>

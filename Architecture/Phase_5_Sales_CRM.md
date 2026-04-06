@@ -17,7 +17,7 @@ It must be used together with:
 - **Phase Name:** `Sales & CRM Workflows`
 - **Branch Name:** `phase-5`
 - **Status:** ✅ **COMPLETE**
-- **Version Tag:** `v5.0-phase5-complete` (pending merge)
+- **Version Tag:** `v5.0-phase5-complete`
 - **Primary Goal:** `Implement customer management and atomic sales order workflows with stock deduction.`
 - **Depends On:** `Phase 4` (Inventory Architecture & Valuation)
 - **Manager Approval Required:** `Yes`

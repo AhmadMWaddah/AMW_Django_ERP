@@ -1,0 +1,103 @@
+{% load pagination_tags %}
+
+{% comment %}
+  Reusable pagination snippet with HTMX support.
+  Preserves ALL active query parameters automatically.
+
+  Required context variables:
+    - page_obj: Django Page object
+
+  Optional context variables:
+    - hx_target: CSS selector for HTMX target (default: "#main-content")
+
+  Usage:
+    {% include "_snipps_/_pagination_.html" with page_obj=page_obj hx_target="#table-results" %}
+{% endcomment %}
+
+{% if page_obj.paginator.num_pages > 1 %}
+<div class="pagination">
+  <div class="pagination__info">
+    <span>
+      Showing {{ page_obj.start_index }}-{{ page_obj.end_index }} of {{ page_obj.paginator.count }} items
+      (Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }})
+    </span>
+  </div>
+
+  <nav class="pagination__controls">
+    {% comment %}Previous Page{% endcomment %}
+    {% if page_obj.has_previous %}
+      {% preserve_query_params page=page_obj.previous_page_number as prev_url %}
+      <a
+        href="{{ prev_url }}"
+        class="pagination__link pagination__link--prev"
+        hx-get="{{ prev_url }}"
+        hx-target="{{ hx_target|default:"#main-content" }}"
+        hx-swap="innerHTML"
+        hx-push-url="true"
+        aria-label="Previous page"
+      >
+        {% include "_snipps_/_icon_.html" with icon="chevron-left" class="icon icon--sm" %}
+        Previous
+      </a>
+    {% else %}
+      <span class="pagination__link pagination__link--disabled" aria-disabled="true">
+        {% include "_snipps_/_icon_.html" with icon="chevron-left" class="icon icon--sm" %}
+        Previous
+      </span>
+    {% endif %}
+
+    {% comment %}Page Numbers{% endcomment %}
+    <div class="pagination__numbers">
+      {% for num in page_obj.paginator.page_range %}
+        {% if num == page_obj.number %}
+          <span class="pagination__number pagination__number--active" aria-current="page">{{ num }}</span>
+        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+          {% preserve_query_params page=num as page_url %}
+          <a
+            href="{{ page_url }}"
+            class="pagination__number"
+            hx-get="{{ page_url }}"
+            hx-target="{{ hx_target|default:"#main-content" }}"
+            hx-swap="innerHTML"
+            hx-push-url="true"
+          >{{ num }}</a>
+        {% elif num == 1 or num == page_obj.paginator.num_pages %}
+          {% preserve_query_params page=num as page_url %}
+          <a
+            href="{{ page_url }}"
+            class="pagination__number"
+            hx-get="{{ page_url }}"
+            hx-target="{{ hx_target|default:"#main-content" }}"
+            hx-swap="innerHTML"
+            hx-push-url="true"
+          >{{ num }}</a>
+        {% elif num == page_obj.number|add:'-3' or num == page_obj.number|add:'3' %}
+          <span class="pagination__ellipsis">…</span>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    {% comment %}Next Page{% endcomment %}
+    {% if page_obj.has_next %}
+      {% preserve_query_params page=page_obj.next_page_number as next_url %}
+      <a
+        href="{{ next_url }}"
+        class="pagination__link pagination__link--next"
+        hx-get="{{ next_url }}"
+        hx-target="{{ hx_target|default:"#main-content" }}"
+        hx-swap="innerHTML"
+        hx-push-url="true"
+        aria-label="Next page"
+      >
+        Next
+        {% include "_snipps_/_icon_.html" with icon="chevron-right" class="icon icon--sm" %}
+      </a>
+    {% else %}
+      <span class="pagination__link pagination__link--disabled" aria-disabled="true">
+        Next
+        {% include "_snipps_/_icon_.html" with icon="chevron-right" class="icon icon--sm" %}
+      </span>
+    {% endif %}
+  </nav>
+</div>
+{% endif %}

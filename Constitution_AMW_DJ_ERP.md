@@ -404,6 +404,17 @@ bash utils/git_phase_finish.sh <phase-number> [version-tag]
 - `templates/<module>/components/` - module-specific fragments
 - `templates/<module>/pages/` - full pages rendered by views
 
+### 10.2.1 Template Naming Convention
+
+- Page templates must use: `{page_name}.html`
+- Component templates must use: `{component_name}.html`
+- Snippet templates must use: `_{snippet_name}_.html`
+
+**Examples:**
+- `templates/accounts/pages/employee_list.html`
+- `templates/components/table_frame.html`
+- `templates/_snipps_/_pagination_.html`
+
 ### 10.3 Asset Placement
 
 - CSS belongs in `static/styles/`

@@ -1,0 +1,31 @@
+{# -- Sales - Customer Table Rows -- #}
+{# Receives: customers (queryset) #}
+
+<thead>
+    <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Category</th>
+        <th>Address</th>
+        <th>Actions</th>
+    </tr>
+</thead>
+<tbody>
+{% for customer in customers %}
+<tr>
+    <td><strong>{{ customer.name }}</strong></td>
+    <td class="u-text-xs">{{ customer.email|default:"-" }}</td>
+    <td class="u-text-xs">{{ customer.phone|default:"-" }}</td>
+    <td><span class="badge badge--neutral">{{ customer.category.name }}</span></td>
+    <td class="u-text-xs u-truncate" style="max-width: 200px;">{{ customer.shipping_address|default:"-" }}</td>
+    <td>
+        <a href="{% url "Sales:CustomerDetail" customer.slug %}" class="btn btn--outline btn--sm">View</a>
+    </td>
+</tr>
+{% empty %}
+<tr>
+    <td colspan="6" class="u-text-center u-py-lg u-text-muted">No customers found.</td>
+</tr>
+{% endfor %}
+</tbody>

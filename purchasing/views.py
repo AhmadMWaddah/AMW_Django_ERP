@@ -2,6 +2,7 @@
 -- AMW Django ERP - Purchasing Views --
 
 Phase 7: Supplier list, PO tracking, HTMX receive stock.
+Phase 7.5: Pagination added to all list views.
 """
 
 from decimal import Decimal
@@ -12,14 +13,17 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_POST
 
-from purchasing.models import PurchaseOrder, Supplier
+from core.utils import paginate_queryset
+from purchasing.models import PurchaseOrder, Supplier, SupplierCategory
 from purchasing.operations.orders import receive_items
 
 
 @login_required
 def supplier_list(request):
-    """Supplier registry with search."""
+    """Supplier registry with search and pagination."""
     query = request.GET.get("q", "").strip()
+    category_filter = request.GET.get("category", "").strip()
+
     suppliers = Supplier.objects.select_related("category").order_by("name")
 
     if query:
@@ -30,10 +34,29 @@ def supplier_list(request):
             | Q(category__name__icontains=query)
         )
 
+    if category_filter:
+        suppliers = suppliers.filter(category__slug=category_filter)
+
+    categories = SupplierCategory.objects.all().order_by("name")
+    pagination_data = paginate_queryset(suppliers, request)
+
+    context = {
+        "query": query,
+        "category_filter": category_filter,
+        "categories": categories,
+        "suppliers": pagination_data["page_obj"].object_list,
+        "title": "Suppliers",
+        "row_template": "purchasing/components/supplier_table.html",
+        **pagination_data,
+    }
+
+    if getattr(request, "htmx", None):
+        return render(request, "components/table_content_only.html", context)
+
     return render(
         request,
         "purchasing/pages/supplier_list.html",
-        {"suppliers": suppliers, "query": query},
+        context,
     )
 
 
@@ -60,21 +83,40 @@ def supplier_detail(request, slug):
 
 @login_required
 def order_list(request):
-    """Purchase order dashboard."""
+    """Purchase order dashboard with search and pagination."""
+    query = request.GET.get("q", "").strip()
     status_filter = request.GET.get("status", "").strip()
+
     orders = (
         PurchaseOrder.objects.select_related("supplier", "created_by")
         .prefetch_related("items", "items__product")
         .order_by("-created_at")
     )
 
+    if query:
+        orders = orders.filter(Q(po_number__icontains=query) | Q(supplier__name__icontains=query))
+
     if status_filter:
         orders = orders.filter(status=status_filter)
+
+    pagination_data = paginate_queryset(orders, request)
+
+    context = {
+        "query": query,
+        "status_filter": status_filter,
+        "orders": pagination_data["page_obj"].object_list,
+        "title": "Purchase Orders",
+        "row_template": "purchasing/components/order_table.html",
+        **pagination_data,
+    }
+
+    if getattr(request, "htmx", None):
+        return render(request, "components/table_content_only.html", context)
 
     return render(
         request,
         "purchasing/pages/order_list.html",
-        {"orders": orders, "status_filter": status_filter},
+        context,
     )
 
 

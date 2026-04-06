@@ -1,0 +1,21 @@
+{# -- AMW Django ERP - Global Table Frame Component -- #}
+{# Constitution Section 10.2: Global Component #}
+{# Receives: #}
+{#   row_template   - path to app-specific _table_body.html #}
+{#   title          - display title (e.g., "Employees") #}
+{#   total_items    - total count for header #}
+{#   **pagination_data #}
+
+<div class="card">
+    <div class="card__header">
+        <h2 class="card__title">{{ title|default:"Records" }} ({{ total_items }})</h2>
+    </div>
+
+    {# Search / Filter Form Slot #}
+    {% block search_form %}{% endblock %}
+
+    {# Table Container - HTMX target for pagination #}
+    <div id="table-results" class="card__body" style="overflow-x: auto;">
+        {% include "components/table_content_only.html" %}
+    </div>
+</div>

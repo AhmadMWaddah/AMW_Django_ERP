@@ -1,0 +1,11 @@
+{# -- AMW Django ERP - Table Content Only (HTMX Inner Fragment) -- #}
+{# Receives: row_template (path to app-specific _table_body.html), #}
+{#           **pagination_data #}
+{# Usage: Returned ONLY on HTMX requests to replace #table-results #}
+
+<table class="data-table">
+    {% include row_template %}
+</table>
+
+{# Pagination #}
+{% include "_snipps_/_pagination_.html" with page_obj=page_obj hx_target="#table-results" %}

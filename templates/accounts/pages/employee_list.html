@@ -4,29 +4,19 @@
 {% block topbar_title %}Identity - Employees{% endblock %}
 
 {% block dashboard_content %}
+<div id="main-content">
 <form method="get" class="u-flex u-gap-sm u-mb-md">
-    <input type="text" name="q" value="{{ query }}" placeholder="Search by name or email..." class="form-group__input" style="max-width: 600px;">
+    <input type="text" name="q" value="{{ query }}" placeholder="Search by name or email..." class="form-group__input" style="max-width: 500px;">
+    <select name="department" class="form-group__input" style="max-width: 200px;">
+        <option value="">All Departments</option>
+        {% for dept in departments %}
+        <option value="{{ dept.slug }}" {% if dept_filter == dept.slug %}selected{% endif %}>{{ dept.name }}</option>
+        {% endfor %}
+    </select>
     <button type="submit" class="btn btn--primary">Search</button>
-    {% if query %}<a href="{% url 'Accounts:EmployeeList' %}" class="btn btn--outline">Clear</a>{% endif %}
+    {% if query or dept_filter %}<a href="{% url 'Accounts:EmployeeList' %}" class="btn btn--outline">Clear</a>{% endif %}
 </form>
-<div class="card">
-    <div class="card__header"><h2 class="card__title">Employees ({{ employees.count }})</h2></div>
-    <div class="card__body" style="overflow-x: auto;">
-        <table class="data-table">
-            <thead><tr><th>Name</th><th>Email</th><th>Staff</th><th>Active</th></tr></thead>
-            <tbody>
-                {% for emp in employees %}
-                <tr>
-                    <td><strong>{{ emp.get_full_name|default:"-" }}</strong></td>
-                    <td class="u-text-xs">{{ emp.email }}</td>
-                    <td>{% if emp.is_staff %}<span class="badge badge--success">Yes</span>{% else %}<span class="badge badge--neutral">No</span>{% endif %}</td>
-                    <td>{% if emp.is_active %}<span class="badge badge--success">Active</span>{% else %}<span class="badge badge--danger">Inactive</span>{% endif %}</td>
-                </tr>
-                {% empty %}
-                <tr><td colspan="4" class="u-text-center u-py-lg u-text-muted">No employees found.</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+
+{% include "components/table_frame.html" %}
 </div>
 {% endblock %}

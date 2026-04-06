@@ -1,0 +1,50 @@
+{# -- Audit - Audit Log Table Rows -- #}
+{# Receives: logs (queryset) #}
+
+<thead>
+    <tr>
+        <th>Timestamp</th>
+        <th>Actor</th>
+        <th>Action</th>
+        <th>Target</th>
+        <th>Object</th>
+        <th>Actions</th>
+    </tr>
+</thead>
+<tbody>
+{% for log in logs %}
+<tr>
+    <td>
+        <div class="u-text-sm">{{ log.timestamp|date:"Y-m-d H:i" }}</div>
+        <div class="u-text-xs u-text-muted">{{ log.timestamp|timesince }} ago</div>
+    </td>
+    <td>
+        <div class="u-text-sm">{{ log.actor_name }}</div>
+        <div class="u-text-xs u-text-muted">{{ log.actor_email }}</div>
+    </td>
+    <td>
+        <span class="badge badge--{% if log.action == "create" %}success{% elif log.action == "delete" %}danger{% elif log.action == "update" %}info{% elif log.action == "approve" %}success{% elif log.action == "reject" %}danger{% else %}warning{% endif %}">
+            {{ log.get_action_display }}
+        </span>
+        <div class="u-text-xs u-text-muted u-mt-xs">{{ log.action_code }}</div>
+    </td>
+    <td>
+        <div class="u-text-sm">{{ log.content_type }}</div>
+        <div class="u-text-xs u-text-muted">ID: {{ log.object_id }}</div>
+    </td>
+    <td style="max-width: 300px;">
+        <span class="u-text-sm" title="{{ log.object_repr }}">{{ log.object_repr|truncatechars:50 }}</span>
+    </td>
+    <td>
+        <a href="{% url "audit:AuditLogDetail" log.pk %}" class="btn btn--detail btn--sm">
+            {% include "_snipps_/_icon_.html" with icon="clipboard-list" class="icon icon--sm" %}
+            Detail
+        </a>
+    </td>
+</tr>
+{% empty %}
+<tr>
+    <td colspan="6" class="u-text-center u-py-lg u-text-muted">No audit logs found.</td>
+</tr>
+{% endfor %}
+</tbody>

@@ -114,10 +114,11 @@ AMW_Django_ERP/
 │   ├── Phase_1_Foundation.md
 │   ├── Phase_2_Infrastructure_Identity.md
 │   ├── Phase_3_IAM_Security.md
-│   ├── Phase_4_Inventory_Architecture.md
+│   ├── Phase_4_Inventory_Valuation.md
 │   ├── Phase_5_Sales_CRM.md
-│   ├── Phase_6_Purchasing.md
-│   └── Phase_7_Frontend_HTMX.md
+│   ├── Phase_6_Purchasing_Procurement.md
+│   ├── Phase_7_Frontend_HTMX.md
+│   └── Phase_8_Async_Hardening.md
 │
 ├── Brand/                     # Brand assets and color palette
 │   └── Dj_ERP_Colour_Pallete_CSS.scss
@@ -181,10 +182,6 @@ AMW_Django_ERP/
 │       ├── _base.css         # CSS resets
 │       ├── _layout.css       # Sidebar, topbar, cards, tables, modals
 │       └── _utilities.css    # Micro-spacing, flexbox, text utils
-│
-├── ScreenShots/               # UI reference screenshots
-│   ├── ERP_04.png
-│   └── Search.png
 │
 ├── media/                     # User-uploaded media (gitignored)
 │
@@ -431,6 +428,6 @@ MIT License - See [LICENSE](LICENSE) file
 
 ---
 
-*Last Updated: 2026-04-04*
+*Last Updated: 2026-04-05*
 *Phase 7 Status: ✅ COMPLETE (188 tests passing, merged to master)*
 *Phase 8 Status: ⏳ NEXT*

@@ -1,0 +1,25 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}Audit Logs - {{ app_name }}{% endblock %}
+{% block topbar_title %}Audit - Activity Logs{% endblock %}
+
+{% block dashboard_content %}
+<div id="main-content">
+<form method="get" class="u-flex u-gap-sm u-mb-md">
+    <input type="text" name="q" value="{{ query }}" placeholder="Search by actor, action, or target..." class="form-group__input" style="max-width: 500px;">
+    <select name="action" class="form-group__input" style="max-width: 200px;">
+        <option value="">All Actions</option>
+        <option value="create" {% if action_filter == "create" %}selected{% endif %}>Create</option>
+        <option value="update" {% if action_filter == "update" %}selected{% endif %}>Update</option>
+        <option value="delete" {% if action_filter == "delete" %}selected{% endif %}>Delete</option>
+        <option value="approve" {% if action_filter == "approve" %}selected{% endif %}>Approve</option>
+        <option value="reject" {% if action_filter == "reject" %}selected{% endif %}>Reject</option>
+        <option value="adjust" {% if action_filter == "adjust" %}selected{% endif %}>Adjust</option>
+    </select>
+    <button type="submit" class="btn btn--primary">Search</button>
+    {% if query or action_filter %}<a href="{% url 'audit:AuditLogList' %}" class="btn btn--outline">Clear</a>{% endif %}
+</form>
+
+{% include "components/table_frame.html" %}
+</div>
+{% endblock %}

@@ -4,55 +4,19 @@
 {% block topbar_title %}Inventory - Products{% endblock %}
 
 {% block dashboard_content %}
-{# Search Bar #}
+<div id="main-content">
 <form method="get" class="u-flex u-gap-sm u-mb-md">
-    <input type="text" name="q" value="{{ query }}" placeholder="Search by SKU, name, or category..."
-           class="form-group__input" style="max-width: 600px;">
+    <input type="text" name="q" value="{{ query }}" placeholder="Search by SKU, name, or category..." class="form-group__input" style="max-width: 400px;">
+    <select name="category" class="form-group__input" style="max-width: 200px;">
+        <option value="">All Categories</option>
+        {% for cat in categories %}
+        <option value="{{ cat.slug }}" {% if category_filter == cat.slug %}selected{% endif %}>{{ cat.name }}</option>
+        {% endfor %}
+    </select>
     <button type="submit" class="btn btn--primary">Search</button>
-    {% if query %}
-        <a href="{% url 'Inventory:ProductList' %}" class="btn btn--outline">Clear</a>
-    {% endif %}
+    {% if query or category_filter %}<a href="{% url 'Inventory:ProductList' %}" class="btn btn--outline">Clear</a>{% endif %}
 </form>
 
-{# Product Table #}
-<div class="card">
-    <div class="card__header">
-        <h2 class="card__title">Products ({{ products.count }})</h2>
-    </div>
-    <div class="card__body" style="overflow-x: auto;">
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>SKU</th>
-                    <th>Name</th>
-                    <th>Category</th>
-                    <th class="u-text-right">Stock</th>
-                    <th class="u-text-right">WAC Price</th>
-                    <th>UoM</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for product in products %}
-                <tr>
-                    <td><strong>{{ product.sku }}</strong></td>
-                    <td>{{ product.name }}</td>
-                    <td>{{ product.category.name }}</td>
-                    <td class="u-text-right">{{ product.current_stock }}</td>
-                    <td class="u-text-right">{{ product.wac_price }}</td>
-                    <td>{{ product.unit_of_measure }}</td>
-                    <td class="u-flex u-gap-xs">
-                        <a href="{% url 'Inventory:ProductDetail' product.slug %}" class="btn btn--detail btn--sm">Detail</a>
-                        <a href="{% url 'Inventory:StockLedger' product.slug %}" class="btn btn--ledger btn--sm">Ledger</a>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="7" class="u-text-center u-py-lg u-text-muted">No products found.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+{% include "components/table_frame.html" %}
 </div>
 {% endblock %}

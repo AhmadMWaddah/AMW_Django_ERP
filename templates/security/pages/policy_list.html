@@ -4,29 +4,18 @@
 {% block topbar_title %}IAM - Policies{% endblock %}
 
 {% block dashboard_content %}
+<div id="main-content">
 <form method="get" class="u-flex u-gap-sm u-mb-md">
-    <input type="text" name="q" value="{{ query }}" placeholder="Search by name or resource..." class="form-group__input" style="max-width: 600px;">
+    <input type="text" name="q" value="{{ query }}" placeholder="Search by name or resource..." class="form-group__input" style="max-width: 400px;">
+    <select name="effect" class="form-group__input" style="max-width: 150px;">
+        <option value="">All Effects</option>
+        <option value="allow" {% if effect_filter == "allow" %}selected{% endif %}>Allow</option>
+        <option value="deny" {% if effect_filter == "deny" %}selected{% endif %}>Deny</option>
+    </select>
     <button type="submit" class="btn btn--primary">Search</button>
-    {% if query %}<a href="{% url 'Security:PolicyList' %}" class="btn btn--outline">Clear</a>{% endif %}
+    {% if query or effect_filter %}<a href="{% url 'Security:PolicyList' %}" class="btn btn--outline">Clear</a>{% endif %}
 </form>
-<div class="card">
-    <div class="card__header"><h2 class="card__title">Policies ({{ policies.count }})</h2></div>
-    <div class="card__body" style="overflow-x: auto;">
-        <table class="data-table">
-            <thead><tr><th>Name</th><th>Resource</th><th>Action</th><th>Effect</th></tr></thead>
-            <tbody>
-                {% for policy in policies %}
-                <tr>
-                    <td><strong>{{ policy.name }}</strong></td>
-                    <td class="u-text-xs">{{ policy.resource|default:"*" }}</td>
-                    <td class="u-text-xs">{{ policy.action|default:"*" }}</td>
-                    <td><span class="badge {% if policy.effect == 'ALLOW' %}badge--success{% else %}badge--danger{% endif %}">{{ policy.get_effect_display }}</span></td>
-                </tr>
-                {% empty %}
-                <tr><td colspan="4" class="u-text-center u-py-lg u-text-muted">No policies found.</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+
+{% include "components/table_frame.html" %}
 </div>
 {% endblock %}

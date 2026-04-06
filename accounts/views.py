@@ -2,6 +2,7 @@
 -- AMW Django ERP - Accounts Views --
 
 Authentication views: login, logout
+Employee views: list, detail
 
 Security:
 - CSRF protection enabled on all forms
@@ -12,11 +13,12 @@ Security:
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_http_methods
 
 from accounts.models import Employee
+from core.utils import paginate_queryset
 
 
 @require_http_methods(["GET", "POST"])
@@ -98,11 +100,48 @@ def dashboard_view(request):
 
 @login_required
 def employee_list(request):
-    """Employee list view with search."""
+    """Employee list view with search and pagination."""
+    from security.models import Department
+
     query = request.GET.get("q", "").strip()
-    employees = Employee.objects.all().order_by("email")
+    dept_filter = request.GET.get("department", "").strip()
+
+    employees = Employee.objects.select_related("department").prefetch_related("roles").all().order_by("email")
+
     if query:
         employees = employees.filter(
             Q(email__icontains=query) | Q(first_name__icontains=query) | Q(last_name__icontains=query)
         )
-    return render(request, "accounts/pages/employee_list.html", {"employees": employees, "query": query})
+
+    if dept_filter:
+        employees = employees.filter(department__slug=dept_filter)
+
+    departments = Department.objects.all().order_by("name")
+    pagination_data = paginate_queryset(employees, request)
+
+    context = {
+        "query": query,
+        "dept_filter": dept_filter,
+        "departments": departments,
+        "employees": pagination_data["page_obj"].object_list,
+        "title": "Employees",
+        "row_template": "accounts/components/employee_table.html",
+        **pagination_data,
+    }
+
+    if getattr(request, "htmx", None):
+        return render(request, "components/table_content_only.html", context)
+
+    return render(request, "accounts/pages/employee_list.html", context)
+
+
+@login_required
+def employee_detail(request, slug):
+    """Employee detail/profile view (read-only)."""
+    employee = get_object_or_404(Employee.objects.select_related("department").prefetch_related("roles"), slug=slug)
+
+    context = {
+        "employee": employee,
+    }
+
+    return render(request, "accounts/pages/employee_detail.html", context)

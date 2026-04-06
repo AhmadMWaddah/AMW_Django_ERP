@@ -1,0 +1,29 @@
+{# -- Security - Role Table Rows -- #}
+{# Receives: roles (queryset) #}
+
+<thead>
+    <tr>
+        <th>Role Name</th>
+        <th>Department</th>
+        <th>Policies</th>
+        <th>Employees</th>
+        <th>Actions</th>
+    </tr>
+</thead>
+<tbody>
+{% for role in roles %}
+<tr>
+    <td><strong>{{ role.name }}</strong></td>
+    <td class="u-text-xs">{{ role.department.name|default:"-" }}</td>
+    <td class="u-text-xs">{{ role.policy_count }}</td>
+    <td class="u-text-xs">{{ role.employee_count }}</td>
+    <td>
+        <a href="{% url "Security:RoleDetail" role.slug %}" class="btn btn--detail btn--sm">Detail</a>
+    </td>
+</tr>
+{% empty %}
+<tr>
+    <td colspan="5" class="u-text-center u-py-lg u-text-muted">No roles found.</td>
+</tr>
+{% endfor %}
+</tbody>

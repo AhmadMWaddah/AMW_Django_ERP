@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ahmad M. Waddah - CV</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #34495e;
+            --accent: #e67e22;
+            --text: #333;
+            --light-text: #666;
+            --bg: #fff;
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.5;
+            color: var(--text);
+            background: #f0f0f0;
+            margin: 0;
+            padding: 40px 0;
+        }
+
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 20mm;
+            margin: auto;
+            background: var(--bg);
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        header {
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+
+        h1 {
+            margin: 0;
+            color: var(--primary);
+            font-size: 28pt;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .subtitle {
+            color: var(--accent);
+            font-size: 14pt;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .contact-info {
+            margin-top: 15px;
+            font-size: 10pt;
+            color: var(--secondary);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .contact-info span { display: flex; align-items: center; }
+
+        section { margin-bottom: 25px; }
+
+        h2 {
+            font-size: 14pt;
+            color: var(--primary);
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .summary { font-size: 10.5pt; text-align: justify; }
+
+        .competencies {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            font-size: 10pt;
+        }
+
+        .competencies ul { padding-left: 18px; margin: 0; }
+
+        .project, .job { margin-bottom: 18px; }
+
+        .project-header, .job-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            font-weight: bold;
+            font-size: 11pt;
+            color: var(--secondary);
+        }
+
+        .project-title, .job-title { color: var(--primary); font-size: 12pt; }
+        .date { color: var(--light-text); font-style: italic; font-size: 10pt; }
+
+        ul { margin: 5px 0; padding-left: 20px; }
+        li { font-size: 10pt; margin-bottom: 4px; color: #444; }
+
+        .tech-tag {
+            display: inline-block;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 9pt;
+            margin-right: 4px;
+            margin-bottom: 4px;
+        }
+
+        @media print {
+            body { padding: 0; background: none; }
+            .page { box-shadow: none; margin: 0; width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <header>
+            <h1>Ahmad M. Waddah</h1>
+            <div class="subtitle">Technical Lead | Senior Python & Django Developer | Automation Architect</div>
+            <div class="contact-info">
+                <span>📍 Cairo, Egypt</span>
+                <span>📞 +20 114 159 169</span>
+                <span>✉️ ahmad.m.waddah@proton.me</span>
+                <span>🔗 linkedin.com/in/ahmadmwaddah/</span>
+                <span>💻 github.com/AhmadMWaddah</span>
+            </div>
+        </header>
+
+        <section>
+            <h2>Professional Summary</h2>
+            <div class="summary">
+                Strategic Technical Lead and Systems Architect specializing in the Python/Django ecosystem. Proven expertise in bridging complex business requirements with high-performance technical solutions. Focused on building robust, scalable systems with an emphasis on data integrity, concurrency safety, and operational automation. Currently architecting an enterprise-grade ERP system from the ground up, utilizing modern tools like HTMX to deliver lean, reactive, and reliable business applications.
+            </div>
+        </section>
+
+        <section>
+            <h2>Core Competencies</h2>
+            <div class="competencies">
+                <div>
+                    <ul>
+                        <li><strong>Systems Architecture:</strong> ERP Design, Multi-App Ecosystems, Clean Architecture.</li>
+                        <li><strong>Backend Specialist:</strong> Django, REST APIs, Custom Identity/IAM.</li>
+                        <li><strong>Data Integrity:</strong> Concurrency Control, Atomic Transactions, Audit Snapshots.</li>
+                    </ul>
+                </div>
+                <div>
+                    <ul>
+                        <li><strong>Financial Logic:</strong> WAC Engines, High-Precision Decimal Math (19.4).</li>
+                        <li><strong>Automation:</strong> API Integration, Python-based Task Automation.</li>
+                        <li><strong>Modern UI:</strong> HTMX, Responsive CSS (BEM/Utility), Alpine.js.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Key Projects</h2>
+            <div class="project">
+                <div class="project-header">
+                    <span class="project-title">AMW Django ERP | Lead Architect & Developer</span>
+                </div>
+                <ul>
+                    <li><strong>WAC Valuation Engine:</strong> Built a deterministic inventory valuation engine using 19.4 decimal precision and automatic recalculation.</li>
+                    <li><strong>Concurrency-Safe Ledger:</strong> Implemented an immutable transaction ledger using <code>select_for_update</code> to prevent race conditions.</li>
+                    <li><strong>Policy-Based IAM:</strong> Architected a security framework mapping Employees to Roles with reusable Python-level enforcement.</li>
+                    <li><strong>Audit Traceability:</strong> Integrated a centralized audit engine capturing full state snapshots for critical operations.</li>
+                </ul>
+            </div>
+
+            <div class="project">
+                <div class="project-header">
+                    <span class="project-title">Python Inventory Automation | Lead Developer</span>
+                </div>
+                <ul>
+                    <li>Created a Python engine that synchronized inventory across global Shopify storefronts, reducing manual maintenance by <strong>15+ hours/week</strong>.</li>
+                    <li>Leveraged Shopify APIs and Python libraries to automate reporting and eliminate 100% of human synchronization errors.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section>
+            <h2>Professional Experience</h2>
+            <div class="job">
+                <div class="job-header">
+                    <span class="job-title">Technical E-commerce Operations Lead</span>
+                    <span class="date">2018 – Present</span>
+                </div>
+                <div style="font-weight: bold; font-size: 10pt; color: var(--light-text); margin-bottom: 5px;">Educational Supplies Co.</div>
+                <ul>
+                    <li>Orchestrate end-to-end technical operations for international storefronts (AU, UAE, EG).</li>
+                    <li>Directed theme redesigns using custom Liquid and Metaobjects, achieving a <strong>40% increase in load performance</strong>.</li>
+                    <li>Lead integration of third-party APIs and custom automation scripts to streamline logistics.</li>
+                </ul>
+            </div>
+
+            <div class="job">
+                <div class="job-header">
+                    <span class="job-title">Django Developer (Freelance/Contract)</span>
+                    <span class="date">2022 – 2023</span>
+                </div>
+                <div style="font-weight: bold; font-size: 10pt; color: var(--light-text); margin-bottom: 5px;">Tuft Co. (Remote)</div>
+                <ul>
+                    <li>Built backend modules for specialized ERP-style applications, translating complex business rules into maintainable code.</li>
+                </ul>
+            </div>
+
+            <div class="job">
+                <div class="job-header">
+                    <span class="job-title">Operational Foundations</span>
+                    <span class="date">2005 – 2018</span>
+                </div>
+                <ul>
+                    <li>Progression from Operational Support to Executive Management Assistant. Developed deep understanding of corporate logistics and cross-departmental synchronization which provides the business logic foundation for my current architectural work.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section>
+            <h2>Technical Toolkit</h2>
+            <div>
+                <span class="tech-tag">Python (Expert)</span>
+                <span class="tech-tag">Django</span>
+                <span class="tech-tag">PostgreSQL</span>
+                <span class="tech-tag">HTMX</span>
+                <span class="tech-tag">Docker</span>
+                <span class="tech-tag">Redis</span>
+                <span class="tech-tag">Celery</span>
+                <span class="tech-tag">Bash</span>
+                <span class="tech-tag">Linux (Red Hat)</span>
+                <span class="tech-tag">Git</span>
+                <span class="tech-tag">GitHub Actions</span>
+            </div>
+        </section>
+
+        <section>
+            <h2>Certifications</h2>
+            <div style="font-size: 10pt;">
+                <strong>AWS Certified Cloud Practitioner</strong> | Amazon Web Services<br>
+                <strong>Fundamentals of Red Hat Enterprise Linux</strong> | Red Hat / Coursera
+            </div>
+        </section>
+    </div>
+</body>
+</html>

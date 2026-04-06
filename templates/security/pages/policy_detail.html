@@ -1,0 +1,125 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}Policy Detail - {{ app_name }}{% endblock %}
+{% block topbar_title %}IAM - Policy Detail{% endblock %}
+
+{% block dashboard_content %}
+<div class="card">
+    <div class="card__header">
+        <h2 class="card__title">{{ policy.name }}</h2>
+        <a href="{% url 'Security:PolicyList' %}" class="btn btn--outline">Back to Policies</a>
+    </div>
+    <div class="card__body">
+        {# Basic Information #}
+        <h3 class="u-mb-md">Basic Information</h3>
+        <div class="u-mb-lg" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
+            <div>
+                <div class="u-text-xs u-text-muted u-uppercase u-mb-xs">Policy Name</div>
+                <div class="u-text-lg">{{ policy.name }}</div>
+            </div>
+            <div>
+                <div class="u-text-xs u-text-muted u-uppercase u-mb-xs">Effect</div>
+                <span class="badge {% if policy.effect == 'allow' %}badge--success{% else %}badge--danger{% endif %}">
+                    {{ policy.get_effect_display }}
+                </span>
+            </div>
+            <div>
+                <div class="u-text-xs u-text-muted u-uppercase u-mb-xs">Status</div>
+                {% if policy.is_active %}
+                <span class="badge badge--success">Active</span>
+                {% else %}
+                <span class="badge badge--danger">Inactive</span>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if policy.description %}
+        <div class="u-mb-lg">
+            <div class="u-text-xs u-text-muted u-uppercase u-mb-xs">Description</div>
+            <div class="u-text-sm">{{ policy.description }}</div>
+        </div>
+        {% endif %}
+
+        {# Resource and Action Patterns #}
+        <h3 class="u-mb-md">Resource & Action Patterns</h3>
+        <div class="u-mb-lg" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
+            <div>
+                <div class="u-text-xs u-text-muted u-uppercase u-mb-xs">Resource Pattern</div>
+                <code class="u-text-sm" style="background: var(--color-surface-muted); padding: var(--space-xs) var(--space-sm); border-radius: var(--radius-sm);">{{ policy.resource }}</code>
+            </div>
+            <div>
+                <div class="u-text-xs u-text-muted u-uppercase u-mb-xs">Action Pattern</div>
+                <code class="u-text-sm" style="background: var(--color-surface-muted); padding: var(--space-xs) var(--space-sm); border-radius: var(--radius-sm);">{{ policy.action }}</code>
+            </div>
+        </div>
+
+        {# Roles using this Policy #}
+        <h3 class="u-mb-md">Roles Using This Policy</h3>
+        <div class="u-mb-lg">
+            {% if policy.roles.all %}
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Role Name</th>
+                        <th>Department</th>
+                        <th>Employees</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for role in policy.roles.all %}
+                    <tr>
+                        <td><strong>{{ role.name }}</strong></td>
+                        <td class="u-text-xs">{{ role.department.name }}</td>
+                        <td class="u-text-xs">{{ role.employee_count }}</td>
+                        <td>
+                            <a href="{% url "Security:RoleDetail" role.slug %}" class="btn btn--detail btn--sm">Detail</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="u-text-muted">No roles are using this policy.</p>
+            {% endif %}
+        </div>
+
+        {# Employees affected (through roles) #}
+        <h3 class="u-mb-md">Employees Affected (through Roles)</h3>
+        <div class="u-mb-lg">
+            {% with affected_employees=policy.roles.all|dictsort:"department.name" %}
+            {% if affected_employees %}
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Department</th>
+                        <th>Role</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for role in affected_employees %}
+                    {% for emp in role.employees.all %}
+                    <tr>
+                        <td><strong>{{ emp.get_full_name|default:"-" }}</strong></td>
+                        <td class="u-text-xs">{{ emp.email }}</td>
+                        <td class="u-text-xs">{{ emp.department.name|default:"-" }}</td>
+                        <td class="u-text-xs">{{ role.name }}</td>
+                        <td>
+                            <a href="{% url "Accounts:EmployeeDetail" emp.slug %}" class="btn btn--detail btn--sm">Detail</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="u-text-muted">No employees are affected through roles.</p>
+            {% endif %}
+            {% endwith %}
+        </div>
+    </div>
+</div>
+{% endblock %}
