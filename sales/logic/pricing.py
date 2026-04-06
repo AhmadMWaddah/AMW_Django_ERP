@@ -7,7 +7,7 @@ Constitution Section 9.5: Financial Precision
 - Precision: 19,4 decimal places
 """
 
-from decimal import Decimal, ROUND_HALF_UP
+from decimal import ROUND_HALF_UP, Decimal
 
 
 def calculate_order_totals(order):

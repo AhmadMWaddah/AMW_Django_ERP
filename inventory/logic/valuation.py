@@ -14,7 +14,7 @@ Trigger Points:
 - ❌ Do NOT recalculate on: SALE, ADJUST_REDUCE, TRANSFER, RETURN (stock-out)
 """
 
-from decimal import Decimal, ROUND_HALF_UP
+from decimal import ROUND_HALF_UP, Decimal
 
 
 def calculate_wac(old_quantity, old_wac, new_quantity, new_cost):

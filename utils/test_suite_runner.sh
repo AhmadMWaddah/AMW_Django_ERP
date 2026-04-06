@@ -250,6 +250,10 @@ case "${1:-}" in
     help|--help|-h)
         show_usage
         ;;
+    test)
+        shift
+        run_all_tests "$@"
+        ;;
     *)
         run_all_tests "$@"
         ;;

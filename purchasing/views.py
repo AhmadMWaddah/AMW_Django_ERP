@@ -5,6 +5,7 @@ Phase 7: Supplier list, PO tracking, HTMX receive stock.
 Phase 7.5: Pagination added to all list views.
 """
 
+import json
 from decimal import Decimal
 
 from django.contrib.auth.decorators import login_required
@@ -16,6 +17,7 @@ from django.views.decorators.http import require_POST
 from core.utils import paginate_queryset
 from purchasing.models import PurchaseOrder, Supplier, SupplierCategory
 from purchasing.operations.orders import receive_items
+from security.logic.enforcement import PolicyEngine
 
 
 @login_required
@@ -128,23 +130,39 @@ def order_detail(request, order_id):
         pk=order_id,
     )
 
+    engine = PolicyEngine(request.user)
+    can_receive_items = engine.has_permission("purchasing.order", "receive")
+
     return render(
         request,
         "purchasing/pages/order_detail.html",
-        {"order": order},
+        {
+            "order": order,
+            "can_receive_items": can_receive_items,
+        },
     )
 
 
 @require_POST
 @login_required
 def receive_stock_htmx(request, order_id):
-    """HTMX endpoint to receive stock against a PO."""
+    """HTMX endpoint to receive stock against a PO.
+
+    Server-side authorization: requires purchasing.order:receive permission.
+    """
+    if not PolicyEngine(request.user).has_permission("purchasing.order", "receive"):
+        return JsonResponse(
+            {"error": "Permission denied: receive stock"},
+            status=403,
+            headers={
+                "HX-Trigger": '{"showToast": {"message": "Permission denied: you cannot receive stock.", "type": "error"}}',
+            },
+        )
+
     order = get_object_or_404(PurchaseOrder, pk=order_id)
 
     # Parse items from POST data
     # Expected: items_json = [{"item_id": 1, "quantity": "10"}, ...]
-    import json
-
     items_json = request.POST.get("items", "[]")
     try:
         items_data = json.loads(items_json)

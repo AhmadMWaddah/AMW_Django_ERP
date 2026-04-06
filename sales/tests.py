@@ -679,3 +679,163 @@ class TestPricingLogic:
         assert subtotal == Decimal("100.0000")
         assert tax == Decimal("14.0000")  # 14% tax
         assert total == Decimal("114.0000")
+
+
+@pytest.mark.django_db
+class TestViewAuthorization:
+    """Test server-side authorization on state-changing views.
+
+    Constitution Section 13: Security-critical flows must have
+    regression protection — permission denial must be tested.
+    """
+
+    @pytest.fixture
+    def unauthorized_employee(self):
+        """Create employee without sales permissions."""
+        from accounts.models import Employee
+
+        return Employee.objects.create_user(
+            email="unauthorized@amw.io",
+            password="test123",
+            first_name="No",
+            last_name="Permission",
+        )
+
+    @pytest.fixture
+    def authorized_employee(self):
+        """Create employee with full sales permissions via policies."""
+        from accounts.models import Employee
+        from security.models import Department as SecDepartment
+        from security.models import Policy, Role
+
+        dept = SecDepartment.objects.create(name="Sales")
+        role = Role.objects.create(name="Sales Admin", department=dept)
+        for action in ("create", "confirm", "void"):
+            Policy.objects.create(
+                name=f"Sales {action}",
+                resource="sales.order",
+                action=action,
+                effect="allow",
+            ).roles.add(role)
+
+        employee = Employee.objects.create_user(
+            email="sales.admin@amw.io",
+            password="test123",
+            first_name="Sales",
+            last_name="Admin",
+        )
+        employee.roles.add(role)
+        return employee
+
+    @pytest.fixture
+    def customer(self):
+        """Create test customer."""
+        category = CustomerCategory.objects.create(name="Retail")
+        return Customer.objects.create(
+            name="Test Customer",
+            email="test@example.com",
+            category=category,
+            shipping_address="123 Test St",
+        )
+
+    @pytest.fixture
+    def draft_order(self, customer, unauthorized_employee):
+        """Create a draft sales order."""
+        order_number = generate_order_number()
+        return SalesOrder.objects.create(
+            order_number=order_number,
+            customer=customer,
+            created_by=unauthorized_employee,
+            shipping_address_snapshot=customer.shipping_address,
+        )
+
+    # -- order_create denial --
+
+    def test_order_create_returns_403_without_permission(self, client, unauthorized_employee, customer):
+        """User without sales.order:create permission gets 403."""
+        client.force_login(unauthorized_employee)
+        response = client.post(
+            f"/sales/customers/{customer.slug}/create-order/",
+        )
+        assert response.status_code == 403
+
+    def test_order_create_succeeds_with_permission(self, client, authorized_employee, customer):
+        """User with sales.order:create permission succeeds."""
+        client.force_login(authorized_employee)
+        response = client.post(
+            f"/sales/customers/{customer.slug}/create-order/",
+        )
+        # Should redirect to order detail (302)
+        assert response.status_code == 302
+        # Verify order was created with proper number
+        order = SalesOrder.objects.filter(customer=customer).latest("pk")
+        assert order.order_number.startswith("#Eg-")
+
+    # -- confirm_order_htmx denial --
+
+    def test_confirm_order_htmx_returns_403_without_permission(self, client, unauthorized_employee, draft_order):
+        """User without sales.order:confirm permission gets 403."""
+        client.force_login(unauthorized_employee)
+        response = client.post(f"/sales/orders/{draft_order.id}/confirm/")
+        assert response.status_code == 403
+        assert "Permission denied" in response.json()["error"]
+
+    def test_confirm_order_htmx_returns_hx_trigger_on_denial(self, client, unauthorized_employee, draft_order):
+        """Denial response includes HX-Trigger toast header."""
+        client.force_login(unauthorized_employee)
+        response = client.post(f"/sales/orders/{draft_order.id}/confirm/")
+        hx_trigger = response.headers.get("HX-Trigger")
+        assert hx_trigger is not None
+        assert "showToast" in hx_trigger
+        assert "Permission denied" in hx_trigger
+
+    def test_confirm_order_htmx_succeeds_with_permission(self, client, authorized_employee, customer):
+        """User with sales.order:confirm permission succeeds."""
+        # Need an order with items to confirm
+        from inventory.models import Category as InvCategory
+        from inventory.models import Product
+
+        product_category = InvCategory.objects.create(name="Test")
+        product = Product.objects.create(
+            sku="TEST-001",
+            name="Test Product",
+            category=product_category,
+            current_stock=Decimal("50.0000"),
+            wac_price=Decimal("100.0000"),
+        )
+        order_number = generate_order_number()
+        order = SalesOrder.objects.create(
+            order_number=order_number,
+            customer=customer,
+            created_by=authorized_employee,
+            shipping_address_snapshot=customer.shipping_address,
+        )
+        SalesOrderItem.objects.create(
+            order=order,
+            product=product,
+            quantity=Decimal("1.0000"),
+            snapshot_unit_price=Decimal("100.0000"),
+        )
+
+        client.force_login(authorized_employee)
+        response = client.post(f"/sales/orders/{order.id}/confirm/")
+        assert response.status_code == 200
+        assert response.json()["status"] == "confirmed"
+
+    # -- void_order_htmx denial --
+
+    def test_void_order_htmx_returns_403_without_permission(self, client, unauthorized_employee, draft_order):
+        """User without sales.order:void permission gets 403."""
+        client.force_login(unauthorized_employee)
+        response = client.post(f"/sales/orders/{draft_order.id}/void/")
+        assert response.status_code == 403
+        assert "Permission denied" in response.json()["error"]
+
+    def test_void_order_htmx_returns_hx_trigger_on_denial(self, client, unauthorized_employee, draft_order):
+        """Denial response includes HX-Trigger toast header."""
+        client.force_login(unauthorized_employee)
+        response = client.post(f"/sales/orders/{draft_order.id}/void/")
+        hx_trigger = response.headers.get("HX-Trigger")
+        assert hx_trigger is not None
+        assert "showToast" in hx_trigger
+        assert "Permission denied" in hx_trigger

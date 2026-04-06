@@ -3,9 +3,10 @@
 Add slug fields to SupplierCategory and Supplier, populate data.
 """
 
+import uuid
+
 from django.db import migrations, models
 from django.utils.text import slugify
-import uuid
 
 
 def populate_supplier_category_slugs(apps, schema_editor):

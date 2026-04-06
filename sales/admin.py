@@ -10,10 +10,10 @@ from django.utils.html import format_html
 from sales.models import (
     Customer,
     CustomerCategory,
-    SalesOrder,
-    SalesOrderItem,
     OrderStatus,
     PaymentStatus,
+    SalesOrder,
+    SalesOrderItem,
 )
 
 

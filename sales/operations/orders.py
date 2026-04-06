@@ -67,6 +67,62 @@ def generate_order_number():
 
 
 @transaction.atomic
+def create_order(customer, employee):
+    """
+    Create a new draft sales order for a customer.
+
+    Atomic operation that:
+    1. Generates unique order number via generate_order_number()
+    2. Snapshots customer shipping address
+    3. Creates draft order in DRAFT status
+    4. Logs audit trail
+
+    Constitution Section 8.1: All logic in operations layer, not views.
+    Constitution Section 9.5: Order numbering must be atomic and unique.
+
+    Args:
+        customer: Customer instance to create order for
+        employee: Employee creating the order
+
+    Returns:
+        SalesOrder: Created draft order with unique order number
+    """
+    # Generate unique order number
+    order_number = generate_order_number()
+
+    # Snapshot customer shipping address
+    shipping_address = customer.shipping_address or ""
+
+    # Create the order
+    order = SalesOrder.objects.create(
+        customer=customer,
+        order_number=order_number,
+        created_by=employee,
+        shipping_address_snapshot=shipping_address,
+        status=OrderStatus.DRAFT,
+    )
+
+    # Audit log
+    log_audit(
+        actor=employee,
+        action_code="sales.order.create",
+        action="create",
+        target=order,
+        before={},
+        after={
+            "status": str(OrderStatus.DRAFT.value),
+            "order_number": order_number,
+            "customer": str(customer),
+        },
+        extra_data={
+            "shipping_address_snapshotted": bool(shipping_address),
+        },
+    )
+
+    return order
+
+
+@transaction.atomic
 def confirm_order(order, employee):
     """
     Confirm a sales order (Draft → Confirmed).

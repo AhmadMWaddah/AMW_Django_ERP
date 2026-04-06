@@ -569,7 +569,7 @@ class Command(BaseCommand):
 
         try:
             from inventory.models import Product
-            from inventory.operations.stock import stock_in, StockChangeType
+            from inventory.operations.stock import StockChangeType, stock_in
 
             owner = Employee.objects.get(email="amw@amw.io")
 
@@ -723,6 +723,7 @@ class Command(BaseCommand):
         self.stdout.write("Seeding Sales Orders...")
 
         try:
+            from sales.logic.pricing import calculate_order_totals
             from sales.models import (
                 Customer,
                 OrderStatus,
@@ -731,7 +732,6 @@ class Command(BaseCommand):
                 SalesOrder,
                 SalesOrderItem,
             )
-            from sales.logic.pricing import calculate_order_totals
             from sales.operations.orders import confirm_order, generate_order_number, void_order
 
             sales_mgr = Employee.objects.get(email="sales.manager@amw.io")
@@ -971,6 +971,7 @@ class Command(BaseCommand):
 
         try:
             from decimal import Decimal as D
+
             from purchasing.models import POStatus, PurchaseOrder, PurchaseOrderItem, Supplier
             from purchasing.operations.orders import generate_po_number, issue_order, receive_items
 
