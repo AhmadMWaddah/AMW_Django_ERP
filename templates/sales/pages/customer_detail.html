@@ -39,6 +39,12 @@
 <div class="card">
     <div class="card__header">
         <h3 class="card__title">Order History ({{ orders.count }})</h3>
+        {% if can_create_order %}
+        <form method="post" action="{% url "Sales:CreateOrder" customer.slug %}" class="u-inline-flex">
+            {% csrf_token %}
+            <button type="submit" class="btn btn--primary btn--sm">Create Order</button>
+        </form>
+        {% endif %}
     </div>
     <div class="card__body" style="overflow-x: auto;">
         <table class="data-table">

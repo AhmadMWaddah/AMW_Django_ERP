@@ -56,11 +56,25 @@ def product_list(request):
 @login_required
 def product_detail(request, slug):
     """Product detail with stock movement ledger."""
+    from security.logic.enforcement import PolicyEngine
+
     product = get_object_or_404(Product.objects.select_related("category"), slug=slug)
     transactions = (
         StockTransaction.objects.filter(product=product).select_related("created_by").order_by("-created_at")[:50]
     )
-    return render(request, "inventory/pages/product_detail.html", {"product": product, "transactions": transactions})
+
+    engine = PolicyEngine(request.user)
+    can_adjust_stock = engine.has_permission("inventory.stock", "adjust")
+
+    return render(
+        request,
+        "inventory/pages/product_detail.html",
+        {
+            "product": product,
+            "transactions": transactions,
+            "can_adjust_stock": can_adjust_stock,
+        },
+    )
 
 
 @login_required

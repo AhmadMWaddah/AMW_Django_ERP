@@ -1003,3 +1003,108 @@ class TestReceivedTotal:
         receive_items(po, [{"item_id": item.id, "quantity": Decimal("40")}], employee)
 
         assert po.get_received_total() == Decimal("400.0000")
+
+
+@pytest.mark.django_db
+class TestViewAuthorization:
+    """Test server-side authorization on state-changing views.
+
+    Constitution Section 13: Security-critical flows must have
+    regression protection — permission denial must be tested.
+    """
+
+    @pytest.fixture
+    def unauthorized_employee(self):
+        """Create employee without purchasing permissions."""
+        from accounts.models import Employee
+
+        return Employee.objects.create_user(
+            email="unauthorized.purchasing@amw.io",
+            password="test123",
+            first_name="No",
+            last_name="Permission",
+        )
+
+    @pytest.fixture
+    def authorized_employee(self):
+        """Create employee with purchasing:receive permission via policies."""
+        from accounts.models import Employee
+        from security.models import Department as SecDepartment
+        from security.models import Policy, Role
+
+        dept = SecDepartment.objects.create(name="Purchasing")
+        role = Role.objects.create(name="Purchasing Agent", department=dept)
+        Policy.objects.create(
+            name="Receive Stock",
+            resource="purchasing.order",
+            action="receive",
+            effect="allow",
+        ).roles.add(role)
+
+        employee = Employee.objects.create_user(
+            email="purchasing.agent@amw.io",
+            password="test123",
+            first_name="Purchasing",
+            last_name="Agent",
+        )
+        employee.roles.add(role)
+        return employee
+
+    @pytest.fixture
+    def supplier(self):
+        """Create test supplier."""
+        category = SupplierCategory.objects.create(name="Electronics")
+        return Supplier.objects.create(name="Tech Parts Inc", category=category)
+
+    @pytest.fixture
+    def issued_po(self, supplier, authorized_employee):
+        """Create an issued PO with items."""
+        from inventory.models import Category as InvCategory
+        from inventory.models import Product
+        from purchasing.operations.orders import issue_order
+
+        product_category = InvCategory.objects.create(name="Electronics")
+        product = Product.objects.create(
+            sku="EL-CR-001",
+            name="Test Product",
+            category=product_category,
+            current_stock=Decimal("10"),
+            wac_price=Decimal("50.0000"),
+        )
+
+        po = PurchaseOrder.objects.create(supplier=supplier, created_by=authorized_employee)
+        PurchaseOrderItem.objects.create(
+            order=po,
+            product=product,
+            quantity=Decimal("100"),
+            unit_cost=Decimal("60.0000"),
+        )
+        issue_order(po, authorized_employee)
+        return po
+
+    def test_receive_stock_htmx_returns_403_without_permission(self, client, unauthorized_employee, issued_po):
+        """User without purchasing.order:receive permission gets 403."""
+        client.force_login(unauthorized_employee)
+        response = client.post(f"/purchasing/orders/{issued_po.id}/receive/")
+        assert response.status_code == 403
+        assert "Permission denied" in response.json()["error"]
+
+    def test_receive_stock_htmx_returns_hx_trigger_on_denial(self, client, unauthorized_employee, issued_po):
+        """Denial response includes HX-Trigger toast header."""
+        client.force_login(unauthorized_employee)
+        response = client.post(f"/purchasing/orders/{issued_po.id}/receive/")
+        hx_trigger = response.headers.get("HX-Trigger")
+        assert hx_trigger is not None
+        assert "showToast" in hx_trigger
+        assert "Permission denied" in hx_trigger
+
+    def test_receive_stock_htmx_succeeds_with_permission(self, client, authorized_employee, issued_po):
+        """User with purchasing.order:receive permission succeeds."""
+        item = issued_po.items.first()
+        client.force_login(authorized_employee)
+        response = client.post(
+            f"/purchasing/orders/{issued_po.id}/receive/",
+            data={"items": f'[{{"item_id": {item.id}, "quantity": "10"}}]'},
+        )
+        assert response.status_code == 200
+        assert response.json()["status"] == "IN_PROGRESS"

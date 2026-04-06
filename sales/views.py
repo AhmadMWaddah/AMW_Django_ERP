@@ -7,13 +7,14 @@ Phase 7.5: Pagination added to all list views.
 
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
-from django.http import JsonResponse
-from django.shortcuts import get_object_or_404, render
+from django.http import HttpResponseForbidden, JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
 from core.utils import paginate_queryset
 from sales.models import Customer, SalesOrder
-from sales.operations.orders import confirm_order, void_order
+from sales.operations.orders import confirm_order, create_order, void_order
+from security.logic.enforcement import PolicyEngine
 
 
 @login_required
@@ -71,11 +72,36 @@ def customer_detail(request, slug):
         SalesOrder.objects.filter(customer=customer).prefetch_related("items", "items__product").order_by("-created_at")
     )
 
+    engine = PolicyEngine(request.user)
+    can_create_order = engine.has_permission("sales.order", "create")
+
     return render(
         request,
         "sales/pages/customer_detail.html",
-        {"customer": customer, "orders": orders},
+        {
+            "customer": customer,
+            "orders": orders,
+            "can_create_order": can_create_order,
+        },
     )
+
+
+@login_required
+@require_POST
+def order_create(request, customer_slug):
+    """Create a new draft sales order for a customer.
+
+    Server-side authorization: requires sales.order:create permission.
+    """
+    if not PolicyEngine(request.user).has_permission("sales.order", "create"):
+        return HttpResponseForbidden("Permission denied: create sales order")
+
+    customer = get_object_or_404(
+        Customer.objects.select_related("category"),
+        slug=customer_slug,
+    )
+    order = create_order(customer, request.user)
+    return redirect("Sales:OrderDetail", order_id=order.pk)
 
 
 @login_required
@@ -125,17 +151,37 @@ def order_detail(request, order_id):
         pk=order_id,
     )
 
+    engine = PolicyEngine(request.user)
+    can_confirm_order = engine.has_permission("sales.order", "confirm")
+    can_void_order = engine.has_permission("sales.order", "void")
+
     return render(
         request,
         "sales/pages/order_detail.html",
-        {"order": order},
+        {
+            "order": order,
+            "can_confirm_order": can_confirm_order,
+            "can_void_order": can_void_order,
+        },
     )
 
 
 @require_POST
 @login_required
 def confirm_order_htmx(request, order_id):
-    """HTMX endpoint to confirm a sales order with Toast feedback."""
+    """HTMX endpoint to confirm a sales order with Toast feedback.
+
+    Server-side authorization: requires sales.order:confirm permission.
+    """
+    if not PolicyEngine(request.user).has_permission("sales.order", "confirm"):
+        return JsonResponse(
+            {"error": "Permission denied: confirm order"},
+            status=403,
+            headers={
+                "HX-Trigger": '{"showToast": {"message": "Permission denied: you cannot confirm orders.", "type": "error"}}',
+            },
+        )
+
     order = get_object_or_404(SalesOrder, pk=order_id)
 
     try:
@@ -159,7 +205,19 @@ def confirm_order_htmx(request, order_id):
 @require_POST
 @login_required
 def void_order_htmx(request, order_id):
-    """HTMX endpoint to void a sales order with Toast feedback."""
+    """HTMX endpoint to void a sales order with Toast feedback.
+
+    Server-side authorization: requires sales.order:void permission.
+    """
+    if not PolicyEngine(request.user).has_permission("sales.order", "void"):
+        return JsonResponse(
+            {"error": "Permission denied: void order"},
+            status=403,
+            headers={
+                "HX-Trigger": '{"showToast": {"message": "Permission denied: you cannot void orders.", "type": "error"}}',
+            },
+        )
+
     order = get_object_or_404(SalesOrder, pk=order_id)
     reason = request.POST.get("reason", "Voided via HTMX")
 

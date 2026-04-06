@@ -3,9 +3,10 @@
 Add slug fields to CustomerCategory and Customer, populate data.
 """
 
+import uuid
+
 from django.db import migrations, models
 from django.utils.text import slugify
-import uuid
 
 
 def populate_customer_category_slugs(apps, schema_editor):

@@ -28,10 +28,11 @@ AMW Django ERP is a comprehensive, production-ready ERP system designed for real
 | **Phase 5** | Sales & CRM Workflows                        | ✅ **COMPLETE**  | `master`  |
 | **Phase 6** | Purchasing & Procurement                     | ✅ **COMPLETE**  | `master`  |
 | **Phase 7** | Frontend Foundation & HTMX UI                | ✅ **COMPLETE**  | `master`  |
+| **Phase 7.5**| Infrastructure UI & Global Pagination       | ✅ **COMPLETE**  | `master`  |
 | Phase 8     | Async Tasks, Reporting & Hardening           | ⏳ NEXT          | `phase-8` |
 
 **Branch Strategy:**
-- `master` - Stable production baseline (Phases 1-7 complete)
+- `master` - Stable production baseline (Phases 1-7.5 complete)
 - All phase branches merged and cleaned up after completion
 - Future phases developed in `phase-X` branches, fixes in `fix-{name}` branches
 
@@ -41,6 +42,7 @@ AMW Django ERP is a comprehensive, production-ready ERP system designed for real
 - `v5.0-phase5-complete` - Sales & CRM Workflows
 - `v6.0-phase6-complete` - Purchasing & Procurement
 - `v7.0-phase7-complete` - Frontend Foundation & HTMX UI ✅ **MERGED**
+- `v7.5.0-phase7.5-complete` - Infrastructure UI & Global Pagination ✅ **MERGED**
 
 ---
 
@@ -118,6 +120,7 @@ AMW_Django_ERP/
 │   ├── Phase_5_Sales_CRM.md
 │   ├── Phase_6_Purchasing_Procurement.md
 │   ├── Phase_7_Frontend_HTMX.md
+│   ├── Phase_7.5_Infrastructure_UI_Pagination.md
 │   └── Phase_8_Async_Hardening.md
 │
 ├── Brand/                     # Brand assets and color palette
@@ -158,17 +161,25 @@ AMW_Django_ERP/
 │   │   ├── _button_.html
 │   │   ├── _field_error_.html
 │   │   ├── _icon_.html       # Lucide SVG icons
-│   │   └── _input_.html
+│   │   ├── _input_.html
+│   │   └── _pagination_.html
 │   ├── components/           # Global shared components
+│   │   ├── navbar.html
 │   │   ├── sidebar.html
-│   │   └── topbar.html
-│   ├── core/
-│   │   └── errors/
-│   │       ├── 404.html
-│   │       └── 500.html
-│   └── layouts/
-│       ├── base.html         # Root layout shell
-│       └── dashboard.html    # Dashboard layout
+│   │   ├── topbar.html
+│   │   └── table_frame.html
+│   ├── accounts/             # Authentication pages
+│   ├── admin/                # Custom admin overrides
+│   ├── audit/                # Audit log list/detail pages
+│   ├── core/errors/          # 404.html, 500.html
+│   ├── inventory/            # Module-specific pages
+│   ├── layouts/
+│   │   ├── base.html         # Root layout shell
+│   │   └── dashboard.html    # Dashboard layout
+│   ├── purchasing/           # Module-specific pages
+│   ├── sales/                # Module-specific pages
+│   ├── security/             # IAM detail pages
+│   └── health.html
 │
 ├── static/                    # Static files (centralized)
 │   ├── images/
@@ -181,7 +192,9 @@ AMW_Django_ERP/
 │       ├── _variables.css    # Brand tokens, spacing, typography
 │       ├── _base.css         # CSS resets
 │       ├── _layout.css       # Sidebar, topbar, cards, tables, modals
-│       └── _utilities.css    # Micro-spacing, flexbox, text utils
+│       ├── _utilities.css    # Micro-spacing, flexbox, text utils
+│       ├── accounts.css      # Auth page styles
+│       └── errors.css        # Error page styles
 │
 ├── media/                     # User-uploaded media (gitignored)
 │
@@ -210,9 +223,10 @@ AMW_Django_ERP/
 │   └── tests.py
 │
 ├── inventory/                 # Product catalog & stock
-│   ├── models.py             # Category, Product, StockTransaction
+│   ├── models.py             # Category, Product, StockTransaction, StockAdjustment
 │   ├── operations/
-│   │   └── stock.py          # stock_in, stock_out, adjust_stock
+│   │   └── stock.py          # stock_in, stock_out, approve_adjustment
+│   ├── admin.py              # Full admin with StockAdjustment workflow
 │   ├── views.py
 │   ├── urls.py
 │   └── tests.py
@@ -220,16 +234,18 @@ AMW_Django_ERP/
 ├── sales/                     # CRM & order workflows
 │   ├── models.py             # Customer, SalesOrder, SalesOrderItem
 │   ├── operations/
-│   │   └── orders.py         # confirm_order, void_order
-│   ├── views.py
+│   │   └── orders.py         # create_order, confirm_order, void_order, update_payment
+│   ├── logic/
+│   │   └── pricing.py        # Decimal pricing with ROUND_HALF_UP
+│   ├── views.py              # Server-side PolicyEnforce authorization
 │   ├── urls.py
 │   └── tests.py
 │
 ├── purchasing/                # Supplier & procurement
 │   ├── models.py             # Supplier, PurchaseOrder, PurchaseOrderItem
 │   ├── operations/
-│   │   └── orders.py         # issue_order, receive_items
-│   ├── views.py
+│   │   └── orders.py         # generate_po_number, issue_order, receive_items, cancel_order
+│   ├── views.py              # Server-side PolicyEnforce authorization
 │   ├── urls.py
 │   └── tests.py
 │
@@ -325,13 +341,15 @@ pytest --cov=. --cov-report=html
 ### Architecture Highlights
 
 - **Operations-First Business Logic** - Core workflows in `operations/` modules, not views
-- **Soft Delete by Default** - All business entities support restoration (Constitution 6.4)
-- **Weighted Average Cost (WAC)** - Automatic WAC recalculation on stock-in (Constitution 6.5)
-- **Atomic Safety** - `transaction.atomic` + `select_for_update()` for concurrency (Constitution 6.6)
-- **Comprehensive Audit** - Before/after snapshots for all critical changes (Constitution 6.7)
+- **Server-Side Authorization** - PolicyEngine enforced on all state-changing POST endpoints (403 + HTMX toast on denial)
+- **Soft Delete by Default** - All business entities support restoration (Constitution 8.4)
+- **Weighted Average Cost (WAC)** - Automatic WAC recalculation on stock-in (Constitution 8.5)
+- **Atomic Safety** - `transaction.atomic` + `select_for_update()` for concurrency (Constitution 8.6)
+- **Comprehensive Audit** - Before/after snapshots for all critical changes (Constitution 8.7)
 - **Policy-Based IAM** - Reusable authorization: Employee → Department → Role → Policies
 - **Immutable Stock Ledger** - All stock movements recorded with full traceability
 - **Stock Adjustment Workflow** - Approval-based corrections with rejection comments
+- **Atomic Order Numbering** - Unique sequential IDs (#Eg-00001) generated in operations layer
 - **Enterprise Slug System** - URL-friendly slugs on all models for clean routing
 - **HTMX-First Frontend** - Dynamic UI without heavy JavaScript frameworks
 
@@ -428,6 +446,6 @@ MIT License - See [LICENSE](LICENSE) file
 
 ---
 
-*Last Updated: 2026-04-05*
-*Phase 7 Status: ✅ COMPLETE (188 tests passing, merged to master)*
+*Last Updated: 2026-04-06*
+*Phase 7.5 Status: ✅ COMPLETE (217 tests passing, merged to master)*
 *Phase 8 Status: ⏳ NEXT*

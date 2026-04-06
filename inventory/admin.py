@@ -234,6 +234,15 @@ class StockAdjustmentAdmin(admin.ModelAdmin):
 
     actions = ["approve_selected", "reject_selected"]
 
+    def save_model(self, request, obj, form, change):
+        """Automatically set requested_by and requested_at on creation."""
+        if not obj.pk:
+            obj.requested_by = request.user
+            from django.utils.timezone import now
+
+            obj.requested_at = now()
+        super().save_model(request, obj, form, change)
+
     def approve_selected(self, request, queryset):
         """Bulk approve selected pending adjustments."""
         from inventory.operations.stock import approve_adjustment

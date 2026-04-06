@@ -10,10 +10,10 @@ from django.utils.html import format_html
 from sales.models import (
     Customer,
     CustomerCategory,
-    SalesOrder,
-    SalesOrderItem,
     OrderStatus,
     PaymentStatus,
+    SalesOrder,
+    SalesOrderItem,
 )
 
 
@@ -149,6 +149,12 @@ class SalesOrderAdmin(admin.ModelAdmin):
     inlines = []  # Will add SalesOrderItemInline below
 
     actions = ["confirm_selected_orders", "void_selected_orders"]
+
+    def save_model(self, request, obj, form, change):
+        """Auto-set created_by to the current user on creation."""
+        if not obj.pk:
+            obj.created_by = request.user
+        super().save_model(request, obj, form, change)
 
     def status_badge(self, obj):
         colors = {
