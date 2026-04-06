@@ -59,6 +59,12 @@ class PurchaseOrderAdmin(admin.ModelAdmin):
     ordering = ["-created_at"]
     inlines = [PurchaseOrderItemInline]
 
+    def save_model(self, request, obj, form, change):
+        """Auto-set created_by to the current user on creation."""
+        if not obj.pk:
+            obj.created_by = request.user
+        super().save_model(request, obj, form, change)
+
     def has_delete_permission(self, request, obj=None):
         if obj and obj.status in ("COMPLETED",):
             return False

@@ -8,7 +8,7 @@ Phase 7.5: Pagination added to all list views.
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
 from core.utils import paginate_queryset
@@ -76,6 +76,23 @@ def customer_detail(request, slug):
         "sales/pages/customer_detail.html",
         {"customer": customer, "orders": orders},
     )
+
+
+@login_required
+@require_POST
+def order_create(request, customer_slug):
+    """Create a new draft sales order for a customer."""
+    customer = get_object_or_404(
+        Customer.objects.select_related("category"),
+        slug=customer_slug,
+    )
+    order = SalesOrder.objects.create(
+        customer=customer,
+        created_by=request.user,
+        shipping_address_snapshot=customer.shipping_address or "",
+        status="DRAFT",
+    )
+    return redirect("Sales:OrderDetail", order_id=order.pk)
 
 
 @login_required
