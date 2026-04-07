@@ -6,9 +6,9 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [master, phase-*]
+    branches: [master, phase-*, fix-*, hotfix-*, feature-*]
   pull_request:
-    branches: [master, phase-*]
+    branches: [master, phase-*, fix-*, hotfix-*, feature-*]
 
 jobs:
   # -- Job 1: Lint Check --
