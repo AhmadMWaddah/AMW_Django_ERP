@@ -8,7 +8,7 @@ Phase 7.5: Pagination added to all list views.
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
-from django.http import HttpResponseForbidden, JsonResponse
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
 from core.views import require_post_with_405

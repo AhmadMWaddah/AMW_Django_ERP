@@ -478,7 +478,7 @@ class StockAdjustment(SoftDeleteModel):
         if self.new_quantity is not None:
             if self.new_quantity < 0:
                 raise ValidationError("New quantity cannot be negative")
-        
+
         if self.old_quantity is not None:
             if self.old_quantity < 0:
                 raise ValidationError("Old quantity cannot be negative")
