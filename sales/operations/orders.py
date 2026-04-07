@@ -24,7 +24,7 @@ from audit.logic.logging import log_audit
 from inventory.models import StockChangeType
 from inventory.operations.stock import stock_in, stock_out
 from sales.logic.pricing import calculate_order_totals
-from sales.models import OrderStatus, SalesOrder
+from sales.models import OrderStatus, SalesOrder, SalesOrderItem
 
 
 def generate_order_number():
@@ -120,6 +120,109 @@ def create_order(customer, employee):
     )
 
     return order
+
+
+@transaction.atomic
+def add_order_item(order, product, quantity, unit_price, employee, notes=None):
+    """
+    Add a line item to a DRAFT sales order.
+
+    Atomic operation that:
+    1. Validates order is in DRAFT status
+    2. Validates product and quantity
+    3. Creates SalesOrderItem with frozen pricing snapshot
+    4. Recalculates order totals
+    5. Logs audit trail
+
+    Constitution Section 8.1: All logic in operations layer, not views.
+    Constitution Section 9.2: Pricing is frozen at order time.
+
+    Args:
+        order: SalesOrder instance to add item to
+        product: Product instance to add
+        quantity: Quantity to add (Decimal)
+        unit_price: Unit price for this item (Decimal)
+        employee: Employee adding the item
+        notes: Optional line item notes
+
+    Returns:
+        SalesOrderItem: Created line item
+
+    Raises:
+        ValueError: If order is not in DRAFT status or invalid quantity
+    """
+    from decimal import Decimal
+
+    # Lock order for update
+    order = SalesOrder.objects.select_for_update().get(pk=order.pk)
+
+    # Validate status
+    if order.status != OrderStatus.DRAFT:
+        raise ValueError(f"Can only add items to DRAFT orders (current: {order.status})")
+
+    # Validate quantity
+    if quantity <= Decimal("0"):
+        raise ValueError("Quantity must be positive")
+
+    # Validate unit price
+    if unit_price < Decimal("0"):
+        raise ValueError("Unit price cannot be negative")
+
+    # Capture state BEFORE (order totals)
+    before_data = {
+        "subtotal": str(order.subtotal),
+        "total_amount": str(order.total_amount),
+        "items_count": order.items.count(),
+    }
+
+    # Calculate line total
+    line_total = quantity * unit_price
+
+    # Create the order item
+    order_item = SalesOrderItem.objects.create(
+        order=order,
+        product=product,
+        quantity=quantity,
+        snapshot_unit_price=unit_price,
+        total_price=line_total,
+        notes=notes,
+    )
+
+    # Recalculate order totals
+    subtotal, tax_amount, total_amount = calculate_order_totals(order)
+    order.subtotal = subtotal
+    order.tax_amount = tax_amount
+    order.total_amount = total_amount
+    order.save(update_fields=["subtotal", "tax_amount", "total_amount"])
+
+    # Capture state AFTER
+    after_data = {
+        "subtotal": str(order.subtotal),
+        "total_amount": str(order.total_amount),
+        "items_count": order.items.count(),
+        "added_item": {
+            "product": str(product),
+            "quantity": str(quantity),
+            "unit_price": str(unit_price),
+            "line_total": str(line_total),
+        },
+    }
+
+    # Audit log
+    log_audit(
+        actor=employee,
+        action_code="sales.order.add_item",
+        action="update",
+        target=order,
+        before=before_data,
+        after=after_data,
+        extra_data={
+            "order_number": order.order_number,
+            "product_sku": product.sku,
+        },
+    )
+
+    return order_item
 
 
 @transaction.atomic

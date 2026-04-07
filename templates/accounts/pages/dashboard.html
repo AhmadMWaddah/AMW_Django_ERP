@@ -75,5 +75,27 @@
             </div>
         </div>
     </a>
+    <a href="{% url 'Accounts:EmployeeList' %}" class="card card--clickable">
+        <div class="card__body u-flex u-items-center u-gap-md">
+            <div class="dashboard-modules__icon">
+                {% include "_snipps_/_icon_.html" with icon="users" class="" only %}
+            </div>
+            <div>
+                <h3 class="u-text-sm u-font-semibold">Employees</h3>
+                <p class="u-text-xs u-text-muted">Employee directory and profiles</p>
+            </div>
+        </div>
+    </a>
+    <a href="{% url 'audit:AuditLogList' %}" class="card card--clickable">
+        <div class="card__body u-flex u-items-center u-gap-md">
+            <div class="dashboard-modules__icon">
+                {% include "_snipps_/_icon_.html" with icon="file-text" class="" only %}
+            </div>
+            <div>
+                <h3 class="u-text-sm u-font-semibold">Audit Log</h3>
+                <p class="u-text-xs u-text-muted">System activity and change tracking</p>
+            </div>
+        </div>
+    </a>
 </div>
 {% endblock %}

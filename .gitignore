@@ -89,7 +89,7 @@ __pycache__/
 *.pyd
 
 # Project Specific
-note.txt
+note.md
 ScreenShots/
 .qwen/
 logs/

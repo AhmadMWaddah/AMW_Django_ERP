@@ -474,12 +474,19 @@ class StockAdjustment(SoftDeleteModel):
         return f"Adjustment {self.product.sku}: {self.old_quantity} → {self.new_quantity} ({self.status})"
 
     def clean(self):
-        # Validate quantity change
-        if self.new_quantity < 0:
-            raise ValidationError("New quantity cannot be negative")
+        # Validate quantity change - null-safe
+        if self.new_quantity is not None:
+            if self.new_quantity < 0:
+                raise ValidationError("New quantity cannot be negative")
+
+        if self.old_quantity is not None:
+            if self.old_quantity < 0:
+                raise ValidationError("Old quantity cannot be negative")
 
     def get_quantity_change(self):
         """Calculate the quantity change (positive or negative)."""
+        if self.new_quantity is None or self.old_quantity is None:
+            return None
         return self.new_quantity - self.old_quantity
 
     def approve(self, approver):

@@ -9,10 +9,11 @@ import json
 from decimal import Decimal
 
 from django.contrib.auth.decorators import login_required
+
+from core.views import require_post_with_405
 from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
-from django.views.decorators.http import require_POST
 
 from core.utils import paginate_queryset
 from purchasing.models import PurchaseOrder, Supplier, SupplierCategory
@@ -143,8 +144,8 @@ def order_detail(request, order_id):
     )
 
 
-@require_POST
 @login_required
+@require_post_with_405
 def receive_stock_htmx(request, order_id):
     """HTMX endpoint to receive stock against a PO.
 

@@ -39,5 +39,10 @@ if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
+handler403 = "core.views.error_403"
 handler404 = "core.views.error_404"
 handler500 = "core.views.error_500"
+
+# Note: Django does NOT support handler405 in URLconf.
+# POST-only views use @require_post_with_405 decorator from core/views.py
+# to render the branded 405 page on GET access.

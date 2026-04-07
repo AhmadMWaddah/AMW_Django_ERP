@@ -174,9 +174,31 @@ var submitBtn = document.getElementById('receive-submit');
 if (submitBtn) {
     submitBtn.addEventListener('click', function() {
         var items = [];
+        var hasError = false;
+        
+        // Clear previous errors
+        document.querySelectorAll('.form-group__error').forEach(function(el) {
+            el.remove();
+        });
+
         document.querySelectorAll('.receive-qty').forEach(function(input) {
             var qty = parseFloat(input.value);
+            var max = parseFloat(input.dataset.max);
+            
             if (qty > 0) {
+                // Validate quantity doesn't exceed remaining
+                if (qty > max) {
+                    hasError = true;
+                    var errorDiv = document.createElement('div');
+                    errorDiv.className = 'form-group__error';
+                    errorDiv.style.color = 'var(--color-danger)';
+                    errorDiv.style.fontSize = 'var(--font-size-xs)';
+                    errorDiv.style.marginTop = 'var(--space-xs)';
+                    errorDiv.textContent = 'Quantity cannot exceed remaining amount (' + max + ')';
+                    input.parentNode.appendChild(errorDiv);
+                    return;
+                }
+                
                 items.push({
                     item_id: parseInt(input.dataset.itemId),
                     quantity: qty
@@ -184,13 +206,42 @@ if (submitBtn) {
             }
         });
 
-        if (items.length === 0) {
+        if (hasError) {
             return;
         }
+
+        if (items.length === 0) {
+            var noItemsError = document.createElement('div');
+            noItemsError.className = 'form-group__error';
+            noItemsError.style.color = 'var(--color-danger)';
+            noItemsError.style.textAlign = 'center';
+            noItemsError.style.marginBottom = 'var(--space-md)';
+            noItemsError.textContent = 'Please enter at least one quantity to receive.';
+            document.querySelector('.modal__body').insertBefore(noItemsError, document.querySelector('.modal__body').firstChild);
+            return;
+        }
+
+        // Disable button and show loading state
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Receiving...';
 
         htmx.ajax('POST', '{% url "Purchasing:ReceiveStock" order.id %}', {
             target: '#receive-result',
             values: { items: JSON.stringify(items) },
+        }).then(function() {
+            // Success - close modal and reset button
+            window.closeModal('receive-modal');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Receive';
+            
+            // Clear form inputs
+            document.querySelectorAll('.receive-qty').forEach(function(input) {
+                input.value = '';
+            });
+        }).catch(function() {
+            // Error - re-enable button
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Receive';
         });
     });
 }

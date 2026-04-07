@@ -38,7 +38,7 @@
     <td class="u-text-right">{{ order.total_amount }}</td>
     <td class="u-flex u-gap-xs">
         <a href="{% url "Sales:OrderDetail" order.id %}" class="btn btn--detail btn--sm">Detail</a>
-        {% if order.status == "DRAFT" %}
+        {% if order.status == "DRAFT" and can_confirm %}
         <button class="btn btn--primary btn--sm"
                 hx-post="{% url "Sales:ConfirmOrder" order.id %}"
                 hx-swap="none"

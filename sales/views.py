@@ -6,14 +6,15 @@ Phase 7.5: Pagination added to all list views.
 """
 
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 from django.db.models import Q
-from django.http import HttpResponseForbidden, JsonResponse
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.views.decorators.http import require_POST
 
+from core.views import require_post_with_405
 from core.utils import paginate_queryset
 from sales.models import Customer, SalesOrder
-from sales.operations.orders import confirm_order, create_order, void_order
+from sales.operations.orders import add_order_item, confirm_order, create_order, void_order
 from security.logic.enforcement import PolicyEngine
 
 
@@ -87,14 +88,14 @@ def customer_detail(request, slug):
 
 
 @login_required
-@require_POST
+@require_post_with_405
 def order_create(request, customer_slug):
     """Create a new draft sales order for a customer.
 
     Server-side authorization: requires sales.order:create permission.
     """
     if not PolicyEngine(request.user).has_permission("sales.order", "create"):
-        return HttpResponseForbidden("Permission denied: create sales order")
+        raise PermissionDenied("You do not have permission to create sales orders.")
 
     customer = get_object_or_404(
         Customer.objects.select_related("category"),
@@ -122,6 +123,9 @@ def order_list(request):
     if status_filter:
         orders = orders.filter(status=status_filter)
 
+    engine = PolicyEngine(request.user)
+    can_confirm = engine.has_permission("sales.order", "confirm")
+
     pagination_data = paginate_queryset(orders, request)
 
     context = {
@@ -130,6 +134,7 @@ def order_list(request):
         "orders": pagination_data["page_obj"].object_list,
         "title": "Orders",
         "row_template": "sales/components/order_table.html",
+        "can_confirm": can_confirm,
         **pagination_data,
     }
 
@@ -154,6 +159,15 @@ def order_detail(request, order_id):
     engine = PolicyEngine(request.user)
     can_confirm_order = engine.has_permission("sales.order", "confirm")
     can_void_order = engine.has_permission("sales.order", "void")
+    can_create_order = engine.has_permission("sales.order", "create")
+
+    # Get products for the add item modal (only needed for DRAFT orders)
+    # Gated by create permission, not confirm permission
+    products = []
+    if order.status == "DRAFT" and can_create_order:
+        from inventory.models import Product
+
+        products = Product.objects.filter(deleted_at__isnull=True).order_by("sku")
 
     return render(
         request,
@@ -162,12 +176,14 @@ def order_detail(request, order_id):
             "order": order,
             "can_confirm_order": can_confirm_order,
             "can_void_order": can_void_order,
+            "can_create_order": can_create_order,
+            "products": products,
         },
     )
 
 
-@require_POST
 @login_required
+@require_post_with_405
 def confirm_order_htmx(request, order_id):
     """HTMX endpoint to confirm a sales order with Toast feedback.
 
@@ -202,8 +218,8 @@ def confirm_order_htmx(request, order_id):
         )
 
 
-@require_POST
 @login_required
+@require_post_with_405
 def void_order_htmx(request, order_id):
     """HTMX endpoint to void a sales order with Toast feedback.
 
@@ -226,6 +242,77 @@ def void_order_htmx(request, order_id):
         message = f"Order {order.order_number} voided. Stock restored."
         return JsonResponse(
             {"status": "voided", "message": message},
+            headers={
+                "HX-Trigger": f'{{"showToast": {{"message": "{message}", "type": "success"}}}}',
+                "HX-Refresh": "true",
+            },
+        )
+    except ValueError as e:
+        return JsonResponse(
+            {"error": str(e)},
+            status=400,
+            headers={"HX-Trigger": f'{{"showToast": {{"message": "{e}", "type": "error"}}}}'},
+        )
+
+
+@login_required
+@require_post_with_405
+def add_line_item(request, order_id):
+    """HTMX endpoint to add a line item to a DRAFT sales order.
+
+    Server-side authorization: requires sales.order:create permission.
+    """
+    from decimal import Decimal
+
+    from inventory.models import Product
+
+    if not PolicyEngine(request.user).has_permission("sales.order", "create"):
+        return JsonResponse(
+            {"error": "Permission denied: add line items"},
+            status=403,
+            headers={
+                "HX-Trigger": '{"showToast": {"message": "Permission denied: you cannot add line items.", "type": "error"}}',
+            },
+        )
+
+    order = get_object_or_404(SalesOrder, pk=order_id)
+
+    # Get form data
+    product_id = request.POST.get("product_id")
+    quantity = request.POST.get("quantity")
+    unit_price = request.POST.get("unit_price")
+    notes = request.POST.get("notes", "")
+
+    # Validate inputs
+    if not product_id or not quantity or not unit_price:
+        return JsonResponse(
+            {"error": "Product, quantity, and unit price are required."},
+            status=400,
+            headers={
+                "HX-Trigger": '{"showToast": {"message": "Product, quantity, and unit price are required.", "type": "error"}}',
+            },
+        )
+
+    try:
+        quantity = Decimal(quantity)
+        unit_price = Decimal(unit_price)
+    except Exception:
+        return JsonResponse(
+            {"error": "Invalid quantity or unit price format."},
+            status=400,
+            headers={
+                "HX-Trigger": '{"showToast": {"message": "Invalid quantity or unit price format.", "type": "error"}}',
+            },
+        )
+
+    # Get product
+    product = get_object_or_404(Product, pk=product_id)
+
+    try:
+        add_order_item(order, product, quantity, unit_price, request.user, notes)
+        message = f"Added {product.sku} to order {order.order_number}."
+        return JsonResponse(
+            {"status": "success", "message": message},
             headers={
                 "HX-Trigger": f'{{"showToast": {{"message": "{message}", "type": "success"}}}}',
                 "HX-Refresh": "true",

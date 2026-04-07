@@ -67,6 +67,11 @@
 <div class="card">
     <div class="card__header">
         <h3 class="card__title">Line Items</h3>
+        {% if order.status == 'DRAFT' and can_create_order %}
+        <button class="btn btn--primary btn--sm" onclick="window.openModal('add-item-modal')">
+            {% include "_snipps_/_icon_.html" with icon="plus" only %} Add Product
+        </button>
+        {% endif %}
     </div>
     <div class="card__body" style="overflow-x: auto;">
         <table class="data-table">
@@ -87,6 +92,10 @@
                     <td class="u-text-right">{{ item.quantity }}</td>
                     <td class="u-text-right">{{ item.snapshot_unit_price }}</td>
                     <td class="u-text-right u-font-semibold">{{ item.total_price }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="u-text-center u-py-lg u-text-muted">No line items yet. Add products to this order.</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -115,6 +124,84 @@
         </table>
     </div>
 </div>
+
+{# Add Product Modal (for DRAFT orders) #}
+{% if order.status == 'DRAFT' and can_create_order %}
+<div id="add-item-modal" class="modal-overlay" style="display: none;">
+    <div class="modal">
+        <div class="modal__header">
+            <h3 class="modal__title">Add Product to Order</h3>
+            <button class="modal__close" onclick="window.closeModal('add-item-modal')">
+                {% include "_snipps_/_icon_.html" with icon="x" only %}
+            </button>
+        </div>
+        <form id="add-item-form">
+            <div class="modal__body">
+                <div class="form-group">
+                    <label class="form-group__label">Product</label>
+                    <select id="add-product-id" class="form-group__input" required>
+                        <option value="">Select a product...</option>
+                        {% for product in products %}
+                        <option value="{{ product.id }}">{{ product.sku }} - {{ product.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-group__label">Quantity</label>
+                    <input type="number" id="add-quantity" class="form-group__input" step="0.0001" min="0.0001" required placeholder="0.0000">
+                </div>
+                <div class="form-group">
+                    <label class="form-group__label">Unit Price</label>
+                    <input type="number" id="add-unit-price" class="form-group__input" step="0.0001" min="0" required placeholder="0.0000">
+                </div>
+                <div class="form-group">
+                    <label class="form-group__label">Notes (Optional)</label>
+                    <textarea id="add-notes" class="form-group__input" rows="2" placeholder="Optional notes..."></textarea>
+                </div>
+            </div>
+            <div class="modal__footer">
+                <button type="button" class="btn btn--outline" onclick="window.closeModal('add-item-modal')">Cancel</button>
+                <button type="button" class="btn btn--primary" id="add-item-submit">Add Item</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+var addItemSubmitBtn = document.getElementById('add-item-submit');
+if (addItemSubmitBtn) {
+    addItemSubmitBtn.addEventListener('click', function() {
+        var productId = document.getElementById('add-product-id').value;
+        var quantity = document.getElementById('add-quantity').value;
+        var unitPrice = document.getElementById('add-unit-price').value;
+        var notes = document.getElementById('add-notes').value;
+
+        if (!productId || !quantity || !unitPrice) {
+            return;
+        }
+
+        var btn = this;
+        btn.disabled = true;
+        btn.textContent = 'Adding...';
+
+        htmx.ajax('POST', '{% url "Sales:AddLineItem" order.id %}', {
+            values: {
+                product_id: productId,
+                quantity: quantity,
+                unit_price: unitPrice,
+                notes: notes
+            },
+        }).then(function() {
+            btn.disabled = false;
+            btn.textContent = 'Add Item';
+        }).catch(function() {
+            btn.disabled = false;
+            btn.textContent = 'Add Item';
+        });
+    });
+}
+</script>
+{% endif %}
 
 {# Shipping Address Snapshot #}
 {% if order.shipping_address_snapshot %}
