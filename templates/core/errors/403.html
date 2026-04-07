@@ -1,0 +1,36 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>403 - Permission Denied | AMW Django ERP</title>
+    <link rel="stylesheet" href="{% static 'styles/_variables.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/_base.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/_utilities.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/errors.css' %}">
+</head>
+
+<body>
+    <div class="error-page">
+        <div class="card u-text-center" style="max-width: 500px;">
+            <div class="card__body">
+                <h1 class="error-code">403</h1>
+                <h2 class="u-mt-sm">Permission Denied</h2>
+                <p class="u-text-muted u-mt-sm u-mb-md">
+                    You don't have permission to access this resource. Please check your permissions or contact an administrator.
+                </p>
+                {% if exception %}
+                <div class="u-bg-muted u-p-md u-rounded-md u-text-left u-mb-md u-text-xs">
+                    <strong>Details:</strong><br>
+                    {{ exception }}
+                </div>
+                {% endif %}
+                <a href="{% url 'Accounts:Dashboard' %}" class="btn btn--primary">Go to Dashboard</a>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

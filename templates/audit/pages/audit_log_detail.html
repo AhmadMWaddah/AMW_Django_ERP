@@ -1,4 +1,5 @@
 {% extends "layouts/dashboard.html" %}
+{% load audit_tags %}
 
 {% block title %}Audit Log Detail - {{ app_name }}{% endblock %}
 {% block topbar_title %}Audit - Log Detail{% endblock %}
@@ -95,32 +96,9 @@
         {% if log.before_data %}
         <h3 class="u-mb-md">Before State</h3>
         <div class="u-mb-lg">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th style="width: 200px;">Field</th>
-                        <th>Value</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for key, value in log.before_data.items %}
-                    <tr>
-                        <td><code>{{ key }}</code></td>
-                        <td>
-                            {% if value is None %}
-                                <span class="u-text-muted">None</span>
-                            {% elif value is dict %}
-                                <pre style="margin: 0; white-space: pre-wrap; word-break: break-all;">{{ value|pprint }}</pre>
-                            {% elif value is list %}
-                                <pre style="margin: 0; white-space: pre-wrap; word-break: break-all;">{{ value|pprint }}</pre>
-                            {% else %}
-                                <span class="u-text-sm">{{ value }}</span>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+            <div class="u-bg-muted u-p-md u-rounded-md" style="background: var(--color-surface-muted); padding: var(--space-md); border-radius: var(--radius-sm);">
+                {{ log.before_data|render_audit_data }}
+            </div>
         </div>
         {% endif %}
 
@@ -128,32 +106,9 @@
         {% if log.after_data %}
         <h3 class="u-mb-md">After State</h3>
         <div class="u-mb-lg">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th style="width: 200px;">Field</th>
-                        <th>Value</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for key, value in log.after_data.items %}
-                    <tr>
-                        <td><code>{{ key }}</code></td>
-                        <td>
-                            {% if value is None %}
-                                <span class="u-text-muted">None</span>
-                            {% elif value is dict %}
-                                <pre style="margin: 0; white-space: pre-wrap; word-break: break-all;">{{ value|pprint }}</pre>
-                            {% elif value is list %}
-                                <pre style="margin: 0; white-space: pre-wrap; word-break: break-all;">{{ value|pprint }}</pre>
-                            {% else %}
-                                <span class="u-text-sm">{{ value }}</span>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+            <div class="u-bg-muted u-p-md u-rounded-md" style="background: var(--color-surface-muted); padding: var(--space-md); border-radius: var(--radius-sm);">
+                {{ log.after_data|render_audit_data }}
+            </div>
         </div>
         {% endif %}
 
@@ -161,7 +116,9 @@
         {% if log.extra_data %}
         <h3 class="u-mb-md">Additional Data</h3>
         <div class="u-mb-lg">
-            <pre style="background: var(--color-surface-muted); padding: var(--space-md); border-radius: var(--radius-sm); overflow-x: auto;">{{ log.extra_data|pprint }}</pre>
+            <div class="u-bg-muted u-p-md u-rounded-md" style="background: var(--color-surface-muted); padding: var(--space-md); border-radius: var(--radius-sm);">
+                {{ log.extra_data|render_audit_data }}
+            </div>
         </div>
         {% endif %}
     </div>

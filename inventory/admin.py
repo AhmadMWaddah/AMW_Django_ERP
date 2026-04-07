@@ -179,22 +179,37 @@ class StockAdjustmentAdmin(admin.ModelAdmin):
     list_filter = ["status", "reason", "requested_at"]
     search_fields = ["product__sku", "product__name", "notes"]
     ordering = ["-requested_at"]
-    readonly_fields = [
-        "product",
-        "old_quantity",
-        "new_quantity",
-        "reason",
-        "status",
-        "requested_by",
-        "requested_at",
-        "approved_by",
-        "approved_at",
-        "executed_at",
-        "rejection_comment",
-        "notes",
-        "location_note",
-        "deleted_at",
-    ]
+
+    def get_readonly_fields(self, request, obj=None):
+        """Make fields readonly only after creation."""
+        if obj:  # Editing existing object - all fields readonly
+            return [
+                "product",
+                "old_quantity",
+                "new_quantity",
+                "reason",
+                "status",
+                "requested_by",
+                "requested_at",
+                "approved_by",
+                "approved_at",
+                "executed_at",
+                "rejection_comment",
+                "notes",
+                "location_note",
+                "deleted_at",
+            ]
+        # During creation, allow editing of these fields
+        return [
+            "status",
+            "requested_by",
+            "requested_at",
+            "approved_by",
+            "approved_at",
+            "executed_at",
+            "rejection_comment",
+            "deleted_at",
+        ]
 
     fieldsets = (
         (
@@ -235,12 +250,15 @@ class StockAdjustmentAdmin(admin.ModelAdmin):
     actions = ["approve_selected", "reject_selected"]
 
     def save_model(self, request, obj, form, change):
-        """Automatically set requested_by and requested_at on creation."""
+        """Automatically set requested_by, requested_at, and snapshot old_quantity on creation."""
         if not obj.pk:
             obj.requested_by = request.user
             from django.utils.timezone import now
 
             obj.requested_at = now()
+            # Auto-snapshot old_quantity from product's current stock if not set
+            if obj.old_quantity is None and obj.product:
+                obj.old_quantity = obj.product.current_stock
         super().save_model(request, obj, form, change)
 
     def approve_selected(self, request, queryset):
