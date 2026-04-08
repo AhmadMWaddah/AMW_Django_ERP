@@ -29,12 +29,12 @@ AMW Django ERP is a comprehensive, production-ready ERP system designed for real
 | **Phase 6** | Purchasing & Procurement                     | ✅ **COMPLETE**  | `master`  |
 | **Phase 7** | Frontend Foundation & HTMX UI                | ✅ **COMPLETE**  | `master`  |
 | **Phase 7.5**| Infrastructure UI & Global Pagination       | ✅ **COMPLETE**  | `master`  |
-| Phase 8     | Async Tasks, Reporting & Hardening           | ⏳ NEXT          | `phase-8` |
+| Phase 8     | Async Tasks, Reporting & Hardening           | ⏳ NEXT          | `Phase 8: Async_Hardening` |
 
 **Branch Strategy:**
 - `master` - Stable production baseline (Phases 1-7.5 complete)
-- All phase branches merged and cleaned up after completion
-- Future phases developed in `phase-X` branches, fixes in `fix-{name}` branches
+- All branches merged and cleaned up after completion
+- Branch naming follows Constitution Section 6.2: `Fix: {Name}`, `Feature: {Name}`, `Phase {X}: {Name}`
 
 **Version Tags:**
 - `v3.0-phase3-complete` - IAM & Security Framework
