@@ -224,7 +224,10 @@ def adjust_stock_htmx(request, slug):
         product.refresh_from_db()
         return JsonResponse(
             {"message": message, "current_stock": str(product.current_stock), "wac_price": str(product.wac_price)},
-            headers={"HX-Trigger": f'{{"showToast": {{"message": "{message}", "type": "success"}}}}'},
+            headers={
+                "HX-Trigger": f'{{"showToast": {{"message": "{message}", "type": "success"}}}}',
+                "HX-Refresh": "true",
+            },
         )
     except ValueError as e:
         return JsonResponse(

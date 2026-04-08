@@ -22,8 +22,7 @@
 <body class="{% block body_class %}{% endblock %}">
 
     {# Global Toast Container #}
-    <div id="toast-container" class="toast-container" hx-on::htmx:showToast="window.showToast(event)" aria-live="polite"
-        aria-atomic="true"></div>
+    <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
 
     {# Page Content #}
     {% block page %}{% endblock %}
