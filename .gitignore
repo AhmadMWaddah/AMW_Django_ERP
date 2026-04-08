@@ -66,8 +66,9 @@ celerybeat.pid
 # Documentation
 *.md
 !README.md
-!utils/READMEME.md
+!utils/README.md
 !Constitution_AMW_DJ_ERP.md
+!Manual_Tests/*.md
 
 # Backup Files
 *.bak
