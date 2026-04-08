@@ -48,8 +48,8 @@ This is not a generic starter template and not a toy demo. Every implementation 
   - Reviews overall architectural alignment and strategic consistency.
 - **Backend & Logic Lead:** Qwen
   - Owns business logic, data integrity, IAM enforcement, and backend operations design.
-- **Frontend & UI Lead / Cross-Reviewer:** Cod
-  - Owns HTMX-based interaction, template architecture, and frontend consistency.
+- **Cross-Reviewer / Secondry Urgent Developer:** Cod
+  - Mainly a Reviewer for Backend & Logic Lead, and also a Developer for urgent tasks.
 
 ### Role Rule
 
@@ -131,31 +131,27 @@ A task, part, or phase is complete only when:
 
 ### 6.2 Branch Naming
 
-The original phase naming is preserved conceptually, but branch names used in Git should be machine-safe.
+**MANDATORY:** All branches MUST follow this exact naming convention. No exceptions.
 
 **Branch Naming Convention:**
 
-| Branch Type        | Format          | Example                 |
-|--------------------|-----------------|-------------------------|
-| **Phase Branch**   | `phase-X`       | `phase-4`               |
-| **Feature Branch** | `feature-{name}`| `feature-seed_erp`      |
-| **Fix Branch**     | `fix-{name}`    | `fix-login_bug`         |
-| **Hotfix Branch**  | `hotfix-{name}` | `hotfix-security_patch` |
+| Branch Type | Format | Example |
+|-------------|--------|---------|
+| **Errors/Fixes** | `Fix: {Fix_Name}` | `Fix: Login_Bug` |
+| **Features** | `Feature: {Feature_Name}` | `Feature: Open_Redirect_Protection` |
+| **Phases** | `Phase {Phase_Number}: {Phase_Name}` | `Phase 8: Async_Hardening` |
 
 **When to Use Each:**
 
-- **Phase branches** (`phase-X`): Active development of planned phase work
-- **Feature branches** (`feature-{name}`): New features outside active phase scope (e.g., utility commands, enhancements)
-- **Fix branches** (`fix-{name}`): Bug fixes after phase merged to master
-- **Hotfix branches** (`hotfix-{name}`): Critical production fixes
+- **`Fix: {Fix_Name}`**: Bug fixes, error corrections, and issue resolutions (used after all branches are merged to master)
+- **`Feature: {Feature_Name}`**: New features, enhancements, and updates outside active phase scope
+- **`Phase {Phase_Number}: {Phase_Name}`**: New phase development work
 
 **Workflow Rule:**
 
-1. **During Active Phase Development:** All work goes in `phase-X` branch
-2. **After Phase Merge to Master:** 
-   - New features → `feature-{name}` branch
-   - Bug fixes → `fix-{name}` branch
-3. **Merge to Master:** After Ahmad confirms and approves
+1. All work happens in appropriately named branches
+2. Merge to `master` only after Ahmad confirms and approves
+3. Branch names MUST match the format exactly — no silent drift to alternative naming
 
 ### 6.3 Commits - Multi-Message Format
 
@@ -171,13 +167,13 @@ git commit -m "branch-prefix Title" -m "Detailed description"
 bash utils/git_task_commit.sh "Title" "Description"
 
 # Examples:
-bash utils/git_task_commit.sh "phase-2: Employee Model" "Added AbstractBaseUser with email authentication"
+bash utils/git_task_commit.sh "Phase 4: Inventory Model" "Added AbstractBaseUser with email authentication"
 bash utils/git_task_commit.sh "Fix: Navigation bug" "Changed bare URLs to namespaced accounts:dashboard"
 bash utils/git_task_commit.sh "Feature: Open redirect protection" "Added Django's url_has_allowed_host_and_scheme"
 ```
 
 **Title Prefixes:**
-- `phase-X:` - For phase-related features (e.g., `phase-2:`, `phase-3:`)
+- `Phase X:` - For phase-related features (e.g., `Phase 2:`, `Phase 3:`)
 - `Fix:` - For bug fixes
 - `Feature:` - For new features
 - `Refactor:` - For code refactoring
