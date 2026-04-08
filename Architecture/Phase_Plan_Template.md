@@ -176,48 +176,8 @@ Every task in this file should follow these rules:
 - Each task should include a verification method
 - If a task changes business rules, tests are required
 
-### Commit Message Format (Constitution Section 9.3)
-
-**MANDATORY:** All commits MUST use the Multi-Message Format.
-
-**Format:**
-```bash
-git commit -m "[branch] Title" -m "Description"
-```
-
-**Using the utility script:**
-```bash
-./utils/git_task_commit.sh "Title" "Description"
-```
-
-**Title Prefixes:**
-- `phase-X:` - Phase-related features (phase-1:, phase-2:, etc.)
-- `Fix:` - Bug fixes
-- `Feature:` - New features
-- `Refactor:` - Code refactoring
-- `Docs:` - Documentation updates
-- `Test:` - Test additions or modifications
-
-**Examples:**
-```bash
-# Good commit messages
-./utils/git_task_commit.sh "phase-2: Employee Model" "Added AbstractBaseUser with email authentication"
-./utils/git_task_commit.sh "Fix: Navigation bug" "Changed to namespaced URLs accounts:dashboard"
-./utils/git_task_commit.sh "Feature: WAC valuation" "Implemented weighted average cost calculation"
-
-# Bad: Missing description
-./utils/git_task_commit.sh "Add model"
-
-# Bad: Vague title
-./utils/git_task_commit.sh "Fix stuff" "Fixed some things"
-```
-
-**Rules:**
-- Title must be concise (under 72 characters)
-- Description must explain WHAT and WHY (not HOW)
-- Both title and description are mandatory
-- Use appropriate prefix based on task type
-- Use the utility script for consistency
+### Git Workflow
+All git workflow rules (branch naming, commit format, merging, tagging) are defined in the **Constitution Section 6-7** only. Refer to `Constitution_AMW_DJ_ERP.md` for the authoritative specification.
 
 ### Task Examples
 
