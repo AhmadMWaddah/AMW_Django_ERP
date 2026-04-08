@@ -131,21 +131,21 @@ A task, part, or phase is complete only when:
 
 ### 6.2 Branch Naming
 
-**MANDATORY:** All branches MUST follow this exact naming convention. No exceptions.
+**MANDATORY:** All branches MUST follow this exact PascalCase slug naming convention. No exceptions.
 
 **Branch Naming Convention:**
 
 | Branch Type | Format | Example |
 |-------------|--------|---------|
-| **Errors/Fixes** | `Fix: {Fix_Name}` | `Fix: Login_Bug` |
-| **Features** | `Feature: {Feature_Name}` | `Feature: Open_Redirect_Protection` |
-| **Phases** | `Phase {Phase_Number}: {Phase_Name}` | `Phase 8: Async_Hardening` |
+| **Errors/Fixes** | `Fix-{Name}` | `Fix-HTMX-Stability` |
+| **Features** | `Feature-{Name}` | `Feature-Open-Redirect-Protection` |
+| **Phases** | `Phase-{Number}-{Name}` | `Phase-8-Async-Hardening` |
 
 **When to Use Each:**
 
-- **`Fix: {Fix_Name}`**: Bug fixes, error corrections, and issue resolutions (used after all branches are merged to master)
-- **`Feature: {Feature_Name}`**: New features, enhancements, and updates outside active phase scope
-- **`Phase {Phase_Number}: {Phase_Name}`**: New phase development work
+- **`Fix-{Name}`**: Bug fixes, error corrections, and issue resolutions
+- **`Feature-{Name}`**: New features, enhancements, and updates outside active phase scope
+- **`Phase-{Number}-{Name}`**: New phase development work
 
 **Workflow Rule:**
 
