@@ -3,11 +3,11 @@
 # -- Git Task Commit Script --
 # AMW Django ERP - Atomic Task-Based Committing with Multi-Message Format
 #
-# Usage: ./utils/git_task_commit.sh "Title" "Description"
-# Example: ./utils/git_task_commit.sh "phase-2: Add auth views" "Implemented login, logout, and dashboard"
+# Usage: bash utils/git_task_commit.sh "Title" "Description"
+# Example: bash utils/git_task_commit.sh "Phase 2: Add auth views" "Implemented login, logout, and dashboard"
 #
 # This script ensures atomic commits with proper two-part messages for audit clarity.
-# Constitution Section 9.3: Multi-Message Commit Format
+# Constitution Section 6.3: Multi-Message Commit Format
 
 set -e
 
@@ -80,15 +80,15 @@ run_lint_check() {
 if [ $# -lt 2 ]; then
     print_error "Both Title and Description are required"
     echo ""
-    echo "Usage: $0 \"Title\" \"Description\""
+    echo "Usage: bash utils/git_task_commit.sh \"Title\" \"Description\""
     echo ""
     echo "Examples:"
-    echo "  $0 \"phase-2: Employee Model\" \"Added AbstractBaseUser with email auth\""
-    echo "  $0 \"Fix: Navigation bug\" \"Changed to namespaced URLs accounts:dashboard\""
-    echo "  $0 \"Feature: Open redirect protection\" \"Added Django's url_has_allowed_host_and_scheme\""
+    echo "  bash utils/git_task_commit.sh \"Phase 2: Employee Model\" \"Added AbstractBaseUser with email auth\""
+    echo "  bash utils/git_task_commit.sh \"Fix: Navigation bug\" \"Changed to namespaced URLs accounts:dashboard\""
+    echo "  bash utils/git_task_commit.sh \"Feature: Open redirect protection\" \"Added Django's url_has_allowed_host_and_scheme\""
     echo ""
     echo "Title Prefixes:"
-    echo "  phase-X:  - Phase-related features (phase-1:, phase-2:, etc.)"
+    echo "  Phase X:  - Phase-related features (Phase 2:, Phase 3:, etc.)"
     echo "  Fix:      - Bug fixes"
     echo "  Feature:  - New features"
     echo "  Refactor: - Code refactoring"
@@ -139,8 +139,9 @@ echo ""
 run_lint_check
 
 # -- Create Commit Message --
-# Format: [branch] Title + Description (Multi-Message)
-COMMIT_MESSAGE_TITLE="[$CURRENT_BRANCH] $COMMIT_TITLE"
+# Format: Title + Description (Multi-Message)
+# The title is used exactly as provided — no branch prefix added.
+COMMIT_MESSAGE_TITLE="$COMMIT_TITLE"
 
 # -- Confirm Commit --
 print_header "Commit Preview"
