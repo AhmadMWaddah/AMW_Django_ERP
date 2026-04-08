@@ -16,7 +16,7 @@ git add path/to/file
 **Examples:**
 ```bash
 # Phase work
-./utils/git_task_commit.sh "phase-2: Employee Model" "Added AbstractBaseUser with email auth"
+./utils/git_task_commit.sh "Phase 2: Employee Model" "Added AbstractBaseUser with email auth"
 
 # Bug fix
 ./utils/git_task_commit.sh "Fix: Navigation bug" "Changed to namespaced URLs accounts:dashboard"
@@ -29,7 +29,7 @@ git add path/to/file
 ```
 
 **Title Prefixes:**
-- `phase-X:` - Phase-related features (phase-1:, phase-2:, etc.)
+- `Phase X:` - Phase-related features (Phase 2:, Phase 3:, etc.)
 - `Fix:` - Bug fixes
 - `Feature:` - New features
 - `Refactor:` - Code refactoring
