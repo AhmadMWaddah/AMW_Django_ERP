@@ -1,6 +1,6 @@
 """
 -- AMW Django ERP - Core Context Processors --
-Version: 1.5 (Inclusive Module Access Check)
+Version: 1.6 (Single PolicyEngine Per Request)
 """
 
 import fnmatch
@@ -13,6 +13,9 @@ def ui_context(request):
     Provides global UI context for navigation, app identification, and policy checks.
     Ensures nav_hierarchy is empty for unauthenticated users.
     Filters nav_hierarchy based on user's PolicyEngine permissions.
+
+    Performance: Creates a SINGLE PolicyEngine instance per request and reuses it
+    across all permission checks, eliminating N+1 database queries.
     """
     if not request.user.is_authenticated:
         return {
@@ -24,14 +27,17 @@ def ui_context(request):
     path = request.path
     active_app = _resolve_active_app(path)
 
+    # Create ONE engine for the entire request lifecycle
+    engine = PolicyEngine(request.user)
+
     # Build and filter navigation hierarchy based on permissions
-    nav_hierarchy = _build_nav_hierarchy(request.user)
+    nav_hierarchy = _build_nav_hierarchy(engine)
 
     return {
         "app_name": "AMW ERP",
         "active_app": active_app,
         "nav_hierarchy": nav_hierarchy,
-        "can_adjust_stock": _has_inventory_adjust_policy(request.user),
+        "can_adjust_stock": _has_inventory_adjust_policy(engine),
     }
 
 
@@ -43,25 +49,23 @@ def _resolve_active_app(path):
     return path_parts[0]
 
 
-def _has_inventory_adjust_policy(user):
+def _has_inventory_adjust_policy(engine):
     """Check if the user has 'Inventory: Adjust' policy."""
     try:
-        engine = PolicyEngine(user)
         return engine.has_permission("inventory.stock", "adjust")
     except Exception:
         return False
 
 
-def _check_nav_permission(user, resource, action):
+def _check_nav_permission(engine, resource, action):
     """Check if user has permission for a nav item."""
     try:
-        engine = PolicyEngine(user)
         return engine.has_permission(resource, action)
     except Exception:
         return False
 
 
-def _has_module_access(user, module_prefix):
+def _has_module_access(engine, module_prefix):
     """
     Check if user has ANY permission within a module namespace.
 
@@ -72,14 +76,13 @@ def _has_module_access(user, module_prefix):
     because 'sales.order' matches the 'sales.*' pattern via fnmatch.
 
     Args:
-        user: The authenticated user
+        engine: PolicyEngine instance (already cached)
         module_prefix: Module prefix (e.g., 'inventory', 'sales', 'purchasing')
 
     Returns:
         bool: True if user has any permission in this module
     """
     try:
-        engine = PolicyEngine(user)
         permissions = engine.get_all_permissions()
 
         # Pattern for this module's wildcard (e.g., 'sales.*')
@@ -101,12 +104,14 @@ def _has_module_access(user, module_prefix):
         return False
 
 
-def _build_nav_hierarchy(user):
+def _build_nav_hierarchy(engine):
     """
     Build the sidebar navigation structure filtered by user permissions.
     Every single dictionary GUARANTEES 'icon' and 'children' keys exist.
     Only includes sections the user has permission to access.
     Uses module-level wildcard patterns to align with seeded policies.
+
+    Accepts a pre-initialized PolicyEngine to avoid N+1 queries.
     """
     nav = []
 
@@ -123,7 +128,7 @@ def _build_nav_hierarchy(user):
 
     # Identity section - visible if user has any accounts module access or executive wildcard
     # Note: No accounts.* policies are seeded by default, so this checks for ad-hoc policies
-    if _has_module_access(user, "accounts") or _check_nav_permission(user, "accounts.employee", "view"):
+    if _has_module_access(engine, "accounts") or _check_nav_permission(engine, "accounts.employee", "view"):
         identity_section = {
             "title": "Identity",
             "icon": "users",
@@ -144,14 +149,14 @@ def _build_nav_hierarchy(user):
     # IAM section - visible if user has any security module access
     # Note: No security.* policies are seeded by default
     if (
-        _has_module_access(user, "security")
-        or _check_nav_permission(user, "security.department", "view")
-        or _check_nav_permission(user, "security.role", "view")
-        or _check_nav_permission(user, "security.policy", "view")
+        _has_module_access(engine, "security")
+        or _check_nav_permission(engine, "security.department", "view")
+        or _check_nav_permission(engine, "security.role", "view")
+        or _check_nav_permission(engine, "security.policy", "view")
     ):
         iam_children = []
         # Check each IAM resource individually
-        if _check_nav_permission(user, "security.department", "view") or _has_module_access(user, "security"):
+        if _check_nav_permission(engine, "security.department", "view") or _has_module_access(engine, "security"):
             iam_children.append(
                 {
                     "title": "Departments",
@@ -161,7 +166,7 @@ def _build_nav_hierarchy(user):
                     "children": [],
                 }
             )
-        if _check_nav_permission(user, "security.role", "view") or _has_module_access(user, "security"):
+        if _check_nav_permission(engine, "security.role", "view") or _has_module_access(engine, "security"):
             iam_children.append(
                 {
                     "title": "Roles",
@@ -171,7 +176,7 @@ def _build_nav_hierarchy(user):
                     "children": [],
                 }
             )
-        if _check_nav_permission(user, "security.policy", "view") or _has_module_access(user, "security"):
+        if _check_nav_permission(engine, "security.policy", "view") or _has_module_access(engine, "security"):
             iam_children.append(
                 {
                     "title": "Policies",
@@ -194,7 +199,7 @@ def _build_nav_hierarchy(user):
             )
 
     # Inventory section - check for inventory.* wildcard
-    if _has_module_access(user, "inventory"):
+    if _has_module_access(engine, "inventory"):
         inventory_children = []
         # All children visible if user has inventory.* view
         inventory_children.append(
@@ -236,7 +241,7 @@ def _build_nav_hierarchy(user):
         )
 
     # Sales section - check for sales.* wildcard
-    if _has_module_access(user, "sales"):
+    if _has_module_access(engine, "sales"):
         sales_children = []
         sales_children.append(
             {
@@ -268,7 +273,7 @@ def _build_nav_hierarchy(user):
         )
 
     # Purchasing section - check for purchasing.* wildcard
-    if _has_module_access(user, "purchasing"):
+    if _has_module_access(engine, "purchasing"):
         purchasing_children = []
         purchasing_children.append(
             {
@@ -300,7 +305,7 @@ def _build_nav_hierarchy(user):
         )
 
     # Audit section - check for audit.* wildcard
-    if _has_module_access(user, "audit"):
+    if _has_module_access(engine, "audit"):
         audit_section = {
             "title": "Audit Log",
             "icon": "file-text",
