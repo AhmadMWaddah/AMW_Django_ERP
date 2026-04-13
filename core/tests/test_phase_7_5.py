@@ -81,13 +81,24 @@ class TestAuditLogViews(TestCase):
     """Test Audit Log list and detail views."""
 
     def setUp(self):
-        """Create test employee and audit logs."""
+        """Create test employee with audit view permission and audit logs."""
+        department = Department.objects.create(name="Finance")
+        policy = Policy.objects.create(
+            name="Audit: View",
+            resource="audit.*",
+            action="view",
+            effect="allow",
+        )
+        role = Role.objects.create(name="Auditor", department=department)
+        role.policies.add(policy)
+
         self.employee = Employee.objects.create_user(
             email="auditor@example.com",
             first_name="Audit",
             last_name="User",
             password="testpass123",
         )
+        self.employee.roles.add(role)
         self.client.force_login(self.employee)
 
         # Create audit logs
@@ -139,14 +150,13 @@ class TestSecurityDetailViews(TestCase):
     """Test Security module detail views."""
 
     def setUp(self):
-        """Create test employee, department, role, and policy."""
+        """Create test employee, department, role, and policies."""
         self.employee = Employee.objects.create_user(
             email="admin@example.com",
             first_name="Admin",
             last_name="User",
             password="testpass123",
         )
-        self.client.force_login(self.employee)
 
         self.department = Department.objects.create(name="IT Department")
         self.child_dept = Department.objects.create(name="Backend Team", parent=self.department)
@@ -157,11 +167,16 @@ class TestSecurityDetailViews(TestCase):
             action="adjust",
             effect="allow",
         )
+        dept_view_policy = Policy.objects.create(name="Dept View", resource="security.department", action="view", effect="allow")
+        role_view_policy = Policy.objects.create(name="Role View", resource="security.role", action="view", effect="allow")
+        policy_view_policy = Policy.objects.create(name="Policy View", resource="security.policy", action="view", effect="allow")
+
         self.role = Role.objects.create(name="Warehouse Staff", department=self.department)
-        self.role.policies.add(self.policy)
-        self.employee.department = self.department
+        self.role.policies.add(self.policy, dept_view_policy, role_view_policy, policy_view_policy)
         self.employee.roles.add(self.role)
         self.employee.save()
+
+        self.client.force_login(self.employee)
 
     def test_department_detail_returns_success(self):
         """Test department detail view returns success status."""
@@ -208,13 +223,26 @@ class TestListViewsPagination(TestCase):
     """Test that all list views have pagination applied."""
 
     def setUp(self):
-        """Create test employee and login."""
+        """Create test employee with view permissions and login."""
+        department = Department.objects.create(name="General")
+        policies = [
+            Policy.objects.create(name="Inventory: View", resource="inventory.*", action="view", effect="allow"),
+            Policy.objects.create(name="Customer: View", resource="customer.*", action="view", effect="allow"),
+            Policy.objects.create(name="Sales: View", resource="sales.*", action="view", effect="allow"),
+            Policy.objects.create(name="Dept: View", resource="security.department", action="view", effect="allow"),
+            Policy.objects.create(name="Role: View", resource="security.role", action="view", effect="allow"),
+            Policy.objects.create(name="Policy: View", resource="security.policy", action="view", effect="allow"),
+        ]
+        role = Role.objects.create(name="Viewer", department=department)
+        role.policies.add(*policies)
+
         self.employee = Employee.objects.create_user(
             email="viewer@example.com",
             first_name="Viewer",
             last_name="User",
             password="testpass123",
         )
+        self.employee.roles.add(role)
         self.client.force_login(self.employee)
 
         # Create test data
