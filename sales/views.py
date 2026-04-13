@@ -15,10 +15,10 @@ from core.views import require_post_with_405
 from core.utils import paginate_queryset
 from sales.models import Customer, SalesOrder
 from sales.operations.orders import add_order_item, confirm_order, create_order, void_order
-from security.logic.enforcement import PolicyEngine
+from security.logic.enforcement import PolicyEngine, require_permission
 
 
-@login_required
+@require_permission("customer.*", "view")
 def customer_list(request):
     """Customer registry with search and pagination."""
     query = request.GET.get("q", "").strip()
@@ -62,7 +62,7 @@ def customer_list(request):
     )
 
 
-@login_required
+@require_permission("customer.*", "view")
 def customer_detail(request, slug):
     """Customer detail with order history."""
     customer = get_object_or_404(
@@ -105,7 +105,7 @@ def order_create(request, customer_slug):
     return redirect("Sales:OrderDetail", order_id=order.pk)
 
 
-@login_required
+@require_permission("sales.*", "view")
 def order_list(request):
     """Sales order dashboard with search and pagination."""
     query = request.GET.get("q", "").strip()
@@ -148,7 +148,7 @@ def order_list(request):
     )
 
 
-@login_required
+@require_permission("sales.*", "view")
 def order_detail(request, order_id):
     """Order detail with line items and pricing snapshots."""
     order = get_object_or_404(
