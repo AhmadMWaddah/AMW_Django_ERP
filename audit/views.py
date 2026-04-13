@@ -1,14 +1,14 @@
 """Audit log views with list, detail, search, and pagination."""
 
-from django.contrib.auth.decorators import login_required
 from django.db import models
 from django.shortcuts import get_object_or_404, render
 
 from audit.models import AuditLog
 from core.utils import paginate_queryset
+from security.logic.enforcement import require_permission
 
 
-@login_required
+@require_permission("audit.*", "view")
 def audit_log_list(request):
     """Audit log list view with search and pagination."""
     query = request.GET.get("q", "").strip()
@@ -45,7 +45,7 @@ def audit_log_list(request):
     return render(request, "audit/pages/audit_log_list.html", context)
 
 
-@login_required
+@require_permission("audit.*", "view")
 def audit_log_detail(request, pk):
     """Audit log detail view with before/after data display."""
     log = get_object_or_404(AuditLog, pk=pk)

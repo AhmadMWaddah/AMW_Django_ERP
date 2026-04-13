@@ -6,7 +6,6 @@ Phase 7.5: Pagination added to all list views.
 
 from decimal import Decimal, InvalidOperation
 
-from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
@@ -15,9 +14,10 @@ from django.views.decorators.http import require_POST
 from core.utils import paginate_queryset
 from inventory.models import Category, Product, StockAdjustment, StockTransaction
 from inventory.operations.stock import stock_in, stock_out
+from security.logic.enforcement import require_permission
 
 
-@login_required
+@require_permission("inventory.*", "view")
 def product_list(request):
     """Product catalog list view with search and pagination."""
     query = request.GET.get("q", "").strip()
@@ -53,7 +53,7 @@ def product_list(request):
     return render(request, "inventory/pages/product_list.html", context)
 
 
-@login_required
+@require_permission("inventory.*", "view")
 def product_detail(request, slug):
     """Product detail with stock movement ledger."""
     from security.logic.enforcement import PolicyEngine
@@ -77,7 +77,7 @@ def product_detail(request, slug):
     )
 
 
-@login_required
+@require_permission("inventory.*", "view")
 def stock_ledger(request, slug):
     """Stock movement history page (ledger only) with pagination."""
     product = get_object_or_404(Product.objects.select_related("category"), slug=slug)
@@ -94,7 +94,7 @@ def stock_ledger(request, slug):
     return render(request, "inventory/pages/stock_ledger.html", context)
 
 
-@login_required
+@require_permission("inventory.*", "view")
 def category_list(request):
     """Category list view with search and pagination."""
     query = request.GET.get("q", "").strip()
@@ -119,7 +119,7 @@ def category_list(request):
     return render(request, "inventory/pages/category_list.html", context)
 
 
-@login_required
+@require_permission("inventory.*", "view")
 def adjustment_list(request):
     """Stock adjustment list view with search and pagination."""
     query = request.GET.get("q", "").strip()
@@ -155,24 +155,12 @@ def adjustment_list(request):
 
 
 @require_POST
-@login_required
+@require_permission("inventory.*", "adjust")
 def adjust_stock_htmx(request, slug):
     """HTMX endpoint for stock adjustment by slug.
 
-    Policy: Requires 'inventory.stock' -> 'adjust' permission.
+    Policy: Requires 'inventory.*' -> 'adjust' permission.
     """
-    from security.logic.enforcement import PolicyEngine
-
-    engine = PolicyEngine(request.user)
-    if not engine.has_permission("inventory.stock", "adjust"):
-        return JsonResponse(
-            {"error": "Permission denied"},
-            status=403,
-            headers={
-                "HX-Trigger": '{"showToast": {"message": "You do not have permission to adjust stock.", "type": "error"}}'
-            },
-        )
-
     product = get_object_or_404(Product, slug=slug)
     action = request.POST.get("action")
     quantity_str = request.POST.get("quantity", "0")

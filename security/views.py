@@ -4,15 +4,15 @@ Phase 7: Departments, Roles, Policies list pages.
 Phase 7.5: Detail views and pagination.
 """
 
-from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Prefetch, Q
 from django.shortcuts import get_object_or_404, render
 
 from core.utils import paginate_queryset
+from security.logic.enforcement import require_permission
 from security.models import Department, Policy, Role
 
 
-@login_required
+@require_permission("security.department", "view")
 def department_list(request):
     """Department list view with search and pagination."""
     query = request.GET.get("q", "").strip()
@@ -40,7 +40,7 @@ def department_list(request):
     return render(request, "security/pages/department_list.html", context)
 
 
-@login_required
+@require_permission("security.department", "view")
 def department_detail(request, slug):
     """Department detail view with children and employees."""
     department = get_object_or_404(
@@ -71,7 +71,7 @@ def department_detail(request, slug):
     return render(request, "security/pages/department_detail.html", context)
 
 
-@login_required
+@require_permission("security.role", "view")
 def role_list(request):
     """Role list view with search and pagination."""
     query = request.GET.get("q", "").strip()
@@ -109,7 +109,7 @@ def role_list(request):
     return render(request, "security/pages/role_list.html", context)
 
 
-@login_required
+@require_permission("security.role", "view")
 def role_detail(request, slug):
     """Role detail view with policies and employees."""
     role = get_object_or_404(
@@ -129,7 +129,7 @@ def role_detail(request, slug):
     return render(request, "security/pages/role_detail.html", context)
 
 
-@login_required
+@require_permission("security.policy", "view")
 def policy_list(request):
     """Policy list view with search and pagination."""
     query = request.GET.get("q", "").strip()
@@ -162,7 +162,7 @@ def policy_list(request):
     return render(request, "security/pages/policy_list.html", context)
 
 
-@login_required
+@require_permission("security.policy", "view")
 def policy_detail(request, slug):
     """Policy detail view with usage information."""
     policy = get_object_or_404(
