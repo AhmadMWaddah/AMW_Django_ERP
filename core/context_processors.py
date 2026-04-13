@@ -209,8 +209,8 @@ def _build_nav_hierarchy(engine):
                 }
             )
 
-    # Inventory section - check for inventory.* wildcard
-    if _has_module_access(engine, "inventory"):
+    # Inventory section — requires view permission, not just any inventory permission
+    if _check_nav_permission(engine, "inventory.*", "view"):
         inventory_children = []
         # All children visible if user has inventory.* view
         inventory_children.append(
@@ -251,8 +251,10 @@ def _build_nav_hierarchy(engine):
             }
         )
 
-    # Sales section - check for sales.* wildcard
-    if _has_module_access(engine, "sales"):
+    # Sales section — requires view permission
+    if _check_nav_permission(engine, "sales.*", "view") or _check_nav_permission(
+        engine, "customer.*", "view"
+    ):
         sales_children = []
         sales_children.append(
             {
@@ -283,8 +285,8 @@ def _build_nav_hierarchy(engine):
             }
         )
 
-    # Purchasing section - check for purchasing.* wildcard
-    if _has_module_access(engine, "purchasing"):
+    # Purchasing section — requires view permission
+    if _check_nav_permission(engine, "purchasing.*", "view"):
         purchasing_children = []
         purchasing_children.append(
             {

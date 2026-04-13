@@ -14,6 +14,8 @@ Usage:
 """
 
 from django.contrib.auth import get_user_model
+from django.http import JsonResponse
+from django.shortcuts import render
 
 from ..models import Policy, Role
 
@@ -161,8 +163,11 @@ def require_permission(resource, action):
     """
     Decorator for requiring permission on a view or operation.
 
+    For standard GET requests: renders the styled 403 error page.
+    For HTMX POST requests: returns 403 JSON with toast notification.
+
     Usage:
-        @require_permission('inventory.stock', 'adjust')
+        @require_permission("inventory.stock", "adjust")
         def adjust_stock(request, product_id):
             # Only employees with permission can access
             pass
@@ -183,9 +188,21 @@ def require_permission(resource, action):
                 return HttpResponseForbidden("Authentication required")
 
             if not check_permission(request.user, resource, action):
-                from django.http import HttpResponseForbidden
-
-                return HttpResponseForbidden(f"Permission denied: {action} on {resource}")
+                # HTMX requests get JSON toast; normal requests get styled 403 page
+                if getattr(request, "htmx", None):
+                    return JsonResponse(
+                        {"error": f"Permission denied: {action} on {resource}"},
+                        status=403,
+                        headers={
+                            "HX-Trigger": '{"showToast": {"message": "Permission denied. You do not have access to this resource.", "type": "error"}}'
+                        },
+                    )
+                return render(
+                    request,
+                    "core/errors/403.html",
+                    {"exception": f"You do not have permission to {action} {resource}."},
+                    status=403,
+                )
 
             return func(request, *args, **kwargs)
 
