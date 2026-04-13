@@ -167,9 +167,15 @@ class TestSecurityDetailViews(TestCase):
             action="adjust",
             effect="allow",
         )
-        dept_view_policy = Policy.objects.create(name="Dept View", resource="security.department", action="view", effect="allow")
-        role_view_policy = Policy.objects.create(name="Role View", resource="security.role", action="view", effect="allow")
-        policy_view_policy = Policy.objects.create(name="Policy View", resource="security.policy", action="view", effect="allow")
+        dept_view_policy = Policy.objects.create(
+            name="Dept View", resource="security.department", action="view", effect="allow"
+        )
+        role_view_policy = Policy.objects.create(
+            name="Role View", resource="security.role", action="view", effect="allow"
+        )
+        policy_view_policy = Policy.objects.create(
+            name="Policy View", resource="security.policy", action="view", effect="allow"
+        )
 
         self.role = Role.objects.create(name="Warehouse Staff", department=self.department)
         self.role.policies.add(self.policy, dept_view_policy, role_view_policy, policy_view_policy)
