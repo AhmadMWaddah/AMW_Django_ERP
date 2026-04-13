@@ -38,13 +38,17 @@ def ui_context(request):
         "active_app": active_app,
         "nav_hierarchy": nav_hierarchy,
         "can_adjust_stock": _has_inventory_adjust_policy(engine),
-        "has_inventory_access": _has_module_access(engine, "inventory"),
-        "has_sales_access": _has_module_access(engine, "sales"),
-        "has_purchasing_access": _has_module_access(engine, "purchasing"),
-        "has_security_access": _has_module_access(engine, "security"),
+        # Dashboard card visibility — requires view-level access, not just any permission
+        "has_inventory_access": _check_nav_permission(engine, "inventory.*", "view"),
+        "has_sales_access": _check_nav_permission(engine, "sales.*", "view")
+        or _check_nav_permission(engine, "customer.*", "view"),
+        "has_purchasing_access": _check_nav_permission(engine, "purchasing.*", "view"),
+        "has_security_access": _check_nav_permission(engine, "security.department", "view")
+        or _check_nav_permission(engine, "security.role", "view")
+        or _check_nav_permission(engine, "security.policy", "view"),
         "has_accounts_access": _has_module_access(engine, "accounts")
         or _check_nav_permission(engine, "accounts.employee", "view"),
-        "has_audit_access": _has_module_access(engine, "audit"),
+        "has_audit_access": _check_nav_permission(engine, "audit.*", "view"),
     }
 
 
