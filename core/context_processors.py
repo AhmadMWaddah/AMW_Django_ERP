@@ -38,6 +38,13 @@ def ui_context(request):
         "active_app": active_app,
         "nav_hierarchy": nav_hierarchy,
         "can_adjust_stock": _has_inventory_adjust_policy(engine),
+        "has_inventory_access": _has_module_access(engine, "inventory"),
+        "has_sales_access": _has_module_access(engine, "sales"),
+        "has_purchasing_access": _has_module_access(engine, "purchasing"),
+        "has_security_access": _has_module_access(engine, "security"),
+        "has_accounts_access": _has_module_access(engine, "accounts")
+        or _check_nav_permission(engine, "accounts.employee", "view"),
+        "has_audit_access": _has_module_access(engine, "audit"),
     }
 
 
@@ -304,14 +311,22 @@ def _build_nav_hierarchy(engine):
             }
         )
 
-    # Audit section - check for audit.* wildcard
+    # Audit section - standalone section with its own header
     if _has_module_access(engine, "audit"):
         audit_section = {
-            "title": "Audit Log",
+            "title": "Audit",
             "icon": "file-text",
-            "url": "audit:AuditLogList",
+            "url": "",
             "app": "audit",
-            "children": [],
+            "children": [
+                {
+                    "title": "Audit Log",
+                    "icon": "file-text",
+                    "url": "audit:AuditLogList",
+                    "app": "audit",
+                    "children": [],
+                },
+            ],
         }
         nav.append(audit_section)
 

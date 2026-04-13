@@ -29,8 +29,9 @@
     </div>
 </div>
 
-{# Module Quick Links - 4 cards, 2 per row #}
+{# Module Quick Links - cards gated by user permissions #}
 <div class="dashboard-modules">
+    {% if has_inventory_access or can_adjust_stock or request.user.is_superuser %}
     <a href="{% url 'Inventory:ProductList' %}" class="card card--clickable">
         <div class="card__body u-flex u-items-center u-gap-md">
             <div class="dashboard-modules__icon">
@@ -42,6 +43,8 @@
             </div>
         </div>
     </a>
+    {% endif %}
+    {% if has_sales_access or request.user.is_superuser %}
     <a href="{% url 'Sales:CustomerList' %}" class="card card--clickable">
         <div class="card__body u-flex u-items-center u-gap-md">
             <div class="dashboard-modules__icon">
@@ -53,6 +56,8 @@
             </div>
         </div>
     </a>
+    {% endif %}
+    {% if has_purchasing_access or request.user.is_superuser %}
     <a href="{% url 'Purchasing:SupplierList' %}" class="card card--clickable">
         <div class="card__body u-flex u-items-center u-gap-md">
             <div class="dashboard-modules__icon">
@@ -64,6 +69,8 @@
             </div>
         </div>
     </a>
+    {% endif %}
+    {% if has_security_access or request.user.is_superuser %}
     <a href="{% url 'Security:DepartmentList' %}" class="card card--clickable">
         <div class="card__body u-flex u-items-center u-gap-md">
             <div class="dashboard-modules__icon">
@@ -75,6 +82,8 @@
             </div>
         </div>
     </a>
+    {% endif %}
+    {% if has_accounts_access or request.user.is_staff or request.user.is_superuser %}
     <a href="{% url 'Accounts:EmployeeList' %}" class="card card--clickable">
         <div class="card__body u-flex u-items-center u-gap-md">
             <div class="dashboard-modules__icon">
@@ -86,6 +95,8 @@
             </div>
         </div>
     </a>
+    {% endif %}
+    {% if has_audit_access or can_adjust_stock or request.user.is_superuser %}
     <a href="{% url 'audit:AuditLogList' %}" class="card card--clickable">
         <div class="card__body u-flex u-items-center u-gap-md">
             <div class="dashboard-modules__icon">
@@ -97,5 +108,6 @@
             </div>
         </div>
     </a>
+    {% endif %}
 </div>
 {% endblock %}
