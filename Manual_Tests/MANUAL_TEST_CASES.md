@@ -30,7 +30,7 @@
 | **Steps** | 1. Navigate to `http://localhost:8010`<br>2. Login as `amw@amw.io`<br>3. Verify dashboard loads<br>4. Check sidebar shows all module links (Inventory, Sales, Purchasing, Security, Audit) |
 | **Expected** | Dashboard loads. All module links visible. No permission errors. Topbar shows "Ahmad Waddah". |
 | **Actual** | |
-| **Status** | ⏳ Pending |
+| **Status** | Done |
 | **Comments** | |
 
 ---
@@ -43,7 +43,7 @@
 | **Steps** | 1. Login as `warehouse.lead@amw.io`<br>2. Check sidebar shows Inventory and Purchasing links<br>3. Verify Sales link is absent or inaccessible |
 | **Expected** | Dashboard loads. Sidebar shows Inventory and Purchasing. Sales/CRM not visible or returns 403. |
 | **Actual** | |
-| **Status** | ⏳ Pending |
+| **Status** | Done |
 | **Comments** | |
 
 ---
@@ -56,7 +56,7 @@
 | **Steps** | 1. Login as `sales.manager@amw.io`<br>2. Check sidebar shows Sales & CRM link<br>3. Verify Inventory adjustment is not accessible |
 | **Expected** | Dashboard loads. Sales & CRM visible. Inventory adjustment returns 403 or hidden. |
 | **Actual** | |
-| **Status** | ⏳ Pending |
+| **Status** | Done |
 | **Comments** | |
 
 ---
@@ -69,7 +69,7 @@
 | **Steps** | 1. Login as `auditor@amw.io`<br>2. Navigate to Inventory > Products<br>3. Verify "Quick Stock Adjustment" form is NOT visible<br>4. Navigate to Audit Log<br>5. Verify audit entries are visible |
 | **Expected** | Dashboard loads. No adjustment buttons visible. Audit log shows entries. Read-only enforced. |
 | **Actual** | |
-| **Status** | ⏳ Pending |
+| **Status** | Done |
 | **Comments** | |
 
 ---
@@ -82,7 +82,7 @@
 | **Steps** | 1. Login as any user<br>2. Click logout<br>3. Verify redirected to login page<br>4. Attempt to access `/inventory/products/` directly<br>5. Verify redirect back to login |
 | **Expected** | Logout redirects to login. Direct URL access to protected pages redirects to login (not 403). |
 | **Actual** | |
-| **Status** | ⏳ Pending |
+| **Status** | Done |
 | **Comments** | |
 
 ---
@@ -97,7 +97,7 @@
 | **Steps** | 1. Login as Warehouse Lead<br>2. Navigate to Inventory > Products<br>3. Verify 14 products displayed<br>4. Search for "Refrigerator" in search box<br>5. Verify results filter correctly |
 | **Expected** | All 14 products visible with SKU, name, category, stock. Search filters to matching products. HTMX search works without full page reload. |
 | **Actual** | |
-| **Status** | ⏳ Pending |
+| **Status** | Done |
 | **Comments** | |
 
 ---
@@ -109,7 +109,7 @@
 | **Role** | Warehouse Lead |
 | **Steps** | 1. Navigate to Inventory > Products<br>2. Click on "Frost-Free Refrigerator 500L"<br>3. Verify product details: SKU, category, stock level, WAC price<br>4. Verify stock ledger table shows transaction history |
 | **Expected** | Product detail page shows all fields. Ledger shows initial stock transaction. "View Full Ledger" link works. |
-| **Actual** | |
+| **Actual** | Nothing Happens, No Success Toast, Button Just got Lighter Color as Clicked, No refresh No Stock Updated, Just Nothing. |
 | **Status** | ⏳ Pending |
 | **Comments** | |
 
@@ -122,7 +122,7 @@
 | **Role** | Warehouse Lead |
 | **Steps** | 1. Navigate to a product detail page<br>2. Note current stock value<br>3. In "Quick Stock Adjustment" form, select "Add Stock"<br>4. Enter quantity: `10`<br>5. Click "Adjust" button<br>6. Verify toast notification appears |
 | **Expected** | Success toast: "Added 10 to {SKU}. New stock: {new_value}". Page refreshes showing updated stock. Ledger shows new transaction entry. |
-| **Actual** | |
+| **Actual** | Nothing Happens, No Success Toast, Button Just got Lighter Color as Clicked, No refresh No Stock Updated, Just Nothing. |
 | **Status** | ⏳ Pending |
 | **Comments** | |
 
@@ -135,7 +135,7 @@
 | **Role** | Warehouse Lead |
 | **Steps** | 1. On same product detail page<br>2. Select "Reduce Stock"<br>3. Enter quantity: `5`<br>4. Click "Adjust"<br>5. Verify toast notification |
 | **Expected** | Success toast: "Removed 5 from {SKU}. New stock: {new_value}". Page refreshes. Stock decreased. Ledger shows reduction transaction. |
-| **Actual** | |
+| **Actual** | Nothing Happens, No Success Toast, Button Just got Lighter Color as Clicked, No refresh No Stock Updated, Just Nothing. |
 | **Status** | ⏳ Pending |
 | **Comments** | |
 
@@ -148,7 +148,7 @@
 | **Role** | Warehouse Lead |
 | **Steps** | 1. After INV-003, click "Adjust" again immediately<br>2. Enter different quantity: `3`<br>3. Click "Adjust"<br>4. Verify it works without requiring manual page refresh |
 | **Expected** | Button remains functional. Second adjustment succeeds. Toast appears. Page refreshes. **Button works repeatedly without manual refresh.** |
-| **Actual** | |
+| **Actual** | i am not sure, the previous step is already broken |
 | **Status** | ⏳ Pending |
 | **Comments** | **Critical regression test for HTMX fix.** |
 
@@ -161,7 +161,7 @@
 | **Role** | Auditor |
 | **Steps** | 1. Login as Auditor<br>2. Navigate to a product detail page<br>3. Verify "Quick Stock Adjustment" form is NOT visible |
 | **Expected** | No adjustment form displayed. Only product info and ledger visible. |
-| **Actual** | |
+| **Actual** | already have no permissions for this page |
 | **Status** | ⏳ Pending |
 | **Comments** | |
 
@@ -175,7 +175,7 @@
 | **Steps** | 1. Navigate to Inventory > Categories<br>2. Verify 5 categories displayed<br>3. Search for "Kitchen"<br>4. Verify filter works |
 | **Expected** | All categories visible. Search filters correctly. HTMX table update works. |
 | **Actual** | |
-| **Status** | ⏳ Pending |
+| **Status** | Done. |
 | **Comments** | |
 
 ---
@@ -187,7 +187,7 @@
 | **Role** | Warehouse Lead |
 | **Steps** | 1. Navigate to Inventory > Stock Adjustments<br>2. Verify list shows any adjustments<br>3. Search by product name |
 | **Expected** | List view works. Search filters. Status badges visible (Pending/Approved/Rejected). |
-| **Actual** | |
+| **Actual** | I don't See anything Just Empty Table |
 | **Status** | ⏳ Pending |
 | **Comments** | |
 
@@ -203,7 +203,7 @@
 | **Steps** | 1. Navigate to Purchasing > Suppliers<br>2. Verify suppliers are displayed<br>3. Search by name<br>4. Verify filter works |
 | **Expected** | Supplier list loads. Search filters via HTMX. Category filter dropdown works. |
 | **Actual** | |
-| **Status** | ⏳ Pending |
+| **Status** | Done |
 | **Comments** | |
 
 ---
@@ -216,7 +216,7 @@
 | **Steps** | 1. Navigate to Purchasing > Purchase Orders<br>2. Click on an existing PO<br>3. Verify PO number, supplier, status, line items |
 | **Expected** | PO detail page shows all fields. Line items table visible. Status badge correct. |
 | **Actual** | |
-| **Status** | ⏳ Pending |
+| **Status** | Done |
 | **Comments** | |
 
 ---
@@ -228,7 +228,7 @@
 | **Role** | Warehouse Lead |
 | **Steps** | 1. Open a PO in "Issued" status<br>2. Use receive stock functionality<br>3. Enter quantities for items<br>4. Submit<br>5. Verify toast notification |
 | **Expected** | Success toast. Page refreshes. PO status updates. Product stock levels increased. |
-| **Actual** | |
+| **Actual** | There is no Recieve Button in Order Page, i am not sure this is due to permissions or due to UI Error |
 | **Status** | ⏳ Pending |
 | **Comments** | |
 
@@ -241,7 +241,7 @@
 | **Role** | Sales Manager |
 | **Steps** | 1. Login as Sales Manager<br>2. Navigate to Purchasing > Purchase Orders<br>3. Attempt to receive stock on a PO |
 | **Expected** | 403 error or button not visible. Permission denied toast if attempted via HTMX. |
-| **Actual** | |
+| **Actual** | There is no Recieve Button in Order Page, it is supposed to be due to UI Error, also i do not see Purchasing section in Sidebar while i opened it using URL with GET Request, Check Permission too. |
 | **Status** | ⏳ Pending |
 | **Comments** | |
 
@@ -257,7 +257,7 @@
 | **Steps** | 1. Login as Sales Manager<br>2. Navigate to Sales > Customers<br>3. Verify customers displayed<br>4. Search by name<br>5. Filter by category |
 | **Expected** | Customer list loads. Search and category filter work via HTMX. |
 | **Actual** | |
-| **Status** | ⏳ Pending |
+| **Status** | Done |
 | **Comments** | |
 
 ---
@@ -270,7 +270,7 @@
 | **Steps** | 1. Navigate to Sales > Orders<br>2. Verify orders displayed<br>3. Filter by status (DRAFT, CONFIRMED)<br>4. Search by order number |
 | **Expected** | Order list loads. Status filter works. Search works. "Confirm" button visible for DRAFT orders. |
 | **Actual** | |
-| **Status** | ⏳ Pending |
+| **Status** | Done |
 | **Comments** | |
 
 ---
@@ -282,7 +282,7 @@
 | **Role** | Sales Manager |
 | **Steps** | 1. Navigate to a Customer detail page<br>2. Click "Create Order"<br>3. Verify redirected to new DRAFT order detail page |
 | **Expected** | New order created with unique order number (#Eg-XXXXX format). Status = DRAFT. Line items empty. |
-| **Actual** | |
+| **Actual** | There is no button in UI to Creat Draft Order, Check Permission too. |
 | **Status** | ⏳ Pending |
 | **Comments** | |
 
@@ -321,7 +321,7 @@
 | **Role** | Sales Manager |
 | **Steps** | 1. After SAL-005, the page refreshes<br>2. Verify "Confirm Order" button is gone (status = CONFIRMED)<br>3. If button somehow remains, click it again |
 | **Expected** | Button should NOT appear after confirmation (template condition hides it). If clicked via browser back, should get "Already confirmed" error toast. |
-| **Actual** | |
+| **Actual** | i tried using GET Request it refused and got me 405 error and the page with link to Dashboard |
 | **Status** | ⏳ Pending |
 | **Comments** | |
 
@@ -334,7 +334,7 @@
 | **Role** | Sales Manager |
 | **Steps** | 1. Open a CONFIRMED order<br>2. Click "Void Order" button<br>3. Verify toast notification |
 | **Expected** | Success toast: "Order {number} voided. Stock restored." Page refreshes. Status = VOIDED. Stock levels restored for order items. |
-| **Actual** | |
+| **Actual** | i tried using GET Request it refused and got me 405 error and the page with link to Dashboard |
 | **Status** | ⏳ Pending |
 | **Comments** | |
 
@@ -347,7 +347,7 @@
 | **Role** | Sales Manager |
 | **Steps** | 1. After SAL-007, verify "Void Order" button is gone<br>2. If button remains, click again |
 | **Expected** | Button should NOT appear after voiding. If clicked, should get "Already voided" error. |
-| **Actual** | |
+| **Actual** | i tried using GET Request it refused and got me 405 error and the page with link to Dashboard |
 | **Status** | ⏳ Pending |
 | **Comments** | |
 
@@ -360,8 +360,8 @@
 | **Role** | Auditor |
 | **Steps** | 1. Login as Auditor<br>2. Navigate to Sales > Orders<br>3. Open a DRAFT order<br>4. Verify "Confirm Order" button is NOT visible |
 | **Expected** | Confirm button hidden. If accessed via direct POST, returns 403 with toast. |
-| **Actual** | |
-| **Status** | ⏳ Pending |
+| **Actual** | Permissions denied |
+| **Status** | Done |
 | **Comments** | |
 
 ---
@@ -373,7 +373,7 @@
 | **Role** | Sales Manager |
 | **Steps** | 1. Navigate to Sales > Orders<br>2. Find a DRAFT order in the table<br>3. Click "Confirm" button in the Actions column<br>4. Verify toast notification |
 | **Expected** | Success toast. Page refreshes. Order status changes to CONFIRMED. Button removed from row. |
-| **Actual** | |
+| **Actual** | there is no button found in the UI |
 | **Status** | ⏳ Pending |
 | **Comments** | |
 
@@ -389,7 +389,7 @@
 | **Steps** | 1. Login as Auditor<br>2. Navigate to Audit Log<br>3. Verify entries exist from previous test actions |
 | **Expected** | Audit log shows entries for stock adjustments, order confirmations, voids. Each entry shows actor, action, timestamp, before/after data. |
 | **Actual** | |
-| **Status** | ⏳ Pending |
+| **Status** | Done |
 | **Comments** | |
 
 ---
@@ -443,7 +443,7 @@
 | **Steps** | 1. On any list view, type a search query<br>2. Verify results filter<br>3. Clear search and press enter<br>4. Verify results restore<br>5. Search again with different term |
 | **Expected** | Each search updates table content via HTMX. Works repeatedly without page refresh. |
 | **Actual** | |
-| **Status** | ⏳ Pending |
+| **Status** | Done |
 | **Comments** | |
 
 ---
@@ -481,8 +481,8 @@
 | **Role** | Auditor |
 | **Steps** | 1. Login as Auditor<br>2. Try to access a restricted action via direct URL or POST (e.g., inventory adjustment endpoint)<br>3. Verify response |
 | **Expected** | 403 response with error toast: "You do not have permission to adjust stock." Page does not break. |
-| **Actual** | |
-| **Status** | ⏳ Pending |
+| **Actual** | Dont have permissions, it give me white page with "Permission denied: view on inventory.*" |
+| **Status** | Done |
 | **Comments** | |
 
 ---
@@ -509,7 +509,7 @@
 | **Role** | Owner |
 | **Steps** | 1. In admin, soft-delete a test customer<br>2. Verify it disappears from main list<br>3. Restore it via admin<br>4. Verify it reappears in main UI |
 | **Expected** | Soft delete works. Restore works. Entity visible again in frontend. |
-| **Actual** | |
+| **Actual** | i don't have any soft delete either in Admin or UI |
 | **Status** | ⏳ Pending |
 | **Comments** | |
 

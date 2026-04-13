@@ -52,6 +52,7 @@
     <div class="card__body u-flex u-justify-center">
         <form hx-post="{% url 'Inventory:AdjustStock' product.slug %}" hx-target="#adjustment-result" hx-swap="innerHTML"
             class="u-flex u-flex-wrap u-gap-sm u-items-end u-justify-center">
+            {% csrf_token %}
             <div class="form-group u-mb-0 u-px-lg" style="width: auto;">
                 <label class="form-group__label">Action</label>
                 <select name="action" class="form-group__input" style="width: 140px;">

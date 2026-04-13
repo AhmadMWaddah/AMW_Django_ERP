@@ -169,6 +169,34 @@ class Command(BaseCommand):
                 "effect": "allow",
                 "description": "Create and manage purchase orders",
             },
+            {
+                "name": "Purchasing: Create",
+                "resource": "purchasing.order",
+                "action": "create",
+                "effect": "allow",
+                "description": "Create draft purchase orders",
+            },
+            {
+                "name": "Purchasing: Issue",
+                "resource": "purchasing.order",
+                "action": "issue",
+                "effect": "allow",
+                "description": "Issue purchase orders to suppliers",
+            },
+            {
+                "name": "Purchasing: Receive",
+                "resource": "purchasing.order",
+                "action": "receive",
+                "effect": "allow",
+                "description": "Receive stock against purchase orders",
+            },
+            {
+                "name": "Purchasing: Cancel",
+                "resource": "purchasing.order",
+                "action": "cancel",
+                "effect": "allow",
+                "description": "Cancel purchase orders",
+            },
             # Sales policies
             {
                 "name": "Sales: View",
@@ -183,6 +211,34 @@ class Command(BaseCommand):
                 "action": "manage",
                 "effect": "allow",
                 "description": "Create and manage sales orders",
+            },
+            {
+                "name": "Sales: Create",
+                "resource": "sales.order",
+                "action": "create",
+                "effect": "allow",
+                "description": "Create draft sales orders",
+            },
+            {
+                "name": "Sales: Confirm",
+                "resource": "sales.order",
+                "action": "confirm",
+                "effect": "allow",
+                "description": "Confirm draft sales orders",
+            },
+            {
+                "name": "Sales: Void",
+                "resource": "sales.order",
+                "action": "void",
+                "effect": "allow",
+                "description": "Void confirmed sales orders",
+            },
+            {
+                "name": "Sales: Add Item",
+                "resource": "sales.order",
+                "action": "add_item",
+                "effect": "allow",
+                "description": "Add line items to draft orders",
             },
             # Customer policies
             {
@@ -257,8 +313,16 @@ class Command(BaseCommand):
         inv_audit = Policy.objects.get(name="Inventory: Audit")
         pur_view = Policy.objects.get(name="Purchasing: View")
         pur_manage = Policy.objects.get(name="Purchasing: Manage")
+        pur_create = Policy.objects.get(name="Purchasing: Create")
+        pur_issue = Policy.objects.get(name="Purchasing: Issue")
+        pur_receive = Policy.objects.get(name="Purchasing: Receive")
+        pur_cancel = Policy.objects.get(name="Purchasing: Cancel")
         sales_view = Policy.objects.get(name="Sales: View")
         sales_manage = Policy.objects.get(name="Sales: Manage")
+        sales_create = Policy.objects.get(name="Sales: Create")
+        sales_confirm = Policy.objects.get(name="Sales: Confirm")
+        sales_void = Policy.objects.get(name="Sales: Void")
+        sales_add_item = Policy.objects.get(name="Sales: Add Item")
         cust_view = Policy.objects.get(name="Customer: View")
         cust_manage = Policy.objects.get(name="Customer: Manage")
         audit_view = Policy.objects.get(name="Audit: View")
@@ -277,14 +341,20 @@ class Command(BaseCommand):
             {
                 "name": "Warehouse Lead",
                 "department": logistics_dept,
-                "policies": [inv_view, inv_adjust, inv_audit, pur_view, pur_manage],
+                "policies": [
+                    inv_view, inv_adjust, inv_audit,
+                    pur_view, pur_manage, pur_create, pur_issue, pur_receive, pur_cancel,
+                ],
                 "description": "Full inventory and purchasing access",
             },
             # Sales Manager: sales.* + customer.*
             {
                 "name": "Sales Manager",
                 "department": commercial_dept,
-                "policies": [sales_view, sales_manage, cust_view, cust_manage],
+                "policies": [
+                    sales_view, sales_manage, sales_create, sales_confirm, sales_void, sales_add_item,
+                    cust_view, cust_manage,
+                ],
                 "description": "Sales and customer management",
             },
             # Auditor: audit.* + inventory:audit

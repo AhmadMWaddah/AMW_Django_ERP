@@ -41,8 +41,8 @@ AMW Django ERP is a comprehensive, production-ready ERP system designed for real
 - `v4.0-phase4-complete` - Inventory Architecture & Valuation
 - `v5.0-phase5-complete` - Sales & CRM Workflows
 - `v6.0-phase6-complete` - Purchasing & Procurement
-- `v7.0-phase7-complete` - Frontend Foundation & HTMX UI ✅ **MERGED**
-- `v7.5.0-phase7.5-complete` - Infrastructure UI & Global Pagination ✅ **MERGED**
+- `v7.0-phase7-complete` - Frontend Foundation & HTMX UI
+- `v7.5.0-phase7.5-complete` - Infrastructure UI & Global Pagination
 
 ---
 
