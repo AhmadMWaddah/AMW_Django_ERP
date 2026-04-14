@@ -252,9 +252,7 @@ def _build_nav_hierarchy(engine):
         )
 
     # Sales section — requires view permission
-    if _check_nav_permission(engine, "sales.*", "view") or _check_nav_permission(
-        engine, "customer.*", "view"
-    ):
+    if _check_nav_permission(engine, "sales.*", "view") or _check_nav_permission(engine, "customer.*", "view"):
         sales_children = []
         sales_children.append(
             {

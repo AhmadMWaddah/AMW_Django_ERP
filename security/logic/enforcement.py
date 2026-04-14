@@ -210,6 +210,7 @@ def require_permission(resource, action):
                 raise PermissionDenied(f"You do not have permission to {action} {resource}.")
 
             return func(request, *args, **kwargs)
+
         return wrapper
 
     return decorator
