@@ -8,30 +8,30 @@ The script exercises the main bypass paths discussed in the IAM audit and
 prints PASS/FAIL lines for each gate. It exits non-zero on the first failure.
 """
 
+import logging
 import os
 import sys
 import uuid
-import logging
 from decimal import Decimal
 
 import django
 
+# Django setup must happen before any Django imports
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.dev")
 django.setup()
-
 logging.getLogger("django").setLevel(logging.ERROR)
 
-from django.db import transaction
-from django.test import Client
-from django.urls import reverse
+from django.db import transaction  # noqa: E402
+from django.test import Client  # noqa: E402
+from django.urls import reverse  # noqa: E402
 
-from accounts.models import Employee
-from inventory.models import Category as InventoryCategory
-from inventory.models import Product
-from purchasing.models import PurchaseOrder, PurchaseOrderItem, Supplier, SupplierCategory
-from purchasing.operations.orders import issue_order
-from sales.models import Customer, CustomerCategory
-from security.models import Department, Policy, Role
+from accounts.models import Employee  # noqa: E402
+from inventory.models import Category as InventoryCategory  # noqa: E402
+from inventory.models import Product  # noqa: E402
+from purchasing.models import PurchaseOrder, PurchaseOrderItem, Supplier, SupplierCategory  # noqa: E402
+from purchasing.operations.orders import issue_order  # noqa: E402
+from sales.models import Customer, CustomerCategory  # noqa: E402
+from security.models import Department, Policy, Role  # noqa: E402
 
 
 def check(condition, label, detail=""):
