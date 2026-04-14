@@ -1,6 +1,6 @@
 # Manual Test Plan — AMW Django ERP
 
-**Version:** 1.0
+**Version:** 1.2
 **Created:** 2026-04-08
 **Status:** Active
 
@@ -44,7 +44,7 @@ Execute in this sequence to respect data dependencies:
 
 All test data is seeded by:
 ```bash
-python manage.py seed_erp
+python manage.py seed_erp --force
 ```
 
 See `seed_erp.py` for the complete data catalog:
@@ -84,6 +84,7 @@ See `seed_erp.py` for the complete data catalog:
 - Modal dialogs that disappear after first close — verify re-open works
 - Toast notifications not appearing after HTMX POST — verify HX-Trigger fires
 - Page not refreshing after Confirm/Void Order — verify HX-Refresh header
+- Branded 403 page renders instead of raw white-screen text
 
 ---
 
@@ -92,3 +93,4 @@ See `seed_erp.py` for the complete data catalog:
 | Date | Change | Author |
 |------|--------|--------|
 | 2026-04-08 | Initial manual test plan created | Qwen |
+| 2026-04-14 | v1.2: Updated seed command to `--force` for granular policies, added 403 page note | Qwen |
