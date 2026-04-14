@@ -1089,6 +1089,19 @@ class TestViewAuthorization:
         assert response.status_code == 403
         assert "Permission denied" in response.json()["error"]
 
+    def test_order_detail_returns_branded_403_without_view_permission(self, client, unauthorized_employee, issued_po):
+        """Logged-in users without purchasing.*:view see the branded 403 page."""
+        client.force_login(unauthorized_employee)
+        response = client.get(f"/purchasing/orders/{issued_po.id}/")
+        assert response.status_code == 403
+        assert "Permission Denied" in response.content.decode()
+
+    def test_order_detail_redirects_anonymous_users_to_login(self, client, issued_po):
+        """Anonymous users are redirected to login instead of seeing a raw 403."""
+        response = client.get(f"/purchasing/orders/{issued_po.id}/")
+        assert response.status_code == 302
+        assert "login" in response.headers["Location"].lower()
+
     def test_receive_stock_htmx_returns_hx_trigger_on_denial(self, client, unauthorized_employee, issued_po):
         """Denial response includes HX-Trigger toast header."""
         client.force_login(unauthorized_employee)

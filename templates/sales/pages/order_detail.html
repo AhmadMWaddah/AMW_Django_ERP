@@ -185,6 +185,7 @@ if (addItemSubmitBtn) {
         btn.textContent = 'Adding...';
 
         htmx.ajax('POST', '{% url "Sales:AddLineItem" order.id %}', {
+            swap: 'none',
             values: {
                 product_id: productId,
                 quantity: quantity,

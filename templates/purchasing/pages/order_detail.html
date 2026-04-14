@@ -8,7 +8,7 @@
 <div class="card">
     <div class="card__header">
         <h2 class="card__title">Purchase Order Details</h2>
-        {% if order.status in 'ISSUED,IN_PROGRESS' and can_receive_items %}
+        {% if can_receive_items and order.status != 'DRAFT' and order.status != 'COMPLETED' and order.status != 'CANCELLED' %}
         <button class="btn btn--primary" onclick="window.openModal('receive-modal')">
             Receive Stock
         </button>
@@ -226,7 +226,7 @@ if (submitBtn) {
         submitBtn.textContent = 'Receiving...';
 
         htmx.ajax('POST', '{% url "Purchasing:ReceiveStock" order.id %}', {
-            target: '#receive-result',
+            swap: 'none',
             values: { items: JSON.stringify(items) },
         }).then(function() {
             // Success - close modal and reset button
@@ -246,7 +246,6 @@ if (submitBtn) {
     });
 }
 </script>
-<div id="receive-result"></div>
 
 <a href="{% url 'Purchasing:OrderList' %}" class="btn btn--outline u-mt-md">← Back to Orders</a>
 {% endblock %}

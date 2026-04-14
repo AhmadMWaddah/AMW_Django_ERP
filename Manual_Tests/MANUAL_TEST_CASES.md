@@ -46,7 +46,7 @@
 | **Expected** | Success toast: "Added 10 to {SKU}. New stock: {new_value}". Page refreshes showing updated stock. Ledger shows new transaction entry. |
 | **Actual** | Nothing Happens, No Success Toast, Button Just got Lighter Color as Clicked, No refresh No Stock Updated, Just Nothing. |
 | **Status** | ⏳ Pending |
-| **Comments** | **Requires DB re-seed (`python manage.py seed_erp --force`) to apply granular policies.** |
+| **Comments** | Re-seed with `python manage.py seed_erp --force`, then re-run in browser. Code path audited on 2026-04-14: form now uses `hx-swap="none"` and error toasts are handled for HTMX 4xx responses. |
 
 ---
 
@@ -113,7 +113,7 @@
 | **Expected** | Success toast. Page refreshes. PO status updates. Product stock levels increased. |
 | **Actual** | There is no Recieve Button in Order Page, i am not sure this is due to permissions or due to UI Error |
 | **Status** | ⏳ Pending |
-| **Comments** | **Requires DB re-seed (`python manage.py seed_erp --force`) to apply granular `Purchasing: Receive` policy.** |
+| **Comments** | Re-seed with `python manage.py seed_erp --force`, then re-run in browser. Code path audited on 2026-04-14: button visibility uses `can_receive_items`, page GET access now enforces `purchasing.*:view`, and HTMX receive submits without JSON-to-DOM swaps. |
 
 ---
 
@@ -141,7 +141,7 @@
 | **Expected** | New order created with unique order number (#Eg-XXXXX format). Status = DRAFT. Line items empty. |
 | **Actual** | There is no button in UI to Creat Draft Order, Check Permission too. |
 | **Status** | ⏳ Pending |
-| **Comments** | **Requires DB re-seed (`python manage.py seed_erp --force`) to apply granular `Sales: Create` policy.** |
+| **Comments** | Re-seed with `python manage.py seed_erp --force`, then re-run in browser. Code path audited on 2026-04-14: `can_create_order` is passed by the view and the button remains template-gated by that flag. |
 
 ---
 
@@ -512,3 +512,4 @@
 |------|--------|--------|
 | 2026-04-08 | Initial test cases created (37 cases across 7 modules) | Qwen |
 | 2026-04-14 | v1.2: Restructured — moved verified cases to baseline, refined failed case steps with browser console checks, updated summary table | Qwen |
+| 2026-04-14 | v1.2 audit closure: clarified pending IAM/HTMX cases with re-seed plus browser-verification steps after enforcement and UI fixes | Cod |

@@ -13,9 +13,13 @@ Usage:
         pass
 """
 
+from functools import wraps
+
 from django.contrib.auth import get_user_model
+from django.contrib.auth.views import redirect_to_login
+from django.core.exceptions import PermissionDenied
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import resolve_url
 
 from ..models import Policy, Role
 
@@ -181,11 +185,17 @@ def require_permission(resource, action):
     """
 
     def decorator(func):
+        @wraps(func)
         def wrapper(request, *args, **kwargs):
             if not hasattr(request, "user") or not request.user.is_authenticated:
-                from django.http import HttpResponseForbidden
-
-                return HttpResponseForbidden("Authentication required")
+                login_url = resolve_url("Accounts:Login")
+                if getattr(request, "htmx", None):
+                    return JsonResponse(
+                        {"error": "Authentication required"},
+                        status=401,
+                        headers={"HX-Redirect": login_url},
+                    )
+                return redirect_to_login(request.get_full_path(), login_url)
 
             if not check_permission(request.user, resource, action):
                 # HTMX requests get JSON toast; normal requests get styled 403 page
@@ -197,17 +207,9 @@ def require_permission(resource, action):
                             "HX-Trigger": '{"showToast": {"message": "Permission denied. You do not have access to this resource.", "type": "error"}}'
                         },
                     )
-                return render(
-                    request,
-                    "core/errors/403.html",
-                    {"exception": f"You do not have permission to {action} {resource}."},
-                    status=403,
-                )
+                raise PermissionDenied(f"You do not have permission to {action} {resource}.")
 
             return func(request, *args, **kwargs)
-
-        wrapper.__name__ = func.__name__
-        wrapper.__doc__ = func.__doc__
         return wrapper
 
     return decorator

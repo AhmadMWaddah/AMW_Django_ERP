@@ -50,7 +50,7 @@
         <h3 class="card__title">Quick Stock Adjustment</h3>
     </div>
     <div class="card__body u-flex u-justify-center">
-        <form hx-post="{% url 'Inventory:AdjustStock' product.slug %}" hx-target="#adjustment-result" hx-swap="innerHTML"
+        <form hx-post="{% url 'Inventory:AdjustStock' product.slug %}" hx-swap="none"
             class="u-flex u-flex-wrap u-gap-sm u-items-end u-justify-center">
             {% csrf_token %}
             <div class="form-group u-mb-0 u-px-lg" style="width: auto;">
@@ -73,7 +73,6 @@
             <button type="submit" class="btn btn--primary">Adjust</button>
         </form>
     </div>
-    <div id="adjustment-result" class="u-mt-md u-text-center"></div>
 </div>
 {% endif %}
 

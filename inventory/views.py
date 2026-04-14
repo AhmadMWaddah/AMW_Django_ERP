@@ -155,11 +155,11 @@ def adjustment_list(request):
 
 
 @require_POST
-@require_permission("inventory.*", "adjust")
+@require_permission("inventory.stock", "adjust")
 def adjust_stock_htmx(request, slug):
     """HTMX endpoint for stock adjustment by slug.
 
-    Policy: Requires 'inventory.*' -> 'adjust' permission.
+    Policy: Requires 'inventory.stock' -> 'adjust' permission.
     """
     product = get_object_or_404(Product, slug=slug)
     action = request.POST.get("action")

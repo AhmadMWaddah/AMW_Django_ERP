@@ -9,7 +9,6 @@ import json
 from decimal import Decimal
 
 from django.contrib.auth.decorators import login_required
-
 from core.views import require_post_with_405
 from django.db.models import Q
 from django.http import JsonResponse
@@ -18,10 +17,10 @@ from django.shortcuts import get_object_or_404, render
 from core.utils import paginate_queryset
 from purchasing.models import PurchaseOrder, Supplier, SupplierCategory
 from purchasing.operations.orders import receive_items
-from security.logic.enforcement import PolicyEngine
+from security.logic.enforcement import PolicyEngine, require_permission
 
 
-@login_required
+@require_permission("purchasing.*", "view")
 def supplier_list(request):
     """Supplier registry with search and pagination."""
     query = request.GET.get("q", "").strip()
@@ -63,7 +62,7 @@ def supplier_list(request):
     )
 
 
-@login_required
+@require_permission("purchasing.*", "view")
 def supplier_detail(request, slug):
     """Supplier detail with PO history."""
     supplier = get_object_or_404(
@@ -84,7 +83,7 @@ def supplier_detail(request, slug):
     )
 
 
-@login_required
+@require_permission("purchasing.*", "view")
 def order_list(request):
     """Purchase order dashboard with search and pagination."""
     query = request.GET.get("q", "").strip()
@@ -123,7 +122,7 @@ def order_list(request):
     )
 
 
-@login_required
+@require_permission("purchasing.*", "view")
 def order_detail(request, order_id):
     """PO detail with line items and receiving status."""
     order = get_object_or_404(

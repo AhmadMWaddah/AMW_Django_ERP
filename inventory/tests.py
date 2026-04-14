@@ -376,3 +376,63 @@ class TestStockOperations:
         assert log.actor == employee
         assert log.before_data["current_stock"] == "0.0000"
         assert log.after_data["current_stock"] == "10.0000"
+
+
+@pytest.mark.django_db
+class TestViewAuthorization:
+    """Test granular policy enforcement on inventory HTMX actions."""
+
+    @pytest.fixture
+    def authorized_employee(self):
+        """Create employee with the granular stock-adjust permission."""
+        from accounts.models import Employee
+        from security.models import Department as SecDepartment
+        from security.models import Policy, Role
+
+        dept = SecDepartment.objects.create(name="Inventory")
+        role = Role.objects.create(name="Inventory Adjuster", department=dept)
+        Policy.objects.create(
+            name="Inventory View",
+            resource="inventory.*",
+            action="view",
+            effect="allow",
+        ).roles.add(role)
+        Policy.objects.create(
+            name="Inventory Adjust Stock",
+            resource="inventory.stock",
+            action="adjust",
+            effect="allow",
+        ).roles.add(role)
+
+        employee = Employee.objects.create_user(
+            email="inventory.adjuster@amw.io",
+            password="test123",
+            first_name="Inventory",
+            last_name="Adjuster",
+        )
+        employee.roles.add(role)
+        return employee
+
+    @pytest.fixture
+    def product(self):
+        """Create a test product."""
+        category = Category.objects.create(name="Warehouse")
+        return Product.objects.create(
+            sku="WH-TEST-01",
+            name="Warehouse Test Product",
+            category=category,
+            current_stock=Decimal("10.0000"),
+            wac_price=Decimal("20.0000"),
+        )
+
+    def test_adjust_stock_htmx_accepts_granular_inventory_stock_permission(self, client, authorized_employee, product):
+        """Users with inventory.stock:adjust can use the HTMX endpoint."""
+        client.force_login(authorized_employee)
+        response = client.post(
+            f"/inventory/products/{product.slug}/adjust/",
+            data={"action": "in", "quantity": "1"},
+            HTTP_HX_REQUEST="true",
+        )
+
+        assert response.status_code == 200
+        assert response.headers.get("HX-Refresh") == "true"
