@@ -10,7 +10,6 @@ from decimal import Decimal, InvalidOperation
 from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
-from django.template.loader import render_to_string
 from django.views.decorators.http import require_POST
 
 from core.utils import paginate_queryset
@@ -210,12 +209,8 @@ def adjust_stock_htmx(request, slug):
 
         product.refresh_from_db()
 
-        transactions = (
-            StockTransaction.objects.filter(product=product).select_related("created_by").order_by("-created_at")[:20]
-        )
-        ledger_rows = render_to_string("inventory/components/ledger_rows.html", {"transactions": transactions})
-
-        response = HttpResponse(f'<template id="ledger-template">{ledger_rows}</template>')
+        stock_html = f'<span id="current-stock">{product.current_stock}</span>'
+        response = HttpResponse(stock_html)
         response["HX-Trigger"] = (
             f'{{"showToast": {{"message": "{message}", "type": "success"}}, "refreshLedger": true, "newStock": "{product.current_stock}", "newValue": "{product.get_stock_value}"}}'
         )

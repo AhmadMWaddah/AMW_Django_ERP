@@ -23,11 +23,19 @@ class DeletedFilter(SimpleListFilter):
             ("all", "All"),
         ]
 
+    def choices(self, cl):
+        for lookup, title in self.lookup_choices:
+            yield {
+                "selected": self.value() == lookup,
+                "query_string": cl.get_query_string({self.parameter_name: lookup}, []),
+                "display": title,
+            }
+
     def queryset(self, request, queryset):
         if self.value() == "deleted":
             return queryset.filter(deleted_at__isnull=False)
         if self.value() == "all":
-            return queryset.all_with_deleted()
+            return queryset
         return queryset.filter(deleted_at__isnull=True)
 
 
@@ -43,13 +51,9 @@ class SoftDeleteAdminMixin:
     - Shows deleted status in list view
     """
 
-    def __init__(self, model, admin_site):
-        self._original_list_filter = getattr(self, "list_filter", [])
-        super().__init__(model, admin_site)
-
     def get_list_filter(self, request):
-        filters = list(self._original_list_filter) if self._original_list_filter else []
-        return filters + [DeletedFilter]
+        list_filter = list(self.list_filter) if self.list_filter else []
+        return list_filter + [DeletedFilter]
 
     def get_actions(self, request):
         actions = super().get_actions(request)
@@ -60,10 +64,10 @@ class SoftDeleteAdminMixin:
         return actions
 
     def get_queryset(self, request):
-        qs = super().get_queryset(request)
-        if hasattr(qs, "all_with_deleted"):
-            return qs.all_with_deleted()
-        return qs
+        queryset = super().get_queryset(request)
+        if hasattr(queryset, "all_with_deleted"):
+            return queryset.all_with_deleted()
+        return queryset
 
     def deleted_display(self, obj):
         if obj.is_deleted:
