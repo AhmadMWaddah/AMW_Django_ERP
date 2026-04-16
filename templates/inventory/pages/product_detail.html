@@ -37,7 +37,7 @@
             </div>
             <div>
                 <span class="u-text-xs u-text-muted u-uppercase">Stock Value</span>
-                <p class="u-text-xl u-font-bold">{{ product.get_stock_value }}</p>
+                <p class="u-text-xl u-font-bold" id="stock-value">{{ product.get_stock_value }}</p>
             </div>
         </div>
     </div>
@@ -50,27 +50,31 @@
         <h3 class="card__title">Quick Stock Adjustment</h3>
     </div>
     <div class="card__body u-flex u-justify-center">
-        <form hx-post="{% url 'Inventory:AdjustStock' product.slug %}" hx-swap="none"
-            class="u-flex u-flex-wrap u-gap-sm u-items-end u-justify-center">
+        <form hx-post="{% url 'Inventory:AdjustStock' product.slug %}"
+              hx-target="#current-stock"
+              hx-swap="outerHTML"
+              hx-on::after-request="if(event.detail.successful) { document.querySelector('#stock-value').textContent = '{{ product.get_stock_value }}'; }">
             {% csrf_token %}
-            <div class="form-group u-mb-0 u-px-lg" style="width: auto;">
-                <label class="form-group__label">Action</label>
-                <select name="action" class="form-group__input" style="width: 140px;">
-                    <option value="in">Add Stock</option>
-                    <option value="out">Reduce Stock</option>
-                </select>
+            <div class="u-flex u-flex-wrap u-gap-sm u-items-end u-justify-center">
+                <div class="form-group u-mb-0 u-px-lg" style="width: auto;">
+                    <label class="form-group__label">Action</label>
+                    <select name="action" class="form-group__input" style="width: 140px;">
+                        <option value="in">Add Stock</option>
+                        <option value="out">Reduce Stock</option>
+                    </select>
+                </div>
+                <div class="form-group u-mb-0 u-px-lg" style="width: auto;">
+                    <label class="form-group__label">Quantity</label>
+                    <input type="number" name="quantity" class="form-group__input" step="0.0001" min="0"
+                        style="width: 130px;" required>
+                </div>
+                <div class="form-group u-mb-0 u-px-lg" style="width: auto;">
+                    <label class="form-group__label">Note (optional)</label>
+                    <input type="text" name="location_note" class="form-group__input" style="width: 180px;"
+                        placeholder="Location">
+                </div>
+                <button type="submit" class="btn btn--primary">Adjust</button>
             </div>
-            <div class="form-group u-mb-0 u-px-lg" style="width: auto;">
-                <label class="form-group__label">Quantity</label>
-                <input type="number" name="quantity" class="form-group__input" step="0.0001" min="0"
-                    style="width: 130px;" required>
-            </div>
-            <div class="form-group u-mb-0 u-px-lg" style="width: auto;">
-                <label class="form-group__label">Note (optional)</label>
-                <input type="text" name="location_note" class="form-group__input" style="width: 180px;"
-                    placeholder="Location">
-            </div>
-            <button type="submit" class="btn btn--primary">Adjust</button>
         </form>
     </div>
 </div>
@@ -79,11 +83,11 @@
 {# Stock Transactions Ledger #}
 <div class="card">
     <div class="card__header">
-        <h3 class="card__title">Stock Ledger (Latest 50)</h3>
+        <h3 class="card__title">Stock Ledger (Latest 20)</h3>
         <a href="{% url 'Inventory:StockLedger' product.slug %}" class="btn btn--outline btn--sm">View Full Ledger</a>
     </div>
     <div class="card__body" style="overflow-x: auto;">
-        <table class="data-table">
+        <table class="data-table" id="ledger-table">
             <thead>
                 <tr>
                     <th>Date</th>
@@ -95,7 +99,7 @@
                     <th>By</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="ledger-body">
                 {% for txn in transactions %}
                 <tr>
                     <td class="u-text-xs">{{ txn.created_at|date:"Y-m-d H:i" }}</td>

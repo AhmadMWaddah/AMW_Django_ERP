@@ -6,20 +6,21 @@ Registers all purchasing models with appropriate admin integration.
 
 from django.contrib import admin
 
+from core.admin import SoftDeleteAdminMixin
 from purchasing.models import PurchaseOrder, PurchaseOrderItem, Supplier, SupplierCategory
 
 
 @admin.register(SupplierCategory)
-class SupplierCategoryAdmin(admin.ModelAdmin):
-    list_display = ["name", "slug", "parent", "is_deleted"]
+class SupplierCategoryAdmin(SoftDeleteAdminMixin, admin.ModelAdmin):
+    list_display = ["name", "slug", "parent", "deleted_display"]
     list_filter = ["parent"]
     search_fields = ["name", "slug"]
     ordering = ["name"]
 
 
 @admin.register(Supplier)
-class SupplierAdmin(admin.ModelAdmin):
-    list_display = ["name", "email", "phone", "category", "is_deleted"]
+class SupplierAdmin(SoftDeleteAdminMixin, admin.ModelAdmin):
+    list_display = ["name", "email", "phone", "category", "deleted_display"]
     list_filter = ["category"]
     search_fields = ["name", "email", "phone"]
     ordering = ["name"]
@@ -32,7 +33,7 @@ class PurchaseOrderItemInline(admin.TabularInline):
 
 
 @admin.register(PurchaseOrder)
-class PurchaseOrderAdmin(admin.ModelAdmin):
+class PurchaseOrderAdmin(SoftDeleteAdminMixin, admin.ModelAdmin):
     list_display = [
         "po_number",
         "supplier",
@@ -40,6 +41,7 @@ class PurchaseOrderAdmin(admin.ModelAdmin):
         "total_cost",
         "created_by",
         "created_at",
+        "deleted_display",
     ]
     list_filter = ["status", "supplier"]
     search_fields = ["po_number", "supplier__name"]
@@ -72,7 +74,7 @@ class PurchaseOrderAdmin(admin.ModelAdmin):
 
 
 @admin.register(PurchaseOrderItem)
-class PurchaseOrderItemAdmin(admin.ModelAdmin):
+class PurchaseOrderItemAdmin(SoftDeleteAdminMixin, admin.ModelAdmin):
     list_display = [
         "order",
         "product",
@@ -81,6 +83,7 @@ class PurchaseOrderItemAdmin(admin.ModelAdmin):
         "unit_cost",
         "total_cost",
         "is_fully_received",
+        "deleted_display",
     ]
     list_filter = ["order__status"]
     search_fields = ["order__po_number", "product__sku", "product__name"]

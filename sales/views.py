@@ -3,16 +3,17 @@
 
 Phase 7: Customer list, order dashboard, HTMX confirm order with Toast.
 Phase 7.5: Pagination added to all list views.
+Phase 7.6: Refactored to return empty responses with HTMX headers (no JsonResponse).
 """
 
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
-from django.http import JsonResponse
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
-from core.views import require_post_with_405
 from core.utils import paginate_queryset
+from core.views import require_post_with_405
 from sales.models import Customer, SalesOrder
 from sales.operations.orders import add_order_item, confirm_order, create_order, void_order
 from security.logic.enforcement import PolicyEngine, require_permission
@@ -188,34 +189,28 @@ def confirm_order_htmx(request, order_id):
     """HTMX endpoint to confirm a sales order with Toast feedback.
 
     Server-side authorization: requires sales.order:confirm permission.
+    Returns empty response with HX-Trigger/HX-Refresh headers for HTMX lifecycle.
     """
     if not PolicyEngine(request.user).has_permission("sales.order", "confirm"):
-        return JsonResponse(
-            {"error": "Permission denied: confirm order"},
-            status=403,
-            headers={
-                "HX-Trigger": '{"showToast": {"message": "Permission denied: you cannot confirm orders.", "type": "error"}}',
-            },
+        response = HttpResponse(status=403)
+        response["HX-Trigger"] = (
+            '{"showToast": {"message": "Permission denied: you cannot confirm orders.", "type": "error"}}'
         )
+        return response
 
     order = get_object_or_404(SalesOrder, pk=order_id)
 
     try:
         confirm_order(order, request.user)
         message = f"Order {order.order_number} confirmed successfully."
-        return JsonResponse(
-            {"status": "confirmed", "message": message},
-            headers={
-                "HX-Trigger": f'{{"showToast": {{"message": "{message}", "type": "success"}}}}',
-                "HX-Refresh": "true",
-            },
-        )
+        response = HttpResponse(status=200)
+        response["HX-Trigger"] = f'{{"showToast": {{"message": "{message}", "type": "success"}}}}'
+        response["HX-Refresh"] = "true"
+        return response
     except ValueError as e:
-        return JsonResponse(
-            {"error": str(e)},
-            status=400,
-            headers={"HX-Trigger": f'{{"showToast": {{"message": "{e}", "type": "error"}}}}'},
-        )
+        response = HttpResponse(status=400)
+        response["HX-Trigger"] = f'{{"showToast": {{"message": "{e}", "type": "error"}}}}'
+        return response
 
 
 @login_required
@@ -224,15 +219,14 @@ def void_order_htmx(request, order_id):
     """HTMX endpoint to void a sales order with Toast feedback.
 
     Server-side authorization: requires sales.order:void permission.
+    Returns empty response with HX-Trigger/HX-Refresh headers for HTMX lifecycle.
     """
     if not PolicyEngine(request.user).has_permission("sales.order", "void"):
-        return JsonResponse(
-            {"error": "Permission denied: void order"},
-            status=403,
-            headers={
-                "HX-Trigger": '{"showToast": {"message": "Permission denied: you cannot void orders.", "type": "error"}}',
-            },
+        response = HttpResponse(status=403)
+        response["HX-Trigger"] = (
+            '{"showToast": {"message": "Permission denied: you cannot void orders.", "type": "error"}}'
         )
+        return response
 
     order = get_object_or_404(SalesOrder, pk=order_id)
     reason = request.POST.get("reason", "Voided via HTMX")
@@ -240,19 +234,14 @@ def void_order_htmx(request, order_id):
     try:
         void_order(order, request.user, reason=reason)
         message = f"Order {order.order_number} voided. Stock restored."
-        return JsonResponse(
-            {"status": "voided", "message": message},
-            headers={
-                "HX-Trigger": f'{{"showToast": {{"message": "{message}", "type": "success"}}}}',
-                "HX-Refresh": "true",
-            },
-        )
+        response = HttpResponse(status=200)
+        response["HX-Trigger"] = f'{{"showToast": {{"message": "{message}", "type": "success"}}}}'
+        response["HX-Refresh"] = "true"
+        return response
     except ValueError as e:
-        return JsonResponse(
-            {"error": str(e)},
-            status=400,
-            headers={"HX-Trigger": f'{{"showToast": {{"message": "{e}", "type": "error"}}}}'},
-        )
+        response = HttpResponse(status=400)
+        response["HX-Trigger"] = f'{{"showToast": {{"message": "{e}", "type": "error"}}}}'
+        return response
 
 
 @login_required
@@ -261,19 +250,18 @@ def add_line_item(request, order_id):
     """HTMX endpoint to add a line item to a DRAFT sales order.
 
     Server-side authorization: requires sales.order:create permission.
+    Returns empty response with HX-Trigger/HX-Refresh headers for HTMX lifecycle.
     """
     from decimal import Decimal
 
     from inventory.models import Product
 
     if not PolicyEngine(request.user).has_permission("sales.order", "create"):
-        return JsonResponse(
-            {"error": "Permission denied: add line items"},
-            status=403,
-            headers={
-                "HX-Trigger": '{"showToast": {"message": "Permission denied: you cannot add line items.", "type": "error"}}',
-            },
+        response = HttpResponse(status=403)
+        response["HX-Trigger"] = (
+            '{"showToast": {"message": "Permission denied: you cannot add line items.", "type": "error"}}'
         )
+        return response
 
     order = get_object_or_404(SalesOrder, pk=order_id)
 
@@ -285,25 +273,19 @@ def add_line_item(request, order_id):
 
     # Validate inputs
     if not product_id or not quantity or not unit_price:
-        return JsonResponse(
-            {"error": "Product, quantity, and unit price are required."},
-            status=400,
-            headers={
-                "HX-Trigger": '{"showToast": {"message": "Product, quantity, and unit price are required.", "type": "error"}}',
-            },
+        response = HttpResponse(status=400)
+        response["HX-Trigger"] = (
+            '{"showToast": {"message": "Product, quantity, and unit price are required.", "type": "error"}}'
         )
+        return response
 
     try:
         quantity = Decimal(quantity)
         unit_price = Decimal(unit_price)
     except Exception:
-        return JsonResponse(
-            {"error": "Invalid quantity or unit price format."},
-            status=400,
-            headers={
-                "HX-Trigger": '{"showToast": {"message": "Invalid quantity or unit price format.", "type": "error"}}',
-            },
-        )
+        response = HttpResponse(status=400)
+        response["HX-Trigger"] = '{"showToast": {"message": "Invalid quantity or unit price format.", "type": "error"}}'
+        return response
 
     # Get product
     product = get_object_or_404(Product, pk=product_id)
@@ -311,16 +293,11 @@ def add_line_item(request, order_id):
     try:
         add_order_item(order, product, quantity, unit_price, request.user, notes)
         message = f"Added {product.sku} to order {order.order_number}."
-        return JsonResponse(
-            {"status": "success", "message": message},
-            headers={
-                "HX-Trigger": f'{{"showToast": {{"message": "{message}", "type": "success"}}}}',
-                "HX-Refresh": "true",
-            },
-        )
+        response = HttpResponse(status=200)
+        response["HX-Trigger"] = f'{{"showToast": {{"message": "{message}", "type": "success"}}}}'
+        response["HX-Refresh"] = "true"
+        return response
     except ValueError as e:
-        return JsonResponse(
-            {"error": str(e)},
-            status=400,
-            headers={"HX-Trigger": f'{{"showToast": {{"message": "{e}", "type": "error"}}}}'},
-        )
+        response = HttpResponse(status=400)
+        response["HX-Trigger"] = f'{{"showToast": {{"message": "{e}", "type": "error"}}}}'
+        return response

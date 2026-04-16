@@ -67,7 +67,6 @@ celerybeat.pid
 *.md
 !README.md
 !utils/README.md
-!Constitution_AMW_DJ_ERP.md
 !Manual_Tests/*.md
 
 # Backup Files
@@ -91,6 +90,7 @@ __pycache__/
 
 # Project Specific
 note.md
+!AGENTS.md
 ScreenShots/
 .qwen/
 logs/

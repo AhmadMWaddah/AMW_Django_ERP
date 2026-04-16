@@ -2,13 +2,15 @@
 -- AMW Django ERP - Inventory Views --
 Phase 7: Product list, ledger, categories, stock adjustments, and HTMX stock adjustment.
 Phase 7.5: Pagination added to all list views.
+Phase 7.6: Refactored to return empty responses with HTMX headers (no JsonResponse).
 """
 
 from decimal import Decimal, InvalidOperation
 
 from django.db.models import Q
-from django.http import JsonResponse
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
+from django.template.loader import render_to_string
 from django.views.decorators.http import require_POST
 
 from core.utils import paginate_queryset
@@ -31,11 +33,10 @@ def product_list(request):
         )
 
     if category_filter:
-        products = products.filter(category__slug=category_filter)
-
-    pagination_data = paginate_queryset(products, request)
+        products = products.filter(category__name__iexact=category_filter)
 
     categories = Category.objects.all().order_by("name")
+    pagination_data = paginate_queryset(products, request, page_size=20)
 
     context = {
         "query": query,
@@ -55,42 +56,32 @@ def product_list(request):
 
 @require_permission("inventory.*", "view")
 def product_detail(request, slug):
-    """Product detail with stock movement ledger."""
-    from security.logic.enforcement import PolicyEngine
+    """Product detail view with stock ledger."""
+    product = get_object_or_404(Product, slug=slug)
+    transactions = StockTransaction.objects.filter(product=product).select_related("created_by").order_by("-created_at")
+    paginated = paginate_queryset(transactions, request, page_size=20)
 
-    product = get_object_or_404(Product.objects.select_related("category"), slug=slug)
-    transactions = (
-        StockTransaction.objects.filter(product=product).select_related("created_by").order_by("-created_at")[:50]
-    )
-
-    engine = PolicyEngine(request.user)
-    can_adjust_stock = engine.has_permission("inventory.stock", "adjust")
-
-    return render(
-        request,
-        "inventory/pages/product_detail.html",
-        {
-            "product": product,
-            "transactions": transactions,
-            "can_adjust_stock": can_adjust_stock,
-        },
-    )
+    context = {
+        "product": product,
+        "transactions": paginated["page_obj"].object_list,
+        **paginated,
+    }
+    return render(request, "inventory/pages/product_detail.html", context)
 
 
 @require_permission("inventory.*", "view")
 def stock_ledger(request, slug):
-    """Stock movement history page (ledger only) with pagination."""
-    product = get_object_or_404(Product.objects.select_related("category"), slug=slug)
+    """Full stock ledger view for a specific product."""
+    product = get_object_or_404(Product, slug=slug)
     transactions = StockTransaction.objects.filter(product=product).select_related("created_by").order_by("-created_at")
-
-    pagination_data = paginate_queryset(transactions, request)
+    pagination_data = paginate_queryset(transactions, request, page_size=50)
 
     context = {
         "product": product,
         "transactions": pagination_data["page_obj"].object_list,
+        "title": f"Stock Ledger - {product.sku}",
         **pagination_data,
     }
-
     return render(request, "inventory/pages/stock_ledger.html", context)
 
 
@@ -98,13 +89,12 @@ def stock_ledger(request, slug):
 def category_list(request):
     """Category list view with search and pagination."""
     query = request.GET.get("q", "").strip()
+
     categories = Category.objects.all().order_by("name")
-
     if query:
-        categories = categories.filter(Q(name__icontains=query) | Q(slug__icontains=query))
+        categories = categories.filter(name__icontains=query)
 
-    pagination_data = paginate_queryset(categories, request)
-
+    pagination_data = paginate_queryset(categories, request, page_size=20)
     context = {
         "query": query,
         "categories": pagination_data["page_obj"].object_list,
@@ -120,25 +110,32 @@ def category_list(request):
 
 
 @require_permission("inventory.*", "view")
+def category_detail(request, slug):
+    """Category detail view showing products in category."""
+    category = get_object_or_404(Category, slug=slug)
+    products = Product.objects.filter(category=category).order_by("sku")
+    paginated = paginate_queryset(products, request, page_size=20)
+
+    context = {
+        "category": category,
+        "products": paginated,
+    }
+    return render(request, "inventory/pages/category_detail.html", context)
+
+
+@require_permission("inventory.*", "view")
 def adjustment_list(request):
     """Stock adjustment list view with search and pagination."""
     query = request.GET.get("q", "").strip()
     status_filter = request.GET.get("status", "").strip()
 
-    adjustments = StockAdjustment.objects.select_related("product", "requested_by", "approved_by").order_by(
-        "-requested_at"
-    )
-
+    adjustments = StockAdjustment.objects.all().order_by("-created_at")
     if query:
-        adjustments = adjustments.filter(
-            Q(product__name__icontains=query) | Q(product__sku__icontains=query) | Q(reason__icontains=query)
-        )
-
+        adjustments = adjustments.filter(Q(product__name__icontains=query) | Q(product__sku__icontains=query))
     if status_filter:
         adjustments = adjustments.filter(status=status_filter)
 
-    pagination_data = paginate_queryset(adjustments, request)
-
+    pagination_data = paginate_queryset(adjustments, request, page_size=20)
     context = {
         "query": query,
         "status_filter": status_filter,
@@ -154,12 +151,20 @@ def adjustment_list(request):
     return render(request, "inventory/pages/adjustment_list.html", context)
 
 
+def adjustment_detail(request, pk):
+    """Stock adjustment detail view."""
+    adjustment = get_object_or_404(StockAdjustment, pk=pk)
+    context = {"adjustment": adjustment}
+    return render(request, "inventory/pages/adjustment_detail.html", context)
+
+
 @require_POST
 @require_permission("inventory.stock", "adjust")
 def adjust_stock_htmx(request, slug):
     """HTMX endpoint for stock adjustment by slug.
 
     Policy: Requires 'inventory.stock' -> 'adjust' permission.
+    Returns partial HTML for targeted swap + toast trigger.
     """
     product = get_object_or_404(Product, slug=slug)
     action = request.POST.get("action")
@@ -169,18 +174,14 @@ def adjust_stock_htmx(request, slug):
     try:
         quantity = Decimal(quantity_str)
     except (ValueError, InvalidOperation):
-        return JsonResponse(
-            {"error": "Invalid quantity"},
-            status=400,
-            headers={"HX-Trigger": '{"showToast": {"message": "Invalid quantity entered.", "type": "error"}}'},
-        )
+        response = HttpResponse(status=400)
+        response["HX-Trigger"] = '{"showToast": {"message": "Invalid quantity entered.", "type": "error"}}'
+        return response
 
     if quantity <= 0:
-        return JsonResponse(
-            {"error": "Quantity must be positive"},
-            status=400,
-            headers={"HX-Trigger": '{"showToast": {"message": "Quantity must be positive.", "type": "error"}}'},
-        )
+        response = HttpResponse(status=400)
+        response["HX-Trigger"] = '{"showToast": {"message": "Quantity must be positive.", "type": "error"}}'
+        return response
 
     try:
         if action == "in":
@@ -203,23 +204,23 @@ def adjust_stock_htmx(request, slug):
             )
             message = f"Removed {quantity} from {product.sku}. New stock: {product.current_stock}"
         else:
-            return JsonResponse(
-                {"error": "Invalid action"},
-                status=400,
-                headers={"HX-Trigger": '{"showToast": {"message": "Invalid action.", "type": "error"}}'},
-            )
+            response = HttpResponse(status=400)
+            response["HX-Trigger"] = '{"showToast": {"message": "Invalid action.", "type": "error"}}'
+            return response
 
         product.refresh_from_db()
-        return JsonResponse(
-            {"message": message, "current_stock": str(product.current_stock), "wac_price": str(product.wac_price)},
-            headers={
-                "HX-Trigger": f'{{"showToast": {{"message": "{message}", "type": "success"}}}}',
-                "HX-Refresh": "true",
-            },
+
+        transactions = (
+            StockTransaction.objects.filter(product=product).select_related("created_by").order_by("-created_at")[:20]
         )
+        ledger_rows = render_to_string("inventory/components/ledger_rows.html", {"transactions": transactions})
+
+        response = HttpResponse(f'<template id="ledger-template">{ledger_rows}</template>')
+        response["HX-Trigger"] = (
+            f'{{"showToast": {{"message": "{message}", "type": "success"}}, "refreshLedger": true, "newStock": "{product.current_stock}", "newValue": "{product.get_stock_value}"}}'
+        )
+        return response
     except ValueError as e:
-        return JsonResponse(
-            {"error": str(e)},
-            status=400,
-            headers={"HX-Trigger": f'{{"showToast": {{"message": "{e}", "type": "error"}}}}'},
-        )
+        response = HttpResponse(status=400)
+        response["HX-Trigger"] = f'{{"showToast": {{"message": "{e}", "type": "error"}}}}'
+        return response

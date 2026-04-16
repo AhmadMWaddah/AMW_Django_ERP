@@ -14,6 +14,11 @@ import sys
 import uuid
 from decimal import Decimal
 
+# Add project root to Python path so 'config' module is found
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
+
 import django
 
 # Django setup must happen before any Django imports

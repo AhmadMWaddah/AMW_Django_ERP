@@ -6,14 +6,15 @@ Registers inventory models in Django admin for manual testing and management.
 
 from django.contrib import admin
 
+from core.admin import SoftDeleteAdminMixin
 from inventory.models import Category, Product, StockAdjustment, StockTransaction
 
 
 @admin.register(Category)
-class CategoryAdmin(admin.ModelAdmin):
+class CategoryAdmin(SoftDeleteAdminMixin, admin.ModelAdmin):
     """Admin interface for Category model."""
 
-    list_display = ["name", "slug", "parent", "created_at"]
+    list_display = ["name", "slug", "parent", "deleted_display", "created_at"]
     list_filter = ["parent"]
     search_fields = ["name", "slug", "description"]
     ordering = ["name"]
@@ -26,7 +27,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 
 @admin.register(Product)
-class ProductAdmin(admin.ModelAdmin):
+class ProductAdmin(SoftDeleteAdminMixin, admin.ModelAdmin):
     """Admin interface for Product model."""
 
     list_display = [
@@ -36,6 +37,7 @@ class ProductAdmin(admin.ModelAdmin):
         "current_stock",
         "wac_price",
         "unit_of_measure",
+        "deleted_display",
     ]
     list_filter = ["category", "unit_of_measure"]
     search_fields = ["sku", "name", "description"]
@@ -163,7 +165,7 @@ class StockTransactionAdmin(admin.ModelAdmin):
 
 
 @admin.register(StockAdjustment)
-class StockAdjustmentAdmin(admin.ModelAdmin):
+class StockAdjustmentAdmin(SoftDeleteAdminMixin, admin.ModelAdmin):
     """Admin interface for StockAdjustment model."""
 
     list_display = [
@@ -175,6 +177,7 @@ class StockAdjustmentAdmin(admin.ModelAdmin):
         "status",
         "requested_by",
         "requested_at",
+        "deleted_display",
     ]
     list_filter = ["status", "reason", "requested_at"]
     search_fields = ["product__sku", "product__name", "notes"]

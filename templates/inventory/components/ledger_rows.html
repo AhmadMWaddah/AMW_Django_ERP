@@ -1,0 +1,20 @@
+{% for txn in transactions %}
+<tr>
+    <td class="u-text-xs">{{ txn.created_at|date:"Y-m-d H:i" }}</td>
+    <td>
+        <span
+            class="badge {% if txn.change_type in 'INTAKE,PURCHASE,ADJUST_ADD,RETURN' %}badge--success{% else %}badge--danger{% endif %}">
+            {{ txn.get_change_type_display }}
+        </span>
+    </td>
+    <td class="u-text-right u-text-xs">{{ txn.quantity }}</td>
+    <td class="u-text-right u-text-xs">{{ txn.unit_cost|default:"-" }}</td>
+    <td class="u-text-right u-text-xs u-font-semibold">{{ txn.balance_after }}</td>
+    <td class="u-text-right u-text-xs">{{ txn.wac_after }}</td>
+    <td class="u-text-xs">{{ txn.created_by.get_full_name|default:txn.created_by.email }}</td>
+</tr>
+{% empty %}
+<tr>
+    <td colspan="7" class="u-text-center u-py-lg u-text-muted">No transactions yet.</td>
+</tr>
+{% endfor %}

@@ -3,18 +3,19 @@
 
 Phase 7: Supplier list, PO tracking, HTMX receive stock.
 Phase 7.5: Pagination added to all list views.
+Phase 7.6: Refactored to return empty responses with HTMX headers (no JsonResponse).
 """
 
 import json
 from decimal import Decimal
 
 from django.contrib.auth.decorators import login_required
-from core.views import require_post_with_405
 from django.db.models import Q
-from django.http import JsonResponse
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
 
 from core.utils import paginate_queryset
+from core.views import require_post_with_405
 from purchasing.models import PurchaseOrder, Supplier, SupplierCategory
 from purchasing.operations.orders import receive_items
 from security.logic.enforcement import PolicyEngine, require_permission
@@ -149,15 +150,14 @@ def receive_stock_htmx(request, order_id):
     """HTMX endpoint to receive stock against a PO.
 
     Server-side authorization: requires purchasing.order:receive permission.
+    Returns empty response with HX-Trigger/HX-Refresh headers for HTMX lifecycle.
     """
     if not PolicyEngine(request.user).has_permission("purchasing.order", "receive"):
-        return JsonResponse(
-            {"error": "Permission denied: receive stock"},
-            status=403,
-            headers={
-                "HX-Trigger": '{"showToast": {"message": "Permission denied: you cannot receive stock.", "type": "error"}}',
-            },
+        response = HttpResponse(status=403)
+        response["HX-Trigger"] = (
+            '{"showToast": {"message": "Permission denied: you cannot receive stock.", "type": "error"}}'
         )
+        return response
 
     order = get_object_or_404(PurchaseOrder, pk=order_id)
 
@@ -169,37 +169,24 @@ def receive_stock_htmx(request, order_id):
         items_to_receive = [
             {"item_id": item["item_id"], "quantity": Decimal(str(item["quantity"]))} for item in items_data
         ]
-    except (json.JSONDecodeError, KeyError, ValueError) as e:
-        return JsonResponse(
-            {"error": f"Invalid items data: {e}"},
-            status=400,
-            headers={
-                "HX-Trigger": '{"showToast": {"message": "Invalid receive data.", "type": "error"}}',
-            },
-        )
+    except (json.JSONDecodeError, KeyError, ValueError):
+        response = HttpResponse(status=400)
+        response["HX-Trigger"] = '{"showToast": {"message": "Invalid receive data.", "type": "error"}}'
+        return response
 
     if not items_to_receive:
-        return JsonResponse(
-            {"error": "No items to receive"},
-            status=400,
-            headers={
-                "HX-Trigger": '{"showToast": {"message": "No items to receive.", "type": "error"}}',
-            },
-        )
+        response = HttpResponse(status=400)
+        response["HX-Trigger"] = '{"showToast": {"message": "No items to receive.", "type": "error"}}'
+        return response
 
     try:
         result = receive_items(order, items_to_receive, request.user)
         message = f"Stock received for {order.po_number}. Status: {result.status}"
-        return JsonResponse(
-            {"status": result.status, "message": message},
-            headers={
-                "HX-Trigger": f'{{"showToast": {{"message": "{message}", "type": "success"}}}}',
-                "HX-Refresh": "true",
-            },
-        )
+        response = HttpResponse(status=200)
+        response["HX-Trigger"] = f'{{"showToast": {{"message": "{message}", "type": "success"}}}}'
+        response["HX-Refresh"] = "true"
+        return response
     except ValueError as e:
-        return JsonResponse(
-            {"error": str(e)},
-            status=400,
-            headers={"HX-Trigger": f'{{"showToast": {{"message": "{e}", "type": "error"}}}}'},
-        )
+        response = HttpResponse(status=400)
+        response["HX-Trigger"] = f'{{"showToast": {{"message": "{e}", "type": "error"}}}}'
+        return response

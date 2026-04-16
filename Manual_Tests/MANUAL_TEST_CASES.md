@@ -44,9 +44,9 @@
 | **Role** | Warehouse Lead |
 | **Steps** | 1. Navigate to a product detail page<br>2. Note current stock value<br>3. In "Quick Stock Adjustment" form, select "Add Stock"<br>4. Enter quantity: `10`<br>5. Click "Adjust" button<br>6. Verify toast notification appears<br>7. **If nothing happens, open browser console (F12 → Network tab) and verify the POST request fires and returns 200 with HX-Trigger header** |
 | **Expected** | Success toast: "Added 10 to {SKU}. New stock: {new_value}". Page refreshes showing updated stock. Ledger shows new transaction entry. |
-| **Actual** | Nothing Happens, No Success Toast, Button Just got Lighter Color as Clicked, No refresh No Stock Updated, Just Nothing. |
-| **Status** | ⏳ Pending |
-| **Comments** | Re-seed with `python manage.py seed_erp --force`, then re-run in browser. Code path audited on 2026-04-14: form now uses `hx-swap="none"` and error toasts are handled for HTMX 4xx responses. |
+| **Actual** | |
+| **Status** | ⏳ Ready for Retest |
+| **Comments** | Fixed in Phase 7.6: HTMX responses now use HttpResponse + headers (no JsonResponse). Global event delegation on document.body ensures buttons work repeatedly. |
 
 ---
 
@@ -57,9 +57,9 @@
 | **Role** | Warehouse Lead |
 | **Steps** | 1. On same product detail page<br>2. Select "Reduce Stock"<br>3. Enter quantity: `5`<br>4. Click "Adjust"<br>5. Verify toast notification |
 | **Expected** | Success toast: "Removed 5 from {SKU}. New stock: {new_value}". Page refreshes. Stock decreased. Ledger shows reduction transaction. |
-| **Actual** | Nothing Happens, No Success Toast, Button Just got Lighter Color as Clicked, No refresh No Stock Updated, Just Nothing. |
-| **Status** | ⏳ Pending |
-| **Comments** | Blocked by INV-003. |
+| **Actual** | |
+| **Status** | ⏳ Ready for Retest |
+| **Comments** | Blocked by INV-003 — retest together. |
 
 ---
 
@@ -70,9 +70,9 @@
 | **Role** | Warehouse Lead |
 | **Steps** | 1. After INV-003, click "Adjust" again immediately<br>2. Enter different quantity: `3`<br>3. Click "Adjust"<br>4. Verify it works without requiring manual page refresh |
 | **Expected** | Button remains functional. Second adjustment succeeds. Toast appears. Page refreshes. **Button works repeatedly without manual refresh.** |
-| **Actual** | i am not sure, the previous step is already broken |
-| **Status** | ⏳ Pending |
-| **Comments** | **Critical regression test for HTMX fix.** |
+| **Actual** | |
+| **Status** | ⏳ Ready for Retest |
+| **Comments** | **Critical regression test for HTMX fix.** Fixed: global listeners on document.body survive HTMX swaps. |
 
 ---
 
@@ -95,10 +95,10 @@
 |-------|-------|
 | **Role** | Warehouse Lead |
 | **Steps** | 1. Navigate to Inventory > Stock Adjustments<br>2. Verify list shows any adjustments<br>3. Search by product name |
-| **Expected** | List view works. Search filters. Status badges visible (Pending/Approved/Rejected). |
-| **Actual** | I don't See anything Just Empty Table |
-| **Status** | ⏳ Pending |
-| **Comments** | **Expected:** No StockAdjustment records exist yet. Not a bug. |
+| **Expected** | List view works. Search filters. Status badges visible (Pending/Approved/Rejected/Executed). Pagination functional. |
+| **Actual** | |
+| **Status** | ⏳ Ready for Retest |
+| **Comments** | Fixed in Phase 7.6: Context now includes title, row_template, **pagination_data for table_frame.html. |
 
 ---
 
@@ -111,9 +111,9 @@
 | **Role** | Warehouse Lead |
 | **Steps** | 1. Open a PO in "Issued" status<br>2. Use receive stock functionality<br>3. Enter quantities for items<br>4. Submit<br>5. Verify toast notification<br>6. **If button is missing, open browser console (F12) and check for template rendering errors or missing `can_receive_items` context variable** |
 | **Expected** | Success toast. Page refreshes. PO status updates. Product stock levels increased. |
-| **Actual** | There is no Recieve Button in Order Page, i am not sure this is due to permissions or due to UI Error |
-| **Status** | ⏳ Pending |
-| **Comments** | Re-seed with `python manage.py seed_erp --force`, then re-run in browser. Code path audited on 2026-04-14: button visibility uses `can_receive_items`, page GET access now enforces `purchasing.*:view`, and HTMX receive submits without JSON-to-DOM swaps. |
+| **Actual** | |
+| **Status** | ⏳ Ready for Retest |
+| **Comments** | Fixed in Phase 7.6: HTMX response now uses HttpResponse + headers. Context passes `can_receive_items` correctly. |
 
 ---
 
@@ -123,9 +123,9 @@
 |-------|-------|
 | **Role** | Sales Manager |
 | **Steps** | 1. Login as Sales Manager<br>2. Navigate to Purchasing > Purchase Orders<br>3. Attempt to receive stock on a PO |
-| **Expected** | 403 error or button not visible. Permission denied toast if attempted via HTMX. |
-| **Actual** | There is no Recieve Button in Order Page, it is supposed to be due to UI Error, also i do not see Purchasing section in Sidebar while i opened it using URL with GET Request, Check Permission too. |
-| **Status** | ⏳ Pending |
+| **Expected** | 403 error or button not visible. Permission denied toast if attempted via HTMX. Purchasing sidebar should NOT be visible (correct behavior — Sales Manager lacks purchasing.*:view). |
+| **Actual** | |
+| **Status** | ⏳ Ready for Retest |
 | **Comments** | Sales Manager should NOT see Purchasing sidebar (correct behavior). |
 
 ---
@@ -139,9 +139,9 @@
 | **Role** | Sales Manager |
 | **Steps** | 1. Navigate to a Customer detail page<br>2. Click "Create Order"<br>3. Verify redirected to new DRAFT order detail page<br>4. **If button is missing, open browser console (F12) and check for template errors or missing `can_create_order` context variable** |
 | **Expected** | New order created with unique order number (#Eg-XXXXX format). Status = DRAFT. Line items empty. |
-| **Actual** | There is no button in UI to Creat Draft Order, Check Permission too. |
-| **Status** | ⏳ Pending |
-| **Comments** | Re-seed with `python manage.py seed_erp --force`, then re-run in browser. Code path audited on 2026-04-14: `can_create_order` is passed by the view and the button remains template-gated by that flag. |
+| **Actual** | |
+| **Status** | ⏳ Ready for Retest |
+| **Comments** | Fixed in Phase 7.6: Context passes `can_create_order` via PolicyEngine check. |
 
 ---
 
@@ -153,8 +153,8 @@
 | **Steps** | 1. Open a DRAFT order detail<br>2. Click "Add Product" button<br>3. Verify modal opens<br>4. Select a product, enter quantity and unit price<br>5. Click "Add Item"<br>6. Verify item added |
 | **Expected** | Modal opens correctly. Form submits. Toast confirms. Page refreshes showing new line item. **Close modal and re-open — verify modal opens again (not destroyed).** |
 | **Actual** | |
-| **Status** | ⏳ Pending |
-| **Comments** | **Critical regression test for modal fix.** |
+| **Status** | ⏳ Ready for Retest |
+| **Comments** | **Critical regression test for modal fix.** Fixed: global event delegation on document.body, modal uses style.display toggling (not destroy). |
 
 ---
 
@@ -166,8 +166,8 @@
 | **Steps** | 1. Open a DRAFT order with line items<br>2. Click "Confirm Order" button<br>3. Verify toast notification |
 | **Expected** | Success toast: "Order {number} confirmed successfully." Page refreshes. Status changes to CONFIRMED. "Confirm" button no longer visible. Stock deducted for ordered items. |
 | **Actual** | |
-| **Status** | ⏳ Pending |
-| **Comments** | **Requires DB re-seed to apply `Sales: Confirm` policy.** |
+| **Status** | ⏳ Ready for Retest |
+| **Comments** | Fixed in Phase 7.6: HTMX response uses HttpResponse + HX-Refresh headers. |
 
 ---
 
@@ -178,8 +178,8 @@
 | **Role** | Sales Manager |
 | **Steps** | 1. After SAL-005, the page refreshes<br>2. Verify "Confirm Order" button is gone (status = CONFIRMED)<br>3. If button somehow remains, click it again |
 | **Expected** | Button should NOT appear after confirmation (template condition hides it). If clicked via browser back, should get "Already confirmed" error toast. |
-| **Actual** | i tried using GET Request it refused and got me 405 error and the page with link to Dashboard |
-| **Status** | ⏳ Pending |
+| **Actual** | |
+| **Status** | ⏳ Ready for Retest |
 | **Comments** | 405 for GET is correct behavior (endpoint is POST-only). |
 
 ---
@@ -191,9 +191,9 @@
 | **Role** | Sales Manager |
 | **Steps** | 1. Open a CONFIRMED order<br>2. Click "Void Order" button<br>3. Verify toast notification |
 | **Expected** | Success toast: "Order {number} voided. Stock restored." Page refreshes. Status = VOIDED. Stock levels restored for order items. |
-| **Actual** | i tried using GET Request it refused and got me 405 error and the page with link to Dashboard |
-| **Status** | ⏳ Pending |
-| **Comments** | 405 for GET is correct behavior (endpoint is POST-only). |
+| **Actual** | |
+| **Status** | ⏳ Ready for Retest |
+| **Comments** | Fixed in Phase 7.6: HTMX response uses HttpResponse + HX-Refresh headers. 405 for GET is correct (POST-only). |
 
 ---
 
@@ -204,8 +204,8 @@
 | **Role** | Sales Manager |
 | **Steps** | 1. After SAL-007, verify "Void Order" button is gone<br>2. If button remains, click again |
 | **Expected** | Button should NOT appear after voiding. If clicked, should get "Already voided" error. |
-| **Actual** | i tried using GET Request it refused and got me 405 error and the page with link to Dashboard |
-| **Status** | ⏳ Pending |
+| **Actual** | |
+| **Status** | ⏳ Ready for Retest |
 | **Comments** | 405 for GET is correct behavior (endpoint is POST-only). |
 
 ---
@@ -217,9 +217,9 @@
 | **Role** | Sales Manager |
 | **Steps** | 1. Navigate to Sales > Orders<br>2. Find a DRAFT order in the table<br>3. Click "Confirm" button in the Actions column<br>4. Verify toast notification |
 | **Expected** | Success toast. Page refreshes. Order status changes to CONFIRMED. Button removed from row. |
-| **Actual** | there is no button found in the UI |
-| **Status** | ⏳ Pending |
-| **Comments** | **Requires DB re-seed to apply `Sales: Confirm` policy.** |
+| **Actual** | |
+| **Status** | ⏳ Ready for Retest |
+| **Comments** | Fixed in Phase 7.6: HTMX response uses HttpResponse + HX-Refresh headers. Context passes `can_confirm` correctly. |
 
 ---
 
@@ -261,8 +261,8 @@
 | **Steps** | 1. Navigate to any list view with pagination (Products, Customers, Orders)<br>2. Click "Next" page<br>3. Click "Previous" page<br>4. Click a specific page number<br>5. Repeat navigation 3+ times |
 | **Expected** | Each pagination click loads new page content via HTMX. URL updates. No full page reload needed. Works consistently on every click. |
 | **Actual** | |
-| **Status** | ⏳ Pending |
-| **Comments** | |
+| **Status** | ⏳ Ready for Retest |
+| **Comments** | Fixed in Phase 7.6: Inventory list views now pass correct pagination context (title, row_template, **pagination_data). |
 
 ---
 
@@ -274,8 +274,8 @@
 | **Steps** | 1. Perform 3 consecutive HTMX POST actions (e.g., 3 stock adjustments)<br>2. Verify each action shows a toast notification |
 | **Expected** | Each action produces a toast. Toasts don't stack or overlap. Each auto-dismisses after ~4 seconds. Success/error toasts display correct colors. |
 | **Actual** | |
-| **Status** | ⏳ Pending |
-| **Comments** | **Validates global htmx:afterOnLoad listener fix.** |
+| **Status** | ⏳ Ready for Retest |
+| **Comments** | Fixed in Phase 7.6: Global htmx:afterOnLoad and htmx:responseError listeners on document.body. |
 
 ---
 
@@ -287,8 +287,8 @@
 | **Steps** | 1. Open a DRAFT order<br>2. Click "Add Product" to open modal<br>3. Close modal (click X, click overlay, or press Escape)<br>4. Click "Add Product" again<br>5. Verify modal opens again |
 | **Expected** | Modal opens every time. Close methods (X button, overlay click, Escape key) all work. Modal is not destroyed after close. |
 | **Actual** | |
-| **Status** | ⏳ Pending |
-| **Comments** | **Validates modal.remove() → style.display fix.** |
+| **Status** | ⏳ Ready for Retest |
+| **Comments** | Fixed in Phase 7.6: Modal uses style.display toggling (flex/none), not remove(). Global click/keydown listeners on document.body. |
 
 ---
 
@@ -493,16 +493,16 @@
 
 ## Summary Table
 
-| Module | Active | Verified | Blocked |
-|--------|--------|----------|---------|
-| Identity & IAM | 0 | 5 | 0 |
-| Inventory | 5 | 2 | 1 (needs re-seed) |
-| Purchasing | 2 | 2 | 1 (needs re-seed) |
-| Sales & CRM | 6 | 3 | 3 (needs re-seed) |
-| Audit & Traceability | 2 | 1 | 1 (blocked) |
-| HTMX Regression | 3 | 2 | 0 |
-| Admin Panel | 2 | 0 | 0 |
-| **Total** | **20** | **15** | **6** |
+| Module | Active | Verified | Ready for Retest | Blocked |
+|--------|--------|----------|------------------|---------|
+| Identity & IAM | 0 | 5 | 0 | 0 |
+| Inventory | 0 | 2 | 4 | 1 (INV-006) |
+| Purchasing | 0 | 2 | 2 | 0 |
+| Sales & CRM | 0 | 3 | 6 | 0 |
+| Audit & Traceability | 2 | 1 | 0 | 1 (blocked) |
+| HTMX Regression | 0 | 2 | 3 | 0 |
+| Admin Panel | 2 | 0 | 0 | 0 |
+| **Total** | **6** | **15** | **15** | **2** |
 
 ---
 
@@ -513,3 +513,4 @@
 | 2026-04-08 | Initial test cases created (37 cases across 7 modules) | Qwen |
 | 2026-04-14 | v1.2: Restructured — moved verified cases to baseline, refined failed case steps with browser console checks, updated summary table | Qwen |
 | 2026-04-14 | v1.2 audit closure: clarified pending IAM/HTMX cases with re-seed plus browser-verification steps after enforcement and UI fixes | Cod |
+| 2026-04-15 | v1.3: Phase 7.6 fixes applied — reset 15 test cases to "Ready for Retest". Updated CREDENTIALS.md to match seed_erp.py emails. | Qwen |

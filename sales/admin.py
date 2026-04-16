@@ -7,6 +7,7 @@ Registers sales models in Django admin for CRM and order management.
 from django.contrib import admin
 from django.utils.html import format_html
 
+from core.admin import SoftDeleteAdminMixin
 from sales.models import (
     Customer,
     CustomerCategory,
@@ -18,10 +19,10 @@ from sales.models import (
 
 
 @admin.register(CustomerCategory)
-class CustomerCategoryAdmin(admin.ModelAdmin):
+class CustomerCategoryAdmin(SoftDeleteAdminMixin, admin.ModelAdmin):
     """Admin interface for CustomerCategory model."""
 
-    list_display = ["name", "slug", "parent", "deleted_at_display"]
+    list_display = ["name", "slug", "parent", "deleted_display"]
     list_filter = ["parent"]
     search_fields = ["name", "slug", "description"]
     ordering = ["name"]
@@ -32,17 +33,12 @@ class CustomerCategoryAdmin(admin.ModelAdmin):
         ("Status", {"fields": ("deleted_at", "created_at", "modified_at")}),
     )
 
-    def deleted_at_display(self, obj):
-        return "Yes" if obj.deleted_at else "No"
-
-    deleted_at_display.short_description = "Deleted"
-
 
 @admin.register(Customer)
-class CustomerAdmin(admin.ModelAdmin):
+class CustomerAdmin(SoftDeleteAdminMixin, admin.ModelAdmin):
     """Admin interface for Customer model."""
 
-    list_display = ["name", "email", "phone", "category", "deleted_at_display"]
+    list_display = ["name", "email", "phone", "category", "deleted_display"]
     list_filter = ["category"]
     search_fields = ["name", "email", "phone"]
     ordering = ["name"]
@@ -55,14 +51,9 @@ class CustomerAdmin(admin.ModelAdmin):
         ("Status", {"fields": ("deleted_at", "created_at", "modified_at")}),
     )
 
-    def deleted_at_display(self, obj):
-        return "Yes" if obj.deleted_at else "No"
-
-    deleted_at_display.short_description = "Deleted"
-
 
 @admin.register(SalesOrder)
-class SalesOrderAdmin(admin.ModelAdmin):
+class SalesOrderAdmin(SoftDeleteAdminMixin, admin.ModelAdmin):
     """Admin interface for SalesOrder model."""
 
     list_display = [
@@ -254,7 +245,7 @@ SalesOrderAdmin.inlines = [SalesOrderItemInline]
 
 
 @admin.register(SalesOrderItem)
-class SalesOrderItemAdmin(admin.ModelAdmin):
+class SalesOrderItemAdmin(SoftDeleteAdminMixin, admin.ModelAdmin):
     """Admin interface for SalesOrderItem model."""
 
     list_display = ["order", "product", "quantity", "snapshot_unit_price", "total_price"]
