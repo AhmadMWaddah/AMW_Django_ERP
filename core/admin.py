@@ -6,7 +6,6 @@ Provides base admin mixins for soft delete support.
 
 from django.contrib import admin, messages
 from django.contrib.admin import SimpleListFilter
-from django.utils import timezone
 from django.utils.html import format_html
 
 
@@ -69,6 +68,10 @@ class SoftDeleteAdminMixin:
             return queryset.all_with_deleted()
         return queryset
 
+    def delete_model(self, request, obj):
+        """Soft delete instead of hard delete."""
+        obj.delete()
+
     def deleted_display(self, obj):
         if obj.is_deleted:
             return format_html('<span style="color: red;">Deleted</span>')
@@ -79,7 +82,10 @@ class SoftDeleteAdminMixin:
     @admin.action(description="Soft delete selected %(verbose_name_plural)s")
     def soft_delete_selected(self, request, queryset):
         """Soft delete selected objects instead of hard deleting."""
-        count = queryset.filter(deleted_at__isnull=True).update(deleted_at=timezone.now())
+        count = 0
+        for obj in queryset.filter(deleted_at__isnull=True):
+            obj.delete()
+            count += 1
         self.message_user(
             request,
             f"Soft deleted {count} {queryset.model._meta.verbose_name_plural}.",
@@ -89,5 +95,8 @@ class SoftDeleteAdminMixin:
     @admin.action(description="Restore selected %(verbose_name_plural)s")
     def restore_selected(self, request, queryset):
         """Restore soft-deleted objects."""
-        restored = queryset.filter(deleted_at__isnull=False).update(deleted_at=None)
-        self.message_user(request, f"Restored {restored} {queryset.model._meta.verbose_name_plural}.", messages.SUCCESS)
+        count = 0
+        for obj in queryset.filter(deleted_at__isnull=False):
+            obj.undelete()
+            count += 1
+        self.message_user(request, f"Restored {count} {queryset.model._meta.verbose_name_plural}.", messages.SUCCESS)
