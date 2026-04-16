@@ -43,10 +43,10 @@ class SoftDeleteAdminMixin:
     Admin mixin that adds soft delete functionality.
 
     Features:
-    - Shows all records by default (including deleted for visibility)
-    - Adds "Status" filter to list view
-    - Soft deletes instead of hard deletes
-    - Provides restore action for deleted items
+    - Shows active records by default
+    - Adds "Status" filter to list view (Active/Deleted/All)
+    - Individual delete button soft deletes
+    - Provides soft delete and restore actions
     - Shows deleted status in list view
     """
 
@@ -62,12 +62,6 @@ class SoftDeleteAdminMixin:
         actions["restore_selected"] = self.get_action("restore_selected")
         return actions
 
-    def get_queryset(self, request):
-        queryset = super().get_queryset(request)
-        if hasattr(queryset, "all_with_deleted"):
-            return queryset.all_with_deleted()
-        return queryset
-
     def delete_model(self, request, obj):
         """Soft delete instead of hard delete."""
         obj.delete()
@@ -81,11 +75,12 @@ class SoftDeleteAdminMixin:
 
     @admin.action(description="Soft delete selected %(verbose_name_plural)s")
     def soft_delete_selected(self, request, queryset):
-        """Soft delete selected objects instead of hard deleting."""
+        """Soft delete selected active objects."""
         count = 0
-        for obj in queryset.filter(deleted_at__isnull=True):
-            obj.delete()
-            count += 1
+        for obj in queryset:
+            if not obj.is_deleted:
+                obj.delete()
+                count += 1
         self.message_user(
             request,
             f"Soft deleted {count} {queryset.model._meta.verbose_name_plural}.",
@@ -96,7 +91,8 @@ class SoftDeleteAdminMixin:
     def restore_selected(self, request, queryset):
         """Restore soft-deleted objects."""
         count = 0
-        for obj in queryset.filter(deleted_at__isnull=False):
-            obj.undelete()
-            count += 1
+        for obj in queryset:
+            if obj.is_deleted:
+                obj.undelete()
+                count += 1
         self.message_user(request, f"Restored {count} {queryset.model._meta.verbose_name_plural}.", messages.SUCCESS)
