@@ -435,4 +435,6 @@ class TestViewAuthorization:
         )
 
         assert response.status_code == 200
-        assert response.headers.get("HX-Refresh") == "true"
+        assert "HX-Trigger" in response.headers
+        assert "showToast" in response.headers.get("HX-Trigger", "")
+        assert "refreshLedger" in response.headers.get("HX-Trigger", "")

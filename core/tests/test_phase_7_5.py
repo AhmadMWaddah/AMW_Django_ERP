@@ -30,16 +30,16 @@ class TestPaginationUtility(TestCase):
             Category.objects.create(name=f"Category {i}")
 
     def test_pagination_default_page_size(self):
-        """Test default 10-item page size."""
+        """Test default 20-item page size."""
         from core.utils import paginate_queryset
 
         queryset = Category.objects.all()
         request = self.client.get("/categories/").wsgi_request
         result = paginate_queryset(queryset, request)
 
-        self.assertEqual(len(result["page_obj"].object_list), 10)
+        self.assertEqual(len(result["page_obj"].object_list), 20)
         self.assertEqual(result["total_items"], 25)
-        self.assertEqual(result["total_pages"], 3)
+        self.assertEqual(result["total_pages"], 2)
         self.assertTrue(result["has_next"])
         self.assertFalse(result["has_previous"])
 
@@ -51,9 +51,9 @@ class TestPaginationUtility(TestCase):
         request = self.client.get("/categories/?page=2").wsgi_request
         result = paginate_queryset(queryset, request)
 
-        self.assertEqual(len(result["page_obj"].object_list), 10)
+        self.assertEqual(len(result["page_obj"].object_list), 5)
         self.assertEqual(result["page_obj"].number, 2)
-        self.assertTrue(result["has_next"])
+        self.assertFalse(result["has_next"])
         self.assertTrue(result["has_previous"])
 
     def test_pagination_invalid_page(self):
@@ -74,7 +74,7 @@ class TestPaginationUtility(TestCase):
         request = self.client.get("/categories/?page=999").wsgi_request
         result = paginate_queryset(queryset, request)
 
-        self.assertEqual(result["page_obj"].number, 3)
+        self.assertEqual(result["page_obj"].number, 2)
 
 
 class TestAuditLogViews(TestCase):
@@ -124,7 +124,7 @@ class TestAuditLogViews(TestCase):
         response = self.client.get(reverse("audit:AuditLogList"))
         self.assertEqual(response.status_code, 200)
         self.assertIn("page_obj", response.context)
-        self.assertEqual(len(response.context["logs"]), 10)
+        self.assertEqual(len(response.context["logs"]), 20)
 
     def test_audit_log_list_search_context(self):
         """Test audit log search returns filtered context."""

@@ -778,7 +778,8 @@ class TestViewAuthorization:
         client.force_login(unauthorized_employee)
         response = client.post(f"/sales/orders/{draft_order.id}/confirm/")
         assert response.status_code == 403
-        assert "Permission denied" in response.json()["error"]
+        hx_trigger = response.headers.get("HX-Trigger", "")
+        assert "Permission denied" in hx_trigger
 
     def test_confirm_order_htmx_returns_hx_trigger_on_denial(self, client, unauthorized_employee, draft_order):
         """Denial response includes HX-Trigger toast header."""
@@ -820,7 +821,9 @@ class TestViewAuthorization:
         client.force_login(authorized_employee)
         response = client.post(f"/sales/orders/{order.id}/confirm/")
         assert response.status_code == 200
-        assert response.json()["status"] == "confirmed"
+        hx_trigger = response.headers.get("HX-Trigger", "")
+        assert "showToast" in hx_trigger
+        assert "confirmed" in hx_trigger
 
     # -- void_order_htmx denial --
 
@@ -829,7 +832,8 @@ class TestViewAuthorization:
         client.force_login(unauthorized_employee)
         response = client.post(f"/sales/orders/{draft_order.id}/void/")
         assert response.status_code == 403
-        assert "Permission denied" in response.json()["error"]
+        hx_trigger = response.headers.get("HX-Trigger", "")
+        assert "Permission denied" in hx_trigger
 
     def test_void_order_htmx_returns_hx_trigger_on_denial(self, client, unauthorized_employee, draft_order):
         """Denial response includes HX-Trigger toast header."""

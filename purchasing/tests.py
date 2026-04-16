@@ -1087,7 +1087,8 @@ class TestViewAuthorization:
         client.force_login(unauthorized_employee)
         response = client.post(f"/purchasing/orders/{issued_po.id}/receive/")
         assert response.status_code == 403
-        assert "Permission denied" in response.json()["error"]
+        hx_trigger = response.headers.get("HX-Trigger", "")
+        assert "Permission denied" in hx_trigger
 
     def test_order_detail_returns_branded_403_without_view_permission(self, client, unauthorized_employee, issued_po):
         """Logged-in users without purchasing.*:view see the branded 403 page."""
@@ -1120,4 +1121,5 @@ class TestViewAuthorization:
             data={"items": f'[{{"item_id": {item.id}, "quantity": "10"}}]'},
         )
         assert response.status_code == 200
-        assert response.json()["status"] == "IN_PROGRESS"
+        hx_trigger = response.headers.get("HX-Trigger", "")
+        assert "showToast" in hx_trigger
