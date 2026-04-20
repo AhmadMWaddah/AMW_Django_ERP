@@ -58,9 +58,7 @@ def product_detail(request, slug):
     """Product detail view with stock ledger (max 5 rows)."""
     product = get_object_or_404(Product, slug=slug)
     transactions = list(
-        StockTransaction.objects.filter(product=product)
-        .select_related("created_by")
-        .order_by("-created_at")[:5]
+        StockTransaction.objects.filter(product=product).select_related("created_by").order_by("-created_at")[:5]
     )
 
     context = {
