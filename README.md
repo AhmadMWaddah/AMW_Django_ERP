@@ -421,10 +421,9 @@ bash utils/test_suite_runner.sh coverage
 
 | Role              | Responsibility                                       |
 |-------------------|------------------------------------------------------|
-| **Manager**       | Ahmad - Final owner of scope and business decisions  |
-| **Consultant AI** | Gem - Architecture auditor and strategic consistency |
-| **Backend Lead**  | Qwen - Business logic, data integrity, IAM           |
-| **Frontend Lead** | Cod - HTMX interactions, template architecture       |
+| **Owner**         | Ahmad - Final owner of scope and business decisions  |
+| **Developer**     | Implementation, business logic, data integrity      |
+| **Reviewer**     | Code review, quality gates                          |
 
 ---
 
@@ -442,7 +441,7 @@ MIT License - See [LICENSE](LICENSE) file
 - [ ] Background report generation
 - [ ] Query optimization audit (select_related, prefetch_related)
 - [ ] Production settings lockdown
-- [ ] Value-Based Authorization (Gem's note)
+- [ ] Value-Based Authorization
 
 ---
 

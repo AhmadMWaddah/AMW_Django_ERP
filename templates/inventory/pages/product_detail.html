@@ -83,7 +83,7 @@
 {# Stock Transactions Ledger #}
 <div class="card">
     <div class="card__header">
-        <h3 class="card__title">Stock Ledger (Latest 20)</h3>
+        <h3 class="card__title">Stock Ledger</h3>
         <a href="{% url 'Inventory:StockLedger' product.slug %}" class="btn btn--outline btn--sm">View Full Ledger</a>
     </div>
     <div class="card__body" style="overflow-x: auto;">
@@ -92,11 +92,11 @@
                 <tr>
                     <th>Date</th>
                     <th>Type</th>
-                    <th class="u-text-right">Quantity</th>
-                    <th class="u-text-right">Unit Cost</th>
+                    <th class="u-text-right">Qty</th>
                     <th class="u-text-right">Balance</th>
                     <th class="u-text-right">WAC</th>
                     <th>By</th>
+                    <th>Notes</th>
                 </tr>
             </thead>
             <tbody id="ledger-body">
@@ -110,10 +110,10 @@
                         </span>
                     </td>
                     <td class="u-text-right u-text-xs">{{ txn.quantity }}</td>
-                    <td class="u-text-right u-text-xs">{{ txn.unit_cost|default:"-" }}</td>
                     <td class="u-text-right u-text-xs u-font-semibold">{{ txn.balance_after }}</td>
                     <td class="u-text-right u-text-xs">{{ txn.wac_after }}</td>
-                    <td class="u-text-xs">{{ txn.created_by.get_full_name|default:txn.created_by.email }}</td>
+                    <td class="u-text-xs">{{ txn.created_by.get_full_name|default:txn.created_by.email| truncatechars:12 }}</td>
+                    <td class="u-text-xs u-text-muted">{{ txn.location_note|default:"-"|truncatechars:15 }}</td>
                 </tr>
                 {% empty %}
                 <tr>

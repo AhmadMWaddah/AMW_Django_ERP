@@ -5,6 +5,12 @@
     </div>
 
     <div class="topbar__right">
+        {# Admin Panel Button (SuperUser only) #}
+        {% if request.user.is_superuser %}
+            <a href="{% url 'admin:index' %}" class="topbar__icon-btn" title="Admin Panel">
+                {% include "_snipps_/_icon_.html" with icon="settings" class="topbar__icon" only %}
+            </a>
+        {% endif %}
         {# User Profile Dropdown #}
         {% if request.user.is_authenticated %}
             <div class="topbar__profile-dropdown">
@@ -33,6 +39,12 @@
                         {% include "_snipps_/_icon_.html" with icon="user" class="topbar__dropdown-icon" only %}
                         Profile
                     </a>
+                    {% if request.user.is_superuser %}
+                    <a href="{% url 'admin:index' %}" class="topbar__dropdown-item">
+                        {% include "_snipps_/_icon_.html" with icon="settings" class="topbar__dropdown-icon" only %}
+                        Admin Panel
+                    </a>
+                    {% endif %}
                     <div class="topbar__dropdown-divider"></div>
                     <form method="post" action="{% url 'Accounts:Logout' %}">
                         {% csrf_token %}

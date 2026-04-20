@@ -161,18 +161,17 @@ def receive_stock_htmx(request, order_id):
 
     order = get_object_or_404(PurchaseOrder, pk=order_id)
 
-    # Parse items from POST data
-    # Expected: items_json = [{"item_id": 1, "quantity": "10"}, ...]
-    items_json = request.POST.get("items", "[]")
-    try:
-        items_data = json.loads(items_json)
-        items_to_receive = [
-            {"item_id": item["item_id"], "quantity": Decimal(str(item["quantity"]))} for item in items_data
-        ]
-    except (json.JSONDecodeError, KeyError, ValueError):
-        response = HttpResponse(status=400)
-        response["HX-Trigger"] = '{"showToast": {"message": "Invalid receive data.", "type": "error"}}'
-        return response
+    items_to_receive = []
+
+    for key, value in request.POST.items():
+        if key.startswith("qty_") and value:
+            try:
+                item_id = int(key.replace("qty_", ""))
+                qty = Decimal(value)
+                if qty > 0:
+                    items_to_receive.append({"item_id": item_id, "quantity": qty})
+            except (ValueError, IndexError):
+                continue
 
     if not items_to_receive:
         response = HttpResponse(status=400)

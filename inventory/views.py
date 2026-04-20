@@ -55,15 +55,17 @@ def product_list(request):
 
 @require_permission("inventory.*", "view")
 def product_detail(request, slug):
-    """Product detail view with stock ledger."""
+    """Product detail view with stock ledger (max 5 rows)."""
     product = get_object_or_404(Product, slug=slug)
-    transactions = StockTransaction.objects.filter(product=product).select_related("created_by").order_by("-created_at")
-    paginated = paginate_queryset(transactions, request, page_size=20)
+    transactions = list(
+        StockTransaction.objects.filter(product=product)
+        .select_related("created_by")
+        .order_by("-created_at")[:5]
+    )
 
     context = {
         "product": product,
-        "transactions": paginated["page_obj"].object_list,
-        **paginated,
+        "transactions": transactions,
     }
     return render(request, "inventory/pages/product_detail.html", context)
 

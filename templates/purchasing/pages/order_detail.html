@@ -131,11 +131,12 @@
     <div class="modal">
         <div class="modal__header">
             <h3 class="modal__title">Receive Stock</h3>
-            <button class="modal__close" onclick="window.closeModal('receive-modal')">
+            <button class="modal__close" data-modal-close="receive-modal">
                 {% include "_snipps_/_icon_.html" with icon="x" only %}
             </button>
         </div>
-        <form id="receive-form">
+        <form id="receive-form" method="post" action="{% url 'Purchasing:ReceiveStock' order.id %}" hx-post="{% url 'Purchasing:ReceiveStock' order.id %}" hx-swap="none" hx-target="body">
+            {% csrf_token %}
             <div class="modal__body">
                 <p class="u-text-sm u-text-muted u-mb-md">
                     Enter the quantities received for each line item.
@@ -149,7 +150,8 @@
                             ({{ item.get_remaining_quantity }} remaining)
                         </label>
                         <input type="number"
-                               class="form-group__input receive-qty"
+                               name="qty_{{ item.id }}"
+                               class="form-group__input"
                                data-item-id="{{ item.id }}"
                                data-max="{{ item.get_remaining_quantity }}"
                                step="0.0001"
@@ -161,91 +163,13 @@
                 {% endfor %}
             </div>
             <div class="modal__footer">
-                <button type="button" class="btn btn--outline" onclick="window.closeModal('receive-modal')">Cancel</button>
-                <button type="button" class="btn btn--primary" id="receive-submit">Receive</button>
+                <button type="button" class="btn btn--outline" data-modal-close="receive-modal">Cancel</button>
+                <button type="submit" class="btn btn--primary" id="receive-submit">Receive</button>
             </div>
         </form>
     </div>
 </div>
 {% endif %}
-
-<script>
-var submitBtn = document.getElementById('receive-submit');
-if (submitBtn) {
-    submitBtn.addEventListener('click', function() {
-        var items = [];
-        var hasError = false;
-        
-        // Clear previous errors
-        document.querySelectorAll('.form-group__error').forEach(function(el) {
-            el.remove();
-        });
-
-        document.querySelectorAll('.receive-qty').forEach(function(input) {
-            var qty = parseFloat(input.value);
-            var max = parseFloat(input.dataset.max);
-            
-            if (qty > 0) {
-                // Validate quantity doesn't exceed remaining
-                if (qty > max) {
-                    hasError = true;
-                    var errorDiv = document.createElement('div');
-                    errorDiv.className = 'form-group__error';
-                    errorDiv.style.color = 'var(--color-danger)';
-                    errorDiv.style.fontSize = 'var(--font-size-xs)';
-                    errorDiv.style.marginTop = 'var(--space-xs)';
-                    errorDiv.textContent = 'Quantity cannot exceed remaining amount (' + max + ')';
-                    input.parentNode.appendChild(errorDiv);
-                    return;
-                }
-                
-                items.push({
-                    item_id: parseInt(input.dataset.itemId),
-                    quantity: qty
-                });
-            }
-        });
-
-        if (hasError) {
-            return;
-        }
-
-        if (items.length === 0) {
-            var noItemsError = document.createElement('div');
-            noItemsError.className = 'form-group__error';
-            noItemsError.style.color = 'var(--color-danger)';
-            noItemsError.style.textAlign = 'center';
-            noItemsError.style.marginBottom = 'var(--space-md)';
-            noItemsError.textContent = 'Please enter at least one quantity to receive.';
-            document.querySelector('.modal__body').insertBefore(noItemsError, document.querySelector('.modal__body').firstChild);
-            return;
-        }
-
-        // Disable button and show loading state
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Receiving...';
-
-        htmx.ajax('POST', '{% url "Purchasing:ReceiveStock" order.id %}', {
-            swap: 'none',
-            values: { items: JSON.stringify(items) },
-        }).then(function() {
-            // Success - close modal and reset button
-            window.closeModal('receive-modal');
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Receive';
-            
-            // Clear form inputs
-            document.querySelectorAll('.receive-qty').forEach(function(input) {
-                input.value = '';
-            });
-        }).catch(function() {
-            // Error - re-enable button
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Receive';
-        });
-    });
-}
-</script>
 
 <a href="{% url 'Purchasing:OrderList' %}" class="btn btn--outline u-mt-md">← Back to Orders</a>
 {% endblock %}

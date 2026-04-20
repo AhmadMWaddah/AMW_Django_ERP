@@ -39,12 +39,10 @@
     <td class="u-flex u-gap-xs">
         <a href="{% url "Sales:OrderDetail" order.id %}" class="btn btn--detail btn--sm">Detail</a>
         {% if order.status == "DRAFT" and can_confirm %}
-        <button class="btn btn--primary btn--sm"
-                hx-post="{% url "Sales:ConfirmOrder" order.id %}"
-                hx-swap="none"
-                hx-on::after-request="if(event.detail.successful) { /* page refreshes via HX-Refresh */ }">
-            Confirm
-        </button>
+        <form method="post" action="{% url "Sales:ConfirmOrder" order.id %}" hx-post="{% url "Sales:ConfirmOrder" order.id %}" hx-swap="none" hx-target="body" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn--primary btn--sm">Confirm</button>
+        </form>
         {% endif %}
     </td>
 </tr>
