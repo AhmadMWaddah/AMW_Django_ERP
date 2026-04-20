@@ -1,0 +1,64 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}Reports - {{ app_name }}{% endblock %}
+{% block topbar_title %}Reports{% endblock %}
+
+{% block dashboard_content %}
+<div id="main-content">
+    <div class="u-mb-md">
+        <h2 class="heading-secondary">Generate Report</h2>
+        <form method="post" action="{% url 'Reporting:request' %}" class="u-flex u-gap-sm">
+            {% csrf_token %}
+            <select name="report_type" class="form-group__input" style="max-width: 250px;">
+                <option value="">Select Report Type</option>
+                <option value="inventory_valuation">Inventory Valuation</option>
+                <option value="sales_summary">Sales Summary</option>
+                <option value="stock_movement">Stock Movement</option>
+            </select>
+            <button type="submit" class="btn btn--primary" hx-post="{% url 'Reporting:request' %}" hx-target="#toast-container">
+                Generate Report
+            </button>
+        </form>
+    </div>
+
+    <h2 class="heading-secondary">Your Reports</h2>
+    <div class="table-container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Report Type</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th>File</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for job in jobs %}
+                <tr>
+                    <td>{{ job.id }}</td>
+                    <td>{{ job.get_report_type_display }}</td>
+                    <td>
+                        <span class="badge badge--{% if job.status == 'completed' %}success{% elif job.status == 'failed' %}error{% elif job.status == 'processing' %}info{% else %}warning{% endif %}">
+                            {{ job.get_status_display }}
+                        </span>
+                    </td>
+                    <td>{{ job.created_at|date:"Y-m-d H:i" }}</td>
+                    <td>
+                        {% if job.result_file %}
+                        <a href="{{ job.result_file.url }}" class="btn btn--outline btn--sm" download>Download</a>
+                        {% elif job.error_message %}
+                        <span class="text-error">{{ job.error_message|truncatechars:30 }}</span>
+                        {% else %}—{% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center">No reports generated yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
