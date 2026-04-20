@@ -334,4 +334,23 @@ def _build_nav_hierarchy(engine):
         }
         nav.append(audit_section)
 
+    # Reporting section - standalone section with its own header
+    if _check_nav_permission(engine, "reporting.reportjob", "view"):
+        reporting_section = {
+            "title": "Reports",
+            "icon": "bar-chart-3",
+            "url": "",
+            "app": "reporting",
+            "children": [
+                {
+                    "title": "Reports",
+                    "icon": "bar-chart-3",
+                    "url": "Reporting:list",
+                    "app": "reporting",
+                    "children": [],
+                },
+            ],
+        }
+        nav.append(reporting_section)
+
     return nav

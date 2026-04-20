@@ -6,7 +6,6 @@ Phase 7.5: Pagination added to all list views.
 Phase 7.6: Refactored to return empty responses with HTMX headers (no JsonResponse).
 """
 
-import json
 from decimal import Decimal
 
 from django.contrib.auth.decorators import login_required
