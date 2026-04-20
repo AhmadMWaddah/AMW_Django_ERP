@@ -441,7 +441,6 @@ MIT License - See [LICENSE](LICENSE) file
 - [ ] Background report generation
 - [ ] Query optimization audit (select_related, prefetch_related)
 - [ ] Production settings lockdown
-- [ ] Value-Based Authorization
 
 ---
 

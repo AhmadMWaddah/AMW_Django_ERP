@@ -67,7 +67,8 @@ celerybeat.pid
 *.md
 !README.md
 !utils/README.md
-!Manual_Tests/*.md
+# Manual tests - for personal testing only, not committed
+Manual_Tests/
 
 # Backup Files
 *.bak
@@ -89,6 +90,7 @@ __pycache__/
 *.pyd
 
 # Project Specific
+.worktrees/
 note.md
 !AGENTS.md
 ScreenShots/

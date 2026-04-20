@@ -1,0 +1,248 @@
+"""
+-- AMW Django ERP - Reporting Background Tasks --
+
+Celery tasks for asynchronous report generation.
+
+Constitution Alignment:
+- Section 15.8: Reporting must align with Architecture targets
+- Section 15.5: Hardening: background tasks have retry logic
+"""
+
+import csv
+import io
+import logging
+from datetime import datetime
+
+from celery import shared_task
+from django.core.files.base import ContentFile
+
+logger = logging.getLogger(__name__)
+
+
+@shared_task(bind=True, max_retries=3, default_retry_delay=60)
+def generate_inventory_valuation_report(self, job_id):
+    """
+    Generate inventory valuation report (WAC-based).
+
+    Args:
+        job_id: ReportJob ID to update status
+
+    Returns:
+        ReportJob ID on success
+    """
+    from reporting.models import ReportJob
+
+    try:
+        job = ReportJob.objects.get(id=job_id)
+        job.status = ReportJob.Status.PROCESSING
+        job.save()
+
+        from django.db.models import Prefetch
+
+        from inventory.models import Product, StockTransaction
+
+        products = (
+            Product.objects.all_with_deleted()
+            .select_related("category")
+            .prefetch_related(
+                Prefetch(
+                    "stock_transactions",
+                    queryset=StockTransaction.objects.order_by("-created_at"),
+                )
+            )
+        )
+
+        output = io.StringIO()
+        writer = csv.writer(output)
+        writer.writerow(
+            [
+                "SKU",
+                "Product Name",
+                "Category",
+                "Quantity",
+                "WAC Unit Price",
+                "Total Value",
+                "Last Updated",
+            ]
+        )
+
+        for product in products:
+            stock = product.stock_transactions.first() if product.stock_transactions.exists() else None
+
+            if stock and stock.balance_after > 0:
+                total_value = stock.balance_after * stock.wac_after
+                writer.writerow(
+                    [
+                        product.sku,
+                        product.name,
+                        product.category.name if product.category else "",
+                        stock.balance_after,
+                        str(stock.wac_after),
+                        str(total_value),
+                        stock.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+                    ]
+                )
+
+        csv_content = output.getvalue()
+        filename = f"inventory_valuation_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+
+        job.result_file.save(filename, ContentFile(csv_content.encode("utf-8")))
+        job.status = ReportJob.Status.COMPLETED
+        job.save()
+
+        logger.info(f"Inventory valuation report generated: job_id={job_id}")
+        return job_id
+
+    except Exception as exc:
+        logger.error(f"Inventory valuation report failed: job_id={job_id}, error={exc}")
+        try:
+            job = ReportJob.objects.get(id=job_id)
+            job.status = ReportJob.Status.FAILED
+            job.error_message = str(exc)
+            job.save()
+        except Exception:
+            pass
+
+        raise self.retry(exc=exc)
+
+
+@shared_task(bind=True, max_retries=3, default_retry_delay=60)
+def generate_sales_summary_report(self, job_id):
+    """
+    Generate sales summary report.
+
+    Args:
+        job_id: ReportJob ID to update status
+
+    Returns:
+        ReportJob ID on success
+    """
+    from reporting.models import ReportJob
+
+    try:
+        job = ReportJob.objects.get(id=job_id)
+        job.status = ReportJob.Status.PROCESSING
+        job.save()
+
+        from sales.models import SalesOrder
+
+        orders = SalesOrder.objects.filter(
+            created_by=job.actor,
+        ).select_related("customer")
+
+        output = io.StringIO()
+        writer = csv.writer(output)
+        writer.writerow(
+            [
+                "Order Number",
+                "Customer",
+                "Status",
+                "Total Amount",
+                "Order Date",
+            ]
+        )
+
+        for order in orders:
+            writer.writerow(
+                [
+                    order.order_number,
+                    order.customer.name if order.customer else "",
+                    order.status,
+                    str(order.total_amount),
+                    order.created_at.strftime("%Y-%m-%d"),
+                ]
+            )
+
+        csv_content = output.getvalue()
+        filename = f"sales_summary_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+
+        job.result_file.save(filename, ContentFile(csv_content.encode("utf-8")))
+        job.status = ReportJob.Status.COMPLETED
+        job.save()
+
+        logger.info(f"Sales summary report generated: job_id={job_id}")
+        return job_id
+
+    except Exception as exc:
+        logger.error(f"Sales summary report failed: job_id={job_id}, error={exc}")
+        try:
+            job = ReportJob.objects.get(id=job_id)
+            job.status = ReportJob.Status.FAILED
+            job.error_message = str(exc)
+            job.save()
+        except Exception:
+            pass
+
+        raise self.retry(exc=exc)
+
+
+@shared_task(bind=True, max_retries=3, default_retry_delay=60)
+def generate_stock_movement_report(self, job_id):
+    """
+    Generate stock movement report.
+
+    Args:
+        job_id: ReportJob ID to update status
+
+    Returns:
+        ReportJob ID on success
+    """
+    from reporting.models import ReportJob
+
+    try:
+        job = ReportJob.objects.get(id=job_id)
+        job.status = ReportJob.Status.PROCESSING
+        job.save()
+
+        from inventory.models import StockTransaction
+
+        transactions = StockTransaction.objects.select_related("product", "created_by")
+
+        output = io.StringIO()
+        writer = csv.writer(output)
+        writer.writerow(
+            [
+                "Date",
+                "SKU",
+                "Product Name",
+                "Transaction Type",
+                "Quantity",
+                "WAC",
+                "Actor",
+            ]
+        )
+
+        for txn in transactions:
+              writer.writerow(
+                  [
+                      txn.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+                      txn.product.sku,
+                      txn.product.name,
+                      txn.get_change_type_display(),
+                      txn.balance_after,
+                      str(txn.wac_after),
+                      str(txn.created_by) if txn.created_by else "",
+                  ]
+              )
+
+        csv_content = output.getvalue()
+        filename = f"stock_movement_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+
+        job.result_file.save(filename, ContentFile(csv_content.encode("utf-8")))
+        job.status = ReportJob.Status.COMPLETED
+        job.save()
+
+        logger.info(f"Stock movement report generated: job_id={job_id}")
+        return job_id
+
+    except Exception as exc:
+        logger.error(f"Stock movement report failed: job_id={job_id}, error={exc}")
+        try:
+            job = ReportJob.objects.get(id=job_id)
+            job.status = ReportJob.Status.FAILED
+            job.error_message = str(exc)
+            job.save()
+        except Exception:
+            pass
+
+        raise self.retry(exc=exc)

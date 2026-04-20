@@ -53,6 +53,7 @@ LOCAL_APPS = [
     "inventory",  # Inventory: Category, Product, StockTransaction, StockAdjustment
     "sales",  # Sales & CRM: Customer, SalesOrder, SalesOrderItem
     "purchasing",  # Purchasing: Supplier, PurchaseOrder, PurchaseOrderItem
+    "reporting",  # Reporting: ReportJob, background task generation
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS

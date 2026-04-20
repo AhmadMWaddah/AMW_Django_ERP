@@ -70,6 +70,7 @@ services:
       - .env
     environment:
       - DB_HOST=postgres
+      - DB_PORT=5432
       - REDIS_URL=redis://redis:6379/0
     depends_on:
       postgres:
@@ -93,6 +94,7 @@ services:
       - .env
     environment:
       - DB_HOST=postgres
+      - DB_PORT=5432
       - REDIS_URL=redis://redis:6379/0
     depends_on:
       - redis
