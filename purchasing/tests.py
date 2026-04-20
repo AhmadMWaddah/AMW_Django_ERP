@@ -1118,7 +1118,7 @@ class TestViewAuthorization:
         client.force_login(authorized_employee)
         response = client.post(
             f"/purchasing/orders/{issued_po.id}/receive/",
-            data={"items": f'[{{"item_id": {item.id}, "quantity": "10"}}]'},
+            data={f"qty_{item.id}": "10"},
         )
         assert response.status_code == 200
         hx_trigger = response.headers.get("HX-Trigger", "")
