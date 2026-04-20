@@ -19,7 +19,7 @@ PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-import django
+import django  # noqa: E402
 
 # Django setup must happen before any Django imports
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.dev")
