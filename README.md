@@ -29,11 +29,11 @@ AMW Django ERP is a comprehensive, production-ready ERP system designed for real
 | **Phase 6** | Purchasing & Procurement                     | ✅ **COMPLETE**  | `master`  |
 | **Phase 7** | Frontend Foundation & HTMX UI                | ✅ **COMPLETE**  | `master`  |
 | **Phase 7.5**| Infrastructure UI & Global Pagination       | ✅ **COMPLETE**  | `master`  |
-| Phase 8     | Async Tasks, Reporting & Hardening           | ⏳ NEXT          | `Phase 8: Async_Hardening` |
+| Phase 8     | Async Tasks, Reporting & Hardening           | ✅ **COMPLETE**  | `Phase-8-Async-Hardening` |
 
 **Branch Strategy:**
-- `master` - Stable production baseline (Phases 1-7.5 complete)
-- All branches merged and cleaned up after completion
+- `master` - Stable production baseline (Phases 1-8 complete)
+- `Phase-8-Async-Hardening` - All work merged and cleaned up
 - Branch naming follows Constitution Section 6.2: `Fix: {Name}`, `Feature: {Name}`, `Phase {X}: {Name}`
 
 **Version Tags:**
@@ -43,6 +43,7 @@ AMW Django ERP is a comprehensive, production-ready ERP system designed for real
 - `v6.0-phase6-complete` - Purchasing & Procurement
 - `v7.0-phase7-complete` - Frontend Foundation & HTMX UI
 - `v7.5.0-phase7.5-complete` - Infrastructure UI & Global Pagination
+- `v8.0-phase8-complete` - Async Tasks, Reporting & Hardening
 
 ---
 
@@ -249,6 +250,13 @@ AMW_Django_ERP/
 │   ├── urls.py
 │   └── tests.py
 │
+├── reporting/                # Async report generation (Celery)
+│   ├── models.py             # ReportJob
+│   ├── tasks.py              # Celery tasks (inventory, sales, stock movement)
+│   ├── views.py              # HTMX-enabled views
+│   ├── urls.py
+│   └── tests.py
+│
 ├── conftest.py               # pytest fixtures
 ├── manage.py                 # Django CLI
 ├── requirements.txt          # Python dependencies
@@ -435,15 +443,10 @@ MIT License - See [LICENSE](LICENSE) file
 
 ## 🎯 Next Steps
 
-**Phase 8: Async Tasks, Reporting & Hardening**
-
-- [ ] Celery and Redis integration
-- [ ] Background report generation
-- [ ] Query optimization audit (select_related, prefetch_related)
-- [ ] Production settings lockdown
+All phases complete! AMW Django ERP is now production-ready.
 
 ---
 
-*Last Updated: 2026-04-06*
-*Phase 7.5 Status: ✅ COMPLETE (217 tests passing, merged to master)*
-*Phase 8 Status: ⏳ NEXT*
+*Last Updated: 2026-04-20*
+*Phase 8 Status: ✅ COMPLETE (228 tests passing, merged to Phase-8-Async-Hardening)*
+*All phases complete - Ready for production deployment*
