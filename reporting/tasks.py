@@ -46,11 +46,7 @@ def generate_inventory_valuation_report(self, job_id):
             .select_related("category")
             .prefetch_related(
                 Prefetch(
-<<<<<<< HEAD
-                    "stocktransactions",
-=======
                     "stock_transactions",
->>>>>>> 241313a (Phase 8: Fix Reports page template errors and add search/filter functionality)
                     queryset=StockTransaction.objects.order_by("-created_at"),
                 )
             )
@@ -71,29 +67,17 @@ def generate_inventory_valuation_report(self, job_id):
         )
 
         for product in products:
-<<<<<<< HEAD
-            stock = product.stocktransactions.first() if product.stocktransactions.exists() else None
-
-            if stock and stock.quantity_on_hand > 0:
-                total_value = stock.quantity_on_hand * stock.wac_unit_price
-=======
             stock = product.stock_transactions.first() if product.stock_transactions.exists() else None
 
             if stock and stock.balance_after > 0:
                 total_value = stock.balance_after * stock.wac_after
->>>>>>> 241313a (Phase 8: Fix Reports page template errors and add search/filter functionality)
                 writer.writerow(
                     [
                         product.sku,
                         product.name,
                         product.category.name if product.category else "",
-<<<<<<< HEAD
-                        stock.quantity_on_hand,
-                        str(stock.wac_unit_price),
-=======
                         stock.balance_after,
                         str(stock.wac_after),
->>>>>>> 241313a (Phase 8: Fix Reports page template errors and add search/filter functionality)
                         str(total_value),
                         stock.created_at.strftime("%Y-%m-%d %H:%M:%S"),
                     ]
@@ -143,11 +127,7 @@ def generate_sales_summary_report(self, job_id):
         from sales.models import SalesOrder
 
         orders = SalesOrder.objects.filter(
-<<<<<<< HEAD
-            actor=job.actor,
-=======
             created_by=job.actor,
->>>>>>> 241313a (Phase 8: Fix Reports page template errors and add search/filter functionality)
         ).select_related("customer")
 
         output = io.StringIO()
@@ -169,11 +149,7 @@ def generate_sales_summary_report(self, job_id):
                     order.customer.name if order.customer else "",
                     order.status,
                     str(order.total_amount),
-<<<<<<< HEAD
-                    order.order_date.strftime("%Y-%m-%d"),
-=======
                     order.created_at.strftime("%Y-%m-%d"),
->>>>>>> 241313a (Phase 8: Fix Reports page template errors and add search/filter functionality)
                 ]
             )
 
@@ -220,11 +196,7 @@ def generate_stock_movement_report(self, job_id):
 
         from inventory.models import StockTransaction
 
-<<<<<<< HEAD
-        transactions = StockTransaction.objects.select_related("product", "actor")
-=======
         transactions = StockTransaction.objects.select_related("product", "created_by")
->>>>>>> 241313a (Phase 8: Fix Reports page template errors and add search/filter functionality)
 
         output = io.StringIO()
         writer = csv.writer(output)
@@ -241,31 +213,17 @@ def generate_stock_movement_report(self, job_id):
         )
 
         for txn in transactions:
-<<<<<<< HEAD
             writer.writerow(
                 [
                     txn.created_at.strftime("%Y-%m-%d %H:%M:%S"),
                     txn.product.sku,
                     txn.product.name,
-                    txn.transaction_type,
-                    txn.quantity_on_hand,
-                    str(txn.wac_unit_price),
-                    str(txn.actor) if txn.actor else "",
+                    txn.get_change_type_display(),
+                    txn.balance_after,
+                    str(txn.wac_after),
+                    str(txn.created_by) if txn.created_by else "",
                 ]
             )
-=======
-              writer.writerow(
-                  [
-                      txn.created_at.strftime("%Y-%m-%d %H:%M:%S"),
-                      txn.product.sku,
-                      txn.product.name,
-                      txn.get_change_type_display(),
-                      txn.balance_after,
-                      str(txn.wac_after),
-                      str(txn.created_by) if txn.created_by else "",
-                  ]
-              )
->>>>>>> 241313a (Phase 8: Fix Reports page template errors and add search/filter functionality)
 
         csv_content = output.getvalue()
         filename = f"stock_movement_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
