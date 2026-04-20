@@ -1,5 +1,5 @@
 # This package contains all configuration for the Django project.
 
-from .celery import app as celery
+from .celery import celery
 
 __all__ = ("celery",)
