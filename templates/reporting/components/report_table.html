@@ -1,0 +1,36 @@
+{# -- Reporting - Report Job Table Rows -- #}
+{# Receives: jobs (queryset) #}
+
+<thead>
+    <tr>
+        <th>ID</th>
+        <th>Report Type</th>
+        <th>Status</th>
+        <th>Created</th>
+        <th>File</th>
+    </tr>
+</thead>
+<tbody>
+    {% for job in jobs %}
+    <tr>
+        <td>{{ job.id }}</td>
+        <td>{{ job.get_report_type_display }}</td>
+        <td>
+            {% if job.status == "completed" %}<span class="badge badge--success">{{ job.get_status_display }}</span>
+            {% elif job.status == "failed" %}<span class="badge badge--danger">{{ job.get_status_display }}</span>
+            {% elif job.status == "processing" %}<span class="badge badge--info">{{ job.get_status_display }}</span>
+            {% else %}<span class="badge badge--warning">{{ job.get_status_display }}</span>{% endif %}
+        </td>
+        <td class="u-text-xs">{{ job.created_at|date:"Y-m-d H:i" }}</td>
+        <td>
+            {% if job.result_file %}<a href="{{ job.result_file.url }}" class="btn btn--outline btn--sm" download>Download</a>
+            {% elif job.error_message %}{{ job.error_message|truncatechars:30 }}
+            {% else %}<span class="u-text-muted">—</span>{% endif %}
+        </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="5" class="u-text-center u-py-lg u-text-muted">No reports generated yet.</td>
+    </tr>
+    {% endfor %}
+</tbody>

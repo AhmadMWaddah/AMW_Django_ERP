@@ -109,5 +109,18 @@
         </div>
     </a>
     {% endif %}
+    {% if request.user.is_superuser or request.user.is_staff %}
+    <a href="{% url 'Reporting:list' %}" class="card card--clickable">
+        <div class="card__body u-flex u-items-center u-gap-md">
+            <div class="dashboard-modules__icon">
+                {% include "_snipps_/_icon_.html" with icon="bar-chart" class="" only %}
+            </div>
+            <div>
+                <h3 class="u-text-sm u-font-semibold">Reports</h3>
+                <p class="u-text-xs u-text-muted">Generate and download reports</p>
+            </div>
+        </div>
+    </a>
+    {% endif %}
 </div>
 {% endblock %}

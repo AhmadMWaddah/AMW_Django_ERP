@@ -1,0 +1,38 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}Reports - {{ app_name }}{% endblock %}
+{% block topbar_title %}Reports{% endblock %}
+
+{% block dashboard_content %}
+<div id="main-content">
+    <div class="u-mb-md">
+        <h2 class="heading-secondary">Generate Report</h2>
+        <form method="post" action="{% url 'Reporting:request' %}">
+            {% csrf_token %}
+            <select name="report_type">
+                <option value="">Select Report Type</option>
+                <option value="inventory_valuation">Inventory Valuation</option>
+                <option value="sales_summary">Sales Summary</option>
+                <option value="stock_movement">Stock Movement</option>
+            </select>
+            <button type="submit" class="btn btn--primary">Generate Report</button>
+        </form>
+    </div>
+
+    <form method="get" class="u-flex u-gap-sm u-mb-md">
+        <input type="text" name="q" value="{{ query }}" placeholder="Search by ID or report type..."
+            class="form-group__input" style="max-width: 300px;">
+        <select name="status" class="form-group__input" style="max-width: 180px;">
+            <option value="">All Statuses</option>
+            <option value="pending" {% if status_filter == "pending" %}selected{% endif %}>Pending</option>
+            <option value="processing" {% if status_filter == "processing" %}selected{% endif %}>Processing</option>
+            <option value="completed" {% if status_filter == "completed" %}selected{% endif %}>Completed</option>
+            <option value="failed" {% if status_filter == "failed" %}selected{% endif %}>Failed</option>
+        </select>
+        <button type="submit" class="btn btn--primary">Search</button>
+        {% if query or status_filter %}<a href="{% url 'Reporting:list' %}" class="btn btn--outline">Clear</a>{% endif %}
+    </form>
+
+    {% include "components/table_frame.html" %}
+</div>
+{% endblock %}

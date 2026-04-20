@@ -1,5 +1,4 @@
 {# -- AMW Django ERP - Button Snippet -- #}
-<button type="{{ type|default:'button' }}" class="btn {{ class|default:'' }}" {% if name|default:None %}name="{{ name }}" {% endif %}
-    {% if disabled|default:False %}disabled{% endif %}>
+<button type="{{ type|default:'button' }}" class="btn {{ class|default:'' }}">
     {{ text }}
 </button>
