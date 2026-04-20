@@ -213,17 +213,17 @@ def generate_stock_movement_report(self, job_id):
         )
 
         for txn in transactions:
-              writer.writerow(
-                  [
-                      txn.created_at.strftime("%Y-%m-%d %H:%M:%S"),
-                      txn.product.sku,
-                      txn.product.name,
-                      txn.get_change_type_display(),
-                      txn.balance_after,
-                      str(txn.wac_after),
-                      str(txn.created_by) if txn.created_by else "",
-                  ]
-              )
+            writer.writerow(
+                [
+                    txn.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+                    txn.product.sku,
+                    txn.product.name,
+                    txn.get_change_type_display(),
+                    txn.balance_after,
+                    str(txn.wac_after),
+                    str(txn.created_by) if txn.created_by else "",
+                ]
+            )
 
         csv_content = output.getvalue()
         filename = f"stock_movement_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"

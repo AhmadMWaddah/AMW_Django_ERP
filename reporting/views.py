@@ -26,18 +26,15 @@ def report_list(request):
     from reporting.models import ReportJob
 
     # Get filter parameters
-    query = request.GET.get('q', '')
-    status_filter = request.GET.get('status', '')
+    query = request.GET.get("q", "")
+    status_filter = request.GET.get("status", "")
 
     # Start with user's jobs
     jobs = ReportJob.objects.filter(actor=request.user)
 
     # Apply search filter
     if query:
-        jobs = jobs.filter(
-            models.Q(id__icontains=query) |
-            models.Q(get_report_type_display__icontains=query)
-        )
+        jobs = jobs.filter(models.Q(id__icontains=query) | models.Q(get_report_type_display__icontains=query))
 
     # Apply status filter
     if status_filter:
@@ -46,14 +43,18 @@ def report_list(request):
     # Limit to most recent 20
     jobs = jobs[:20]
 
-    return render(request, "reporting/report_list.html", {
-        "jobs": jobs,
-        "query": query,
-        "status_filter": status_filter,
-        "title": "Your Reports",
-        "total_items": len(jobs),
-        "row_template": "reporting/components/report_table.html",
-    })
+    return render(
+        request,
+        "reporting/report_list.html",
+        {
+            "jobs": jobs,
+            "query": query,
+            "status_filter": status_filter,
+            "title": "Your Reports",
+            "total_items": len(jobs),
+            "row_template": "reporting/components/report_table.html",
+        },
+    )
 
 
 @login_required

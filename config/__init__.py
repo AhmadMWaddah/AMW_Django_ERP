@@ -4,6 +4,5 @@ from .celery import celery
 
 __all__ = ("celery",)
 
-from .celery import celery
 
 __all__ = ("celery",)
