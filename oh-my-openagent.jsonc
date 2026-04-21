@@ -1,16 +1,121 @@
 {
+  "workflow": {
+    "name": "AMW Django ERP - Automated Development Pipeline",
+    "version": "1.0.0",
+    "iteration_limit": 5,
+    "no_fallback": true,
+    "escalation": "human"
+  },
+
   "agents": {
-    "Planner": { 
+    "Planner": {
       "model": "opencode/big-pickle",
-      "prompt": "You are a senior software architect. Create detailed, step-by-step plans for implementing features. Focus on data models, API design, and task breakdown."
+      "stage_order": 1,
+      "prompt": "BEFORE STARTING: Read relevant Constitution sections from Constitution/ directory to ensure compliance. Read Orchestrator_Law.md, Architecture_Law.md, and Roadmap.md before creating plans. You are a senior software architect for AMW Django ERP. Create detailed, step-by-step plans following Constitution rules. Focus on data models, API design, task breakdown, and constitutional compliance.",
+      "stage": "PLANNING",
+      "retry_limit": 2,
+      "constitution_read": ["Orchestrator_Law.md", "Architecture_Law.md", "Roadmap.md"]
     },
-    "Coder": { 
+
+    "GitBranchCreator": {
+      "model": "ollama/gemma:4",
+      "stage_order": 2,
+      "prompt": "BEFORE STARTING: Read relevant Constitution sections from Constitution/ directory to ensure compliance. Read Orchestrator_Law.md and Git_Law.md first. You are a git specialist. Check if branch already exists. If not, create new feature branch following Constitution branch naming: Feature-{Name} or Fix-{Name}. Create branch locally and push to remote.",
+      "stage": "CREATE_BRANCH",
+      "retry_limit": 2,
+      "conditional_skip": "if_branch_exists",
+      "constitution_read": ["Orchestrator_Law.md", "Git_Law.md"]
+    },
+
+    "Coder": {
       "model": "opencode/minimax-m2.5",
-      "prompt": "You are an expert developer. Write clean, production-ready code with proper error handling, logging, and tests. Follow the plan provided."
+      "stage_order": 3,
+      "prompt": "BEFORE STARTING: Read relevant Constitution sections from Constitution/ directory to ensure compliance. Read Orchestrator_Law.md, Style_Law.md, and Frontend_Law.md before coding. You are an expert Django developer for AMW Django ERP. Write clean, production-ready code following Constitution: use operations modules for business logic, enforce policies, implement soft delete, maintain WAC valuation. Use HTMX-first for frontend.",
+      "stage": "CODING",
+      "retry_limit": 2,
+      "constitution_read": ["Orchestrator_Law.md", "Style_Law.md", "Stack_and_Tools_Law.md", "Frontend_Law.md"]
     },
-    "Reviewer": { 
+
+    "UnitTester": {
+      "model": "ollama/qwen2.5-coder:7b",
+      "stage_order": 4,
+      "prompt": "BEFORE STARTING: Read relevant Constitution sections from Constitution/ directory to ensure compliance. Read Orchestrator_Law.md and Testing_Law.md before testing. You are a test engineer for AMW Django ERP. Write and run unit tests following Constitution Testing Law. Execute pytest, report results clearly. Focus on model, view, and operations tests.",
+      "stage": "UNIT_TESTING",
+      "retry_limit": 2,
+      "constitution_read": ["Orchestrator_Law.md", "Testing_Law.md"]
+    },
+
+    "Reviewer": {
       "model": "opencode/nemotron-3-super",
-      "prompt": "You are a meticulous code reviewer. Check for bugs, logic errors, security issues, and adherence to the plan. Provide specific feedback. Document Updates Made."
+      "stage_order": 5,
+      "prompt": "BEFORE STARTING: Read relevant Constitution sections from Constitution/ directory to ensure compliance. Read Orchestrator_Law.md, Testing_Law.md, Style_Law.md, Git_Law.md, and CICD_Law.md before reviewing. You are a meticulous code reviewer for AMW Django ERP. Check for: 1) Bugs and logic errors, 2) Security issues, 3) Constitutional compliance (operations modules, policy enforcement, soft delete, WAC), 4) Test coverage, 5) Code quality (black, ruff). Output: APPROVED or NEEDS_FIX with report.",
+      "stage": "REVIEWING",
+      "retry_limit": 2,
+      "constitution_read": ["Orchestrator_Law.md", "Testing_Law.md", "Style_Law.md", "Git_Law.md", "CICD_Law.md"]
+    },
+
+    "DocWriter": {
+      "model": "ollama/deepseek-coder:6.7b",
+      "stage_order": 6,
+      "prompt": "BEFORE STARTING: Read relevant Constitution sections from Constitution/ directory to ensure compliance. Read Orchestrator_Law.md and Documentation_Law.md before writing docs. You are a technical writer. Update documentation for AMW Django ERP including README files, inline comments, and Constitution docs. Follow Constitution Documentation Law.",
+      "stage": "DOCUMENTATION",
+      "retry_limit": 2,
+      "constitution_read": ["Orchestrator_Law.md", "Documentation_Law.md"]
+    },
+
+    "GitPusher": {
+      "model": "ollama/deepseek-coder:6.7b",
+      "stage_order": 7,
+      "prompt": "BEFORE STARTING: Read relevant Constitution sections from Constitution/ directory to ensure compliance. Read Orchestrator_Law.md and Git_Law.md before pushing. You are a git specialist. Commit changes with proper multi-message format (Constitution Section 6). Create branch if needed, commit all changes, push to remote. Use utils/git_task_commit.sh for commits.",
+      "stage": "PUSH_TO_BRANCH",
+      "retry_limit": 2,
+      "constitution_read": ["Orchestrator_Law.md", "Git_Law.md"]
+    },
+
+    "GitMerger": {
+      "model": "ollama/gemma:4",
+      "stage_order": 8,
+      "prompt": "BEFORE STARTING: Read relevant Constitution sections from Constitution/ directory to ensure compliance. Read Orchestrator_Law.md, Git_Law.md, and CICD_Law.md before merging. You are a git specialist. Create pull request, merge branch to master after Owner approval. Follow Constitution Section 6 for merge rules. Use GitHub CLI (gh) for operations. Delete branch after successful merge.",
+      "stage": "MERGE_TO_MASTER",
+      "retry_limit": 2,
+      "constitution_read": ["Orchestrator_Law.md", "Git_Law.md", "CICD_Law.md"]
     }
+  },
+
+  "stage_order": [
+    "PLANNING",
+    "CREATE_BRANCH",
+    "CODING",
+    "UNIT_TESTING",
+    "REVIEWING",
+    "DOCUMENTATION",
+    "PUSH_TO_BRANCH",
+    "HUMAN_APPROVAL",
+    "MERGE_TO_MASTER"
+  ],
+
+  "retry_flow": {
+    "PLANNING_fail": "retry_2x_then_human",
+    "CREATE_BRANCH_fail": "retry_2x_then_human",
+    "CODING_fail": "go_to_planning",
+    "UNIT_TESTING_fail": "go_to_planning",
+    "REVIEWING_reject": "go_to_planning",
+    "DOCUMENTATION_fail": "retry_2x_then_human",
+    "PUSH_fail": "retry_2x_then_human"
+  },
+
+  "task_model_assignment": {
+    "complex_planning": "Planner",
+    "planning_error_fix": "Planner",
+    "planning_new_feature": "Planner",
+    "create_git_branch": "GitBranchCreator",
+    "main_coding": "Coder",
+    "coding_error_fix": "Coder",
+    "code_review": "Reviewer",
+    "unit_testing": "UnitTester",
+    "running_tests": "UnitTester",
+    "git_commit_push": "GitPusher",
+    "git_merge": "GitMerger",
+    "documentation": "DocWriter"
   }
 }

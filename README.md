@@ -360,6 +360,35 @@ pytest --cov=. --cov-report=html
 - **Enterprise Slug System** - URL-friendly slugs on all models for clean routing
 - **HTMX-First Frontend** - Dynamic UI without heavy JavaScript frameworks
 
+### Sales & CRM Business Rules
+
+- Order confirmation must be an operation, not a view shortcut
+- Sales order item pricing must preserve snapshot values at order time
+- Customer shipping address snapshotted at order time (not referenced live)
+- State Machine: Draft → Confirmed → Shipped → Voided
+- Void operation must roll back inventory
+- Order numbering: `#Eg-00001` format (configurable prefix)
+- Payment statuses: Pending, Partially Paid, Paid
+
+### Inventory Business Rules
+
+- `Product.current_stock` is controlled; do not edit directly
+- Stock movement via transaction ledger (not just field mutation)
+- WAC (Weighted Average Cost) recalculation on stock-in
+- Stock Adjustments require approval workflow
+- Rejection comments required when denied
+- All stock changes must be atomic + concurrency-safe
+- Use `transaction.atomic` + `select_for_update()`
+
+### Purchasing Business Rules
+
+- Stock receiving is the authoritative point for purchase-driven stock increases
+- Valuation updates only through receiving logic
+- Purchase order items link to suppliers with agreed quantities and prices
+- Receiving triggers WAC recalculation automatically
+- All receipts logged in immutable stock ledger
+- Use `select_for_update()` when updating product stock
+
 ### Technology Stack
 
 | Layer           | Technology                       |
