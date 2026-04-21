@@ -157,10 +157,15 @@ The complete development workflow stages in execution order:
 - **On REJECTED:** → PLANNING (for fix plan)
 
 ### Stage 9: MERGE_TO_MASTER
-- **Agent:** ollama/deepseek-coder:6.7b (GitMerger)
+- **Agent:** ollama/gemma:4 (GitMerger)
 - **Input:** Owner approval received
 - **Output:** PR created, branch merged to master
-- **Branch Cleanup:** Delete feature branch after successful merge
+- **Branch Cleanup:** Delete BOTH local AND remote branch after merge
+- **Command:**
+  ```bash
+  git branch -d Feature-Name        # Local branch
+  git push origin --delete Feature-Name  # Remote branch
+  ```
 - **Status:** COMPLETE
 
 
