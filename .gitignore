@@ -100,4 +100,4 @@ ScreenShots/
 .qwen/
 logs/
 .codex/
-.gemini/
+.gemini/.env_amw_dj_erp
