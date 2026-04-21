@@ -8,6 +8,16 @@
   },
 
   "agents": {
+    "PREPARE": {
+      "model": "opencode/big-pickle",
+      "stage_order": 0,
+      "prompt": "Check and start required services for workflow: 1) Check if Ollama server running, start if needed with 'ollama serve', 2) Check Docker services (PostgreSQL, Redis), start if needed, 3) Check/activate virtual environment, 4) Check Celery worker status. Report status of all services.",
+      "stage": "PREPARE",
+      "retry_limit": 2,
+      "preparation_type": true,
+      "constitution_read": []
+    },
+
     "Planner": {
       "model": "opencode/big-pickle",
       "stage_order": 1,
@@ -83,6 +93,7 @@
   },
 
   "stage_order": [
+    "PREPARE",
     "PLANNING",
     "CREATE_BRANCH",
     "CODING",

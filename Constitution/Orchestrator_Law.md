@@ -103,11 +103,28 @@ Phase Completion:
 
 The complete development workflow stages in execution order:
 
+### Stage 0: PREPARE
+- **Agent:** big-pickle (PREPARE)
+- **Input:** Task assignment from Owner
+- **Output:** Environment ready (Ollama, Docker, Virtual Env, Celery)
+- **Next Stage:** PLANNING
+- **Actions:**
+  - Check if Ollama server running, start if needed
+  - Check Docker services (PostgreSQL, Redis), start if needed
+  - Check/activate virtual environment
+  - Check Celery worker status
+- **Purpose:** Prepare all services needed for workflow before starting
+
+**NOTE:** PREPARE uses big-pickle because Ollama models aren't running yet.
+
+---
+
 ### Stage 1: PLANNING
 - **Agent:** big-pickle (Planner)
 - **Input:** Task description from Owner
 - **Output:** Detailed execution plan with task breakdown
 - **Next Stage:** CREATE_BRANCH
+- **Note:** Ollama now ready for use in later stages
 
 ### Stage 2: CREATE_BRANCH
 - **Agent:** ollama/gemma:4 (GitBranchCreator)
@@ -128,6 +145,7 @@ The complete development workflow stages in execution order:
 - **Output:** Test results, pass/fail report
 - **On Success:** → REVIEWING
 - **On Failure:** → PLANNING (for fix plan)
+- **Note:** Ollama model used
 
 ### Stage 5: REVIEWING
 - **Agent:** nemotron-3-super (Reviewer)
@@ -141,6 +159,7 @@ The complete development workflow stages in execution order:
 - **Input:** Approved code from Reviewer
 - **Output:** Updated README, docs, comments
 - **Next Stage:** PUSH_TO_BRANCH
+- **Note:** Ollama model used
 
 ### Stage 7: PUSH_TO_BRANCH
 - **Agent:** ollama/deepseek-coder:6.7b (GitPusher)
@@ -148,6 +167,7 @@ The complete development workflow stages in execution order:
 - **Output:** Committed and pushed to feature branch
 - **Next Stage:** HUMAN_APPROVAL
 - **Rule:** Only push code that passed testing and review (correct, clean code)
+- **Note:** Ollama model used
 
 ### Stage 8: HUMAN_APPROVAL
 - **Agent:** Owner (Ahmad)
@@ -167,6 +187,7 @@ The complete development workflow stages in execution order:
   git push origin --delete Feature-Name  # Remote branch
   ```
 - **Status:** COMPLETE
+- **Note:** Ollama model used
 
 
 ---
@@ -186,6 +207,7 @@ Workflow Run 1 → FAIL → Workflow Run 2 → FAIL → Workflow Run 3 → FAIL 
 ### Stage-Specific Limits
 | Stage | Retry Behavior |
 |-------|----------------|
+| PREPARE | If fails to start services: retry (max 2x), then human |
 | PLANNING | If plan fails: retry (max 2x), then human |
 | CREATE_BRANCH | If fails: retry (max 2x), then human |
 | CODING | If code fails: retry (max 2x), then go to PLANNING for fixes |
@@ -251,17 +273,18 @@ Move to appropriate previous stage
 | Git Merger | ollama/gemma:4 | Lightweight for simple merge task |
 
 ### Stage Order Reference
-| Stage # | Stage Name | Agent | Model |
-|---------|-----------|-------|-------|
-| 1 | PLANNING | Planner | big-pickle |
-| 2 | CREATE_BRANCH | GitBranchCreator | ollama/gemma:4 |
-| 3 | CODING | Coder | MiniMax M2.5 |
-| 4 | UNIT_TESTING | UnitTester | ollama/qwen2.5-coder:7b |
-| 5 | REVIEWING | Reviewer | nemotron-3-super |
-| 6 | DOCUMENTATION | DocWriter | ollama/deepseek-coder:6.7b |
-| 7 | PUSH_TO_BRANCH | GitPusher | ollama/deepseek-coder:6.7b |
-| 8 | HUMAN_APPROVAL | Owner | Human |
-| 9 | MERGE_TO_MASTER | GitMerger | ollama/gemma:4 |
+| Stage # | Stage Name | Agent | Model | Note |
+|---------|-----------|-------|-------|------|
+| 0 | PREPARE | PREPARE | big-pickle | Starts Ollama/Docker |
+| 1 | PLANNING | Planner | big-pickle | |
+| 2 | CREATE_BRANCH | GitBranchCreator | ollama/gemma:4 | Ollama ready |
+| 3 | CODING | Coder | MiniMax M2.5 | |
+| 4 | UNIT_TESTING | UnitTester | ollama/qwen2.5-coder:7b | Ollama used |
+| 5 | REVIEWING | Reviewer | nemotron-3-super | |
+| 6 | DOCUMENTATION | DocWriter | ollama/deepseek-coder:6.7b | Ollama used |
+| 7 | PUSH_TO_BRANCH | GitPusher | ollama/deepseek-coder:6.7b | Ollama used |
+| 8 | HUMAN_APPROVAL | Owner | Human | |
+| 9 | MERGE_TO_MASTER | GitMerger | ollama/gemma:4 | Ollama used |
 
 
 ---
