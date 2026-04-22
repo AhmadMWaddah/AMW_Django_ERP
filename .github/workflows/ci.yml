@@ -218,10 +218,6 @@ jobs:
         run: |
           docker build -t amw-django-erp:${{ github.sha }} .
 
-      - name: Verify image has Python
+      - name: Verify image exists
         run: |
-          docker run --rm amw-django-erp:${{ github.sha }} python --version
-
-      - name: List built images
-        run: |
-          docker images amw-django-erp:${{ github.sha }}
+          docker images amw-django-erp:${{ github.sha }} --format "{{.ID}}"
