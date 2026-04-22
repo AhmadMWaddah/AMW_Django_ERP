@@ -73,7 +73,7 @@ class ProductViewSet(
     def perform_destroy(self, instance):
         instance.delete()  # Soft delete via SoftDeleteModel
 
-    @action(detail=True, methods=["get"])
+    @action(detail=True, methods=["get"], url_path="stock-value")
     def stock_value(self, request, pk=None):
         product = self.get_object()
         return Response(

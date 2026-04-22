@@ -199,7 +199,7 @@ class TestProductAPI:
 @pytest.mark.django_db
 class TestProductStockValue:
     def test_stock_value_endpoint(self, authenticated_client, product):
-        response = authenticated_client.get(f"/api/v1/products/{product.id}/stock_value/")
+        response = authenticated_client.get(f"/api/v1/products/{product.id}/stock-value/")
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
         assert data["sku"] == "API-TEST-001"
@@ -233,3 +233,68 @@ class TestAPIUnauthenticated:
     def test_unauthenticated_access_denied(self, api_client):
         response = api_client.get("/api/v1/products/")
         assert response.status_code == status.HTTP_403_FORBIDDEN
+
+
+@pytest.mark.django_db
+class TestCategoryOrdering:
+    def test_category_ordering_asc(self, authenticated_client, category):
+        response = authenticated_client.get("/api/v1/categories/?ordering=name")
+        assert response.status_code == status.HTTP_200_OK
+
+    def test_category_ordering_desc(self, authenticated_client, category):
+        response = authenticated_client.get("/api/v1/categories/?ordering=-name")
+        assert response.status_code == status.HTTP_200_OK
+
+
+@pytest.mark.django_db
+class TestProductOrdering:
+    def test_product_ordering_by_sku(self, authenticated_client, product):
+        response = authenticated_client.get("/api/v1/products/?ordering=sku")
+        assert response.status_code == status.HTTP_200_OK
+
+    def test_product_ordering_by_name(self, authenticated_client, product):
+        response = authenticated_client.get("/api/v1/products/?ordering=name")
+        assert response.status_code == status.HTTP_200_OK
+
+
+@pytest.mark.django_db
+class TestPagination:
+    def test_pagination_default_10(self, authenticated_client, category):
+        for i in range(15):
+            Category.objects.create(name=f"Category {i}", description=f"Desc {i}")
+        response = authenticated_client.get("/api/v1/categories/")
+        assert response.status_code == status.HTTP_200_OK
+        data = response.json()
+        assert "results" in data
+        assert len(data["results"]) <= 10
+
+
+@pytest.mark.django_db
+class TestEdgeCases:
+    def test_list_empty_products(self, authenticated_client):
+        Product.objects.all().delete()
+        response =authenticated_client.get("/api/v1/products/")
+        assert response.status_code == status.HTTP_200_OK
+
+    def test_list_empty_categories(self, authenticated_client):
+        Category.objects.all().delete()
+        response = authenticated_client.get("/api/v1/categories/")
+        assert response.status_code == status.HTTP_200_OK
+
+    def test_product_invalid_category(self, authenticated_client):
+        response = authenticated_client.post(
+            "/api/v1/products/",
+            {
+                "sku": "test-invalid",
+                "name": "Test Invalid",
+                "category_id": 99999,
+                "unit_of_measure": "pcs",
+            },
+        )
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_product_search_no_results(self, authenticated_client, product):
+        response = authenticated_client.get("/api/v1/products/?search=NONEXISTENT")
+        assert response.status_code == status.HTTP_200_OK
+        data = response.json()
+        assert len(data["results"]) == 0
