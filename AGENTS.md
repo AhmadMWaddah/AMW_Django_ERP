@@ -50,6 +50,11 @@ The project consists of 8 core modules organized by business domain:
 - No type suppression (`as any`, `@ts-ignore`)
 - No empty catch blocks
 
+**CRITICAL: Never lint virtual environment**
+- NEVER run `black .`, `ruff check .`, or similar on the entire project
+- The venv is `.env_amw_erp/` - it is already excluded in `pyproject.toml`
+- If you must lint specific files, target only them: `black path/to/file.py`
+
 ---
 
 ## 4. Git & Branching
