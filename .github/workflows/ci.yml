@@ -263,7 +263,6 @@ jobs:
             -e EMAIL_HOST_PASSWORD=ci-email-password \
             -e DEFAULT_FROM_EMAIL=noreply@example.com \
             -e CSRF_TRUSTED_ORIGINS=https://example.com \
-            --network=actions_sha \
             amw-django-erp:${{ github.sha }} python manage.py check --settings=config.settings.prod
 
       - name: List built images
