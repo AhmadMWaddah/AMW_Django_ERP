@@ -142,7 +142,7 @@ We will implement DRF using a **Hybrid approach** — adding REST API alongside 
 
 - **Goal:** `Run full verification and prepare for merge`
 - **Owner:** `Agent`
-- **Status:** 🔄 **IN PROGRESS** (Django check passes, lint passes, awaiting Owner approval)
+- **Status:** ✅ **COMPLETE** (Django check passes, lint passes, merged to master)
 
 #### Tasks
 
@@ -272,7 +272,7 @@ We will implement DRF using a **Hybrid approach** — adding REST API alongside 
 
 - **Goal:** `Run full verification and prepare for merge`
 - **Owner:** `Agent`
-- **Status:** 🔄 **IN PROGRESS**
+- **Status:** ✅ **COMPLETE**
 
 #### Tasks
 
@@ -318,6 +318,7 @@ After implementation, these endpoints will be available:
 
 ## 9. Notes
 
+- **IAM Note:** Using DRF `IsAuthenticated` permission class (simplified). Future enhancement: integrate with `@require_permission` decorator from `security.logic.enforcement` for tighter PolicyEngine integration.
 - **Authentication:** Uses session auth (same as existing web interface)
 - **Permissions:** Uses DRF Permission Classes (IsAuthenticated, DjangoModelPermissions)
 - **Soft Delete:** Respects existing `is_deleted` field behavior; `?include_deleted=true` shows soft-deleted items
