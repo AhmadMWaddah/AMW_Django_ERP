@@ -54,6 +54,9 @@ COPY --from=builder /usr/local/bin /usr/local/bin
 # Copy project files and set ownership
 COPY --chown=appuser:appuser . /app
 
+# Create required directories as appuser
+RUN mkdir -p /app/logs && chown -R appuser:appuser /app
+
 # Switch to non-root user
 USER appuser
 
