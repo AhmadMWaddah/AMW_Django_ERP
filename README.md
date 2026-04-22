@@ -31,6 +31,7 @@ AMW Django ERP is a comprehensive, production-ready ERP system designed for real
 | **Phase 7.5**| Infrastructure UI & Global Pagination       | ✅ **COMPLETE**  | `master`  |
 | Phase 8     | Async Tasks, Reporting & Hardening           | ✅ **COMPLETE**  | `master` |
 | **Phase 9** | REST API Layer (DRF)                       | ✅ **COMPLETE**  | `master` |
+| **Phase 10** | Docker & Containerization                  | ⚙️ **IN PROGRESS**  | `Phase-10-Docker` |
 
 **Branch Strategy:**
 - `master` - Stable production baseline (ALL Phases complete)
@@ -45,6 +46,7 @@ AMW Django ERP is a comprehensive, production-ready ERP system designed for real
 - `v7.5.0-phase7.5-complete` - Infrastructure UI & Global Pagination
 - `v8.0-phase8-complete` - Async Tasks, Reporting & Hardening
 - `v9.0-phase9-complete` - REST API Layer (DRF)
+- `v10.0-phase10-complete` - Docker & Containerization
 
 ---
 
@@ -332,6 +334,19 @@ bash utils/infra_manage.sh status        # Check service status
 bash utils/infra_manage.sh stop          # Stop services
 ```
 
+### Docker (Production)
+
+```bash
+# Build local image
+docker build -t amw-django-erp:test .
+
+# Run production stack
+docker-compose -f docker-compose.prod.yml up -d
+
+# Pull latest from Docker Hub
+docker pull ahmadmwaddah/amw-django-erp-docker:latest
+```
+
 ### Code Quality
 
 ```bash
@@ -407,7 +422,7 @@ pytest --cov=. --cov-report=html
 | Testing         | pytest, pytest-django            |
 | Code Quality    | ruff, black, isort               |
 | Deployment      | Docker, Gunicorn, WhiteNoise     |
-| CI/CD           | GitHub Actions                   |
+| CI/CD           | GitHub Actions, Docker Hub       |
 
 ---
 

@@ -1,0 +1,66 @@
+# -- AMW Django ERP - .dockerignore --
+# Reduce Docker image size by excluding unnecessary files
+
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+*.egg
+*.egg-info
+dist
+build
+*.whl
+
+# Virtual environments
+.env_amw_erp
+.env_amw_dj_erp
+venv
+.venv
+
+# Testing
+.pytest_cache
+.coverage
+htmlcov
+.tox
+
+# IDEs
+.idea
+.vscode
+*.swp
+*.swo
+*~
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Database
+*.sqlite3
+*.db
+
+# Media files (user uploads)
+media/
+
+# Documentation (not needed in image)
+docs
+*.md
+
+# Docker files (will be built separately)
+Dockerfile
+docker-compose*.yml
+.dockerignore
+
+# CI/CD
+.github
+
+# Static files (collected at runtime via entrypoint)
+staticfiles
+
+# Celery beat schedule
+celerybeat-schedule
+celerybeat.pid
