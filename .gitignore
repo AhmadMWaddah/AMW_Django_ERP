@@ -25,7 +25,9 @@ share/python-wheels/
 MANIFEST
 
 # Virtual Environments
+# Old one 
 .env_amw_dj_erp/
+.env_amw_erp/
 .venv/
 venv/
 ENV/
