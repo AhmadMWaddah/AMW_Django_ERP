@@ -273,7 +273,7 @@ class TestPagination:
 class TestEdgeCases:
     def test_list_empty_products(self, authenticated_client):
         Product.objects.all().delete()
-        response =authenticated_client.get("/api/v1/products/")
+        response = authenticated_client.get("/api/v1/products/")
         assert response.status_code == status.HTTP_200_OK
 
     def test_list_empty_categories(self, authenticated_client):
