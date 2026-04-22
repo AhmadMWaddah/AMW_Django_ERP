@@ -12,6 +12,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 from django.views.generic.base import RedirectView, TemplateView
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 urlpatterns = [
     # Admin
@@ -25,6 +26,10 @@ urlpatterns = [
     path("security/", include("security.urls")),
     path("audit/", include("audit.urls")),
     path("reports/", include("reporting.urls", namespace="Reporting")),
+    # REST API (Phase 9)
+    path("api/v1/", include("inventory.api_urls")),
+    path("api/v1/schema/", SpectacularAPIView.as_view(), name="schema"),
+    path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
     # Root redirect to dashboard
     path("", RedirectView.as_view(url="/accounts/dashboard/", permanent=False)),
     # Health Check (for monitoring)

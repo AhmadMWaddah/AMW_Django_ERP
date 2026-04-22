@@ -15,8 +15,8 @@ It must be used together with:
 
 - **Phase Number:** `Phase 9`
 - **Phase Name:** `REST API Layer (DRF)`
-- **Branch Name:** `phase-9`
-- **Status:** 🔄 **IN PROGRESS**
+- **Branch Name:** `Feature-Phase-9-REST-API`
+- **Status:** 🔄 **IN PROGRESS** (branch created, committed, testing)
 - **Primary Goal:** `Add Django REST Framework to create REST API endpoints for Products and Categories, coexisting with existing HTMX views (Hybrid approach).`
 - **Depends On:** `Phase 1-8`
 - **Manager Approval Required:** `Yes`
@@ -112,7 +112,37 @@ We will implement DRF using a **Hybrid approach** — adding REST API alongside 
 
 - **Goal:** `Install Django REST Framework and configure settings`
 - **Owner:** `Agent`
-- **Status:** ⏳ **PENDING**
+- **Status:** ✅ **COMPLETE** (committed to Feature-Phase-9-REST-API)
+
+### Part 2: Serializers
+
+- **Goal:** `Create DRF serializers for Product and Category models`
+- **Owner:** `Agent`
+- **Status:** ✅ **COMPLETE** (committed to Feature-Phase-9-REST-API)
+
+### Part 3: API Views
+
+- **Goal:** `Create DRF ViewSets for Products and Categories`
+- **Owner:** `Agent`
+- **Status:** ✅ **COMPLETE** (committed to Feature-Phase-9-REST-API)
+
+### Part 4: URL Routing
+
+- **Goal:** `Add API routes to inventory app`
+- **Owner:** `Agent`
+- **Status:** ✅ **COMPLETE** (committed to Feature-Phase-9-REST-API)
+
+### Part 5: Testing
+
+- **Goal:** `Write unit tests for API endpoints`
+- **Owner:** `Agent`
+- **Status:** ✅ **COMPLETE** (22 tests passing, committed to Feature-Phase-9-REST-API)
+
+### Part 6: Verification & Completion
+
+- **Goal:** `Run full verification and prepare for merge`
+- **Owner:** `Agent`
+- **Status:** 🔄 **IN PROGRESS** (Django check passes, lint passes, awaiting Owner approval)
 
 #### Tasks
 
@@ -120,13 +150,21 @@ We will implement DRF using a **Hybrid approach** — adding REST API alongside 
    - Output: `requirements.txt updated with djangorestframework>=3.14.0`
    - Verification: `pip install completes without error`
 
-2. **Task 9.1.2:** `Add rest_framework to INSTALLED_APPS in base.py`
-   - Output: `THIRD_PARTY_APPS includes "rest_framework"`
+2. **Task 9.1.1b:** `Add drf-spectacular for OpenAPI documentation`
+   - Output: `requirements.txt updated with drf-spectacular>=0.27.0`
+   - Verification: `pip install completes without error`
+
+3. **Task 9.1.2:** `Add rest_framework and drf_spectacular to INSTALLED_APPS in base.py`
+   - Output: `THIRD_PARTY_APPS includes "rest_framework" and "drf_spectacular"`
    - Verification: `python manage.py check passes`
 
-3. **Task 9.1.3:** `Add REST_FRAMEWORK settings configuration`
+4. **Task 9.1.3:** `Add REST_FRAMEWORK settings configuration`
    - Output: `Session auth, pagination, JSON renderer configured`
    - Verification: `Settings load without error`
+
+5. **Task 9.1.4:** `Add drf-spectacular configuration`
+   - Output: `REST_FRAMEWORK with SPECTACULAR_SETTINGS configured`
+   - Verification: `OpenAPI schema generates at /api/v1/schema/`
 
 ---
 
@@ -134,7 +172,7 @@ We will implement DRF using a **Hybrid approach** — adding REST API alongside 
 
 - **Goal:** `Create DRF serializers for Product and Category models`
 - **Owner:** `Agent`
-- **Status:** ⏳ **PENDING**
+- **Status:** ✅ **COMPLETE**
 
 #### Tasks
 
@@ -160,7 +198,7 @@ We will implement DRF using a **Hybrid approach** — adding REST API alongside 
 
 - **Goal:** `Create DRF ViewSets for Products and Categories`
 - **Owner:** `Agent`
-- **Status:** ⏳ **PENDING**
+- **Status:** ✅ **COMPLETE**
 
 #### Tasks
 
@@ -186,7 +224,7 @@ We will implement DRF using a **Hybrid approach** — adding REST API alongside 
 
 - **Goal:** `Add API routes to inventory app`
 - **Owner:** `Agent`
-- **Status:** ⏳ **PENDING**
+- **Status:** ✅ **COMPLETE**
 
 #### Tasks
 
@@ -194,7 +232,11 @@ We will implement DRF using a **Hybrid approach** — adding REST API alongside 
    - Output: `router.register for categories and products`
    - Verification: `Routes under /api/v1/`
 
-2. **Task 9.4.2:** `Verify all API URLs are registered`
+2. **Task 9.4.2:** `Add API documentation URLs (Swagger UI)`
+   - Output: `Schema at /api/v1/schema/, Docs at /api/docs/`
+   - Verification: `Access /api/docs/ in browser`
+
+3. **Task 9.4.3:** `Verify all API URLs are registered`
    - Output: `show_urls shows /api/v1/products/ and /api/v1/categories/`
    - Verification: `URLs accessible`
 
@@ -204,7 +246,7 @@ We will implement DRF using a **Hybrid approach** — adding REST API alongside 
 
 - **Goal:** `Write unit tests for API endpoints`
 - **Owner:** `Agent`
-- **Status:** ⏳ **PENDING**
+- **Status:** ✅ **COMPLETE**
 
 #### Tasks
 
@@ -230,7 +272,7 @@ We will implement DRF using a **Hybrid approach** — adding REST API alongside 
 
 - **Goal:** `Run full verification and prepare for merge`
 - **Owner:** `Agent`
-- **Status:** ⏳ **PENDING**
+- **Status:** 🔄 **IN PROGRESS**
 
 #### Tasks
 
@@ -277,8 +319,10 @@ After implementation, these endpoints will be available:
 ## 9. Notes
 
 - **Authentication:** Uses session auth (same as existing web interface)
-- **Permissions:** Reuses existing `@require_permission` decorator
-- **Soft Delete:** Respects existing `is_deleted` field behavior
+- **Permissions:** Uses DRF Permission Classes (IsAuthenticated, DjangoModelPermissions)
+- **Soft Delete:** Respects existing `is_deleted` field behavior; `?include_deleted=true` shows soft-deleted items
 - **Pagination:** DRF pagination with 20 items per page
 - **Search:** Supports `?search=` parameter on list endpoints
 - **Filtering:** Supports `?category=` and `?include_deleted=` parameters
+- **Documentation:** OpenAPI/Swagger UI available at `/api/docs/` via drf-spectacular
+- **Schema:** OpenAPI schema available at `/api/v1/schema/`
