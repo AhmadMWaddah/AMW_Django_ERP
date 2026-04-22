@@ -30,6 +30,7 @@ AMW Django ERP is a comprehensive, production-ready ERP system designed for real
 | **Phase 7** | Frontend Foundation & HTMX UI                | ✅ **COMPLETE**  | `master`  |
 | **Phase 7.5**| Infrastructure UI & Global Pagination       | ✅ **COMPLETE**  | `master`  |
 | Phase 8     | Async Tasks, Reporting & Hardening           | ✅ **COMPLETE**  | `master` |
+| **Phase 9** | REST API Layer (DRF)                       | ✅ **COMPLETE**  | `master` |
 
 **Branch Strategy:**
 - `master` - Stable production baseline (ALL Phases complete)
@@ -43,6 +44,7 @@ AMW Django ERP is a comprehensive, production-ready ERP system designed for real
 - `v7.0-phase7-complete` - Frontend Foundation & HTMX UI
 - `v7.5.0-phase7.5-complete` - Infrastructure UI & Global Pagination
 - `v8.0-phase8-complete` - Async Tasks, Reporting & Hardening
+- `v9.0-phase9-complete` - REST API Layer (DRF)
 
 ---
 
@@ -227,6 +229,10 @@ AMW_Django_ERP/
 │   ├── operations/
 │   │   └── stock.py          # stock_in, stock_out, approve_adjustment
 │   ├── admin.py              # Full admin with StockAdjustment workflow
+│   ├── api_tests.py          # REST API tests (pytest)
+│   ├── api.py               # DRF Viewsets
+│   ├── serializers.py       # DRF Serializers
+│   ├── api_urls.py          # API URL routing
 │   ├── views.py
 │   ├── urls.py
 │   └── tests.py
@@ -455,11 +461,16 @@ bash utils/test_suite_runner.sh coverage
 
 ## 🤝 Team Roles
 
-| Role              | Responsibility                                       |
-|-------------------|------------------------------------------------------|
-| **Owner**         | Ahmad - Final owner of scope and business decisions  |
-| **Developer**     | Implementation, business logic, data integrity      |
-| **Reviewer**     | Code review, quality gates                          |
+| Role | Responsibility |
+|------|-------------|
+| **Owner** | Ahmad - Final scope, business decisions, merge approval |
+| **Orchestrator** | AI Agent - Executes workflow, delegates specialists, verifies results |
+
+---
+
+## 📝 Workflow
+
+Work proceeds: Branch → Test → Push → Owner confirms → Merge
 
 ---
 
@@ -475,6 +486,6 @@ All phases complete! AMW Django ERP is now production-ready.
 
 ---
 
-*Last Updated: 2026-04-20*
-*All Phases: ✅ COMPLETE (228 tests passing, ready for production)*
+*Last Updated: 2026-04-22*
+*All Phases: ✅ COMPLETE (259 tests passing, ready for production)*
 *AMW Django ERP - Production Ready*
