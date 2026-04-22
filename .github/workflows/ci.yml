@@ -207,6 +207,31 @@ jobs:
     runs-on: ubuntu-latest
     needs: [lint, test]
 
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_DB: amw_django_erp_test
+          POSTGRES_USER: amw_erp_user
+          POSTGRES_PASSWORD: amw_erp_password_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -238,6 +263,7 @@ jobs:
             -e EMAIL_HOST_PASSWORD=ci-email-password \
             -e DEFAULT_FROM_EMAIL=noreply@example.com \
             -e CSRF_TRUSTED_ORIGINS=https://example.com \
+            --network=actions_sha \
             amw-django-erp:${{ github.sha }} python manage.py check --settings=config.settings.prod
 
       - name: List built images
