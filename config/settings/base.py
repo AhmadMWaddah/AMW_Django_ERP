@@ -43,6 +43,8 @@ DJANGO_APPS = [
 
 THIRD_PARTY_APPS = [
     "django_htmx",
+    "rest_framework",
+    "drf_spectacular",
 ]
 
 LOCAL_APPS = [
@@ -190,6 +192,32 @@ CELERY_RESULT_SERIALIZER = "json"
 CELERY_TIMEZONE = TIME_ZONE
 
 HTMX_ENABLED = True
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.SessionAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 20,
+    "DEFAULT_RENDERER_CLASSES": [
+        "rest_framework.renderers.JSONRenderer",
+        "rest_framework.renderers.BrowsableAPIRenderer",
+    ],
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "AMW ERP API",
+    "DESCRIPTION": "AMW Django ERP - Inventory REST API",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "SWAGGER_UI_SETTINGS": {
+        "displaySchemas": False,
+    },
+}
 
 MESSAGE_TAGS = {
     messages.DEBUG: "alert-info",
