@@ -7,6 +7,7 @@ Constitution Alignment:
 - Section 15.8: Reporting must align with Architecture targets
 """
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import models
@@ -83,15 +84,24 @@ def request_report(request):
     if report_type == ReportJob.ReportType.INVENTORY_VALUATION:
         from reporting.tasks import generate_inventory_valuation_report
 
-        generate_inventory_valuation_report.delay(job.id)
+        if getattr(settings, "CELERY_TASK_ALWAYS_EAGER", False):
+            generate_inventory_valuation_report(job.id)
+        else:
+            generate_inventory_valuation_report.delay(job.id)
     elif report_type == ReportJob.ReportType.SALES_SUMMARY:
         from reporting.tasks import generate_sales_summary_report
 
-        generate_sales_summary_report.delay(job.id)
+        if getattr(settings, "CELERY_TASK_ALWAYS_EAGER", False):
+            generate_sales_summary_report(job.id)
+        else:
+            generate_sales_summary_report.delay(job.id)
     elif report_type == ReportJob.ReportType.STOCK_MOVEMENT:
         from reporting.tasks import generate_stock_movement_report
 
-        generate_stock_movement_report.delay(job.id)
+        if getattr(settings, "CELERY_TASK_ALWAYS_EAGER", False):
+            generate_stock_movement_report(job.id)
+        else:
+            generate_stock_movement_report.delay(job.id)
 
     messages.success(request, f"Report requested: {job.get_report_type_display()}")
 

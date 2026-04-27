@@ -95,13 +95,8 @@ finally:
     LOGGING["root"]["level"] = "WARNING"
     LOGGING["loggers"]["django"]["level"] = "INFO"
 
-try:
-    CELERY_TASK_ALWAYS_EAGER = False
-    CELERY_TASK_EAGER_PROPAGATES = False
-    CELERY_WORKER_PREFETCH_MULTIPLIER = 1
-    CELERY_WORKER_CONCURRENCY = 4
-except Exception:
-    pass
+CELERY_TASK_ALWAYS_EAGER = True
+CELERY_TASK_EAGER_PROPAGATES = True
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
