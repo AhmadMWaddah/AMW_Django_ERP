@@ -8,6 +8,7 @@ Project: AMW Django ERP
 Constitution: Constitution_AMW_DJ_ERP.md
 """
 
+import os
 from pathlib import Path
 
 import environ
@@ -100,16 +101,25 @@ WSGI_APPLICATION = "config.wsgi.application"
 # PostgreSQL is the MANDATORY database engine for this project.
 # SQLite is NOT supported in production or development.
 # See dev.py and prod.py for environment-specific database settings.
-DATABASES = {
-    "default": {
-        "ENGINE": env("DB_ENGINE"),
-        "NAME": env("DB_NAME"),
-        "USER": env("DB_USER"),
-        "PASSWORD": env("DB_PASSWORD"),
-        "HOST": env("DB_HOST"),
-        "PORT": env("DB_PORT"),
+
+# Support DATABASE_URL (Render) or individual DB_* vars
+if os.getenv("DATABASE_URL"):
+    # Use DATABASE_URL from Render
+    DATABASES = {
+        "default": env.db_url_config("DATABASE_URL")
     }
-}
+else:
+    # Use individual DB_* variables
+    DATABASES = {
+        "default": {
+            "ENGINE": env("DB_ENGINE", default="django.db.backends.postgresql"),
+            "NAME": env("DB_NAME", default="amw_django_erp"),
+            "USER": env("DB_USER", default="amw_erp_user"),
+            "PASSWORD": env("DB_PASSWORD", default="password"),
+            "HOST": env("DB_HOST", default="localhost"),
+            "PORT": env("DB_PORT", default="5432"),
+        }
+    }
 
 AUTH_PASSWORD_VALIDATORS = [
     {
