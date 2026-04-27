@@ -73,4 +73,6 @@ RUN chmod +x /app/entrypoint.sh
 ENTRYPOINT ["/app/entrypoint.sh"]
 
 # Default command: Gunicorn with recommended settings
+# Use production settings
+ENV DJANGO_SETTINGS_MODULE=config.settings.prod
 CMD ["gunicorn", "--bind", "0.0.0.0:8010", "--workers", "4", "--threads", "2", "--timeout", "120", "--access-logfile", "-", "--error-logfile", "-", "config.wsgi:application"]
