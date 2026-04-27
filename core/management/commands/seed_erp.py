@@ -273,15 +273,15 @@ class Command(BaseCommand):
             # Reporting policies
             {
                 "name": "Reporting: View",
-                "resource": "reporting.*",
+                "resource": "reporting.reportjob",
                 "action": "view",
                 "effect": "allow",
                 "description": "View reports and analytics",
             },
             {
                 "name": "Reporting: Generate",
-                "resource": "reporting.*",
-                "action": "generate",
+                "resource": "reporting.reportjob",
+                "action": "add",
                 "effect": "allow",
                 "description": "Generate new reports",
             },
@@ -347,14 +347,14 @@ class Command(BaseCommand):
         exec_full = Policy.objects.get(name="Executive: Full Access")
 
         roles_data = [
-            # Owner gets ALL roles (assigned separately in _seed_employees)
+            # Owner: exec_full (already has wildcard *, so reports included)
+            # Note: Owner also gets all roles in _seed_employees for UI navigation
             {
                 "name": "Owner",
                 "department": executive_dept,
-                "policies": [exec_full],
+                "policies": [exec_full, report_view, report_generate],
                 "description": "Full system access",
             },
-            # Warehouse Lead: inventory.* + purchasing.*
             {
                 "name": "Warehouse Lead",
                 "department": logistics_dept,
@@ -368,6 +368,8 @@ class Command(BaseCommand):
                     pur_issue,
                     pur_receive,
                     pur_cancel,
+                    report_view,
+                    report_generate,
                 ],
                 "description": "Full inventory and purchasing access",
             },
@@ -384,10 +386,11 @@ class Command(BaseCommand):
                     sales_add_item,
                     cust_view,
                     cust_manage,
+                    report_view,
+                    report_generate,
                 ],
                 "description": "Sales and customer management",
             },
-            # Auditor: audit.* + inventory:audit + reporting.*
             {
                 "name": "Auditor",
                 "department": finance_dept,
