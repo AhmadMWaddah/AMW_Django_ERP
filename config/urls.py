@@ -13,6 +13,7 @@ from django.contrib import admin
 from django.urls import include, path
 from django.views.generic.base import RedirectView, TemplateView
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+
 import core.views as core_views
 
 urlpatterns = [
@@ -47,6 +48,18 @@ if settings.DEBUG:
         ]
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# Serve media files in production (for report downloads)
+if not settings.DEBUG:
+    from django.contrib.auth.decorators import login_required
+    from django.views.static import serve
+
+    def serve_media(request, path, **kwargs):
+        return serve(request, path, document_root=settings.MEDIA_ROOT, **kwargs)
+
+    urlpatterns += [
+        path("media/<path:path>", login_required(serve_media), name="serve_media"),
+    ]
 
 handler403 = "core.views.error_403"
 handler404 = "core.views.error_404"
