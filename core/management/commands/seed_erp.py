@@ -270,6 +270,21 @@ class Command(BaseCommand):
                 "effect": "allow",
                 "description": "Manage audit records",
             },
+            # Reporting policies
+            {
+                "name": "Reporting: View",
+                "resource": "reporting.*",
+                "action": "view",
+                "effect": "allow",
+                "description": "View reports and analytics",
+            },
+            {
+                "name": "Reporting: Generate",
+                "resource": "reporting.*",
+                "action": "generate",
+                "effect": "allow",
+                "description": "Generate new reports",
+            },
             # Executive wildcard (full access)
             {
                 "name": "Executive: Full Access",
@@ -327,6 +342,8 @@ class Command(BaseCommand):
         cust_manage = Policy.objects.get(name="Customer: Manage")
         audit_view = Policy.objects.get(name="Audit: View")
         audit_manage = Policy.objects.get(name="Audit: Manage")
+        report_view = Policy.objects.get(name="Reporting: View")
+        report_generate = Policy.objects.get(name="Reporting: Generate")
         exec_full = Policy.objects.get(name="Executive: Full Access")
 
         roles_data = [
@@ -370,12 +387,12 @@ class Command(BaseCommand):
                 ],
                 "description": "Sales and customer management",
             },
-            # Auditor: audit.* + inventory:audit
+            # Auditor: audit.* + inventory:audit + reporting.*
             {
                 "name": "Auditor",
                 "department": finance_dept,
-                "policies": [audit_view, audit_manage, inv_audit],
-                "description": "Audit oversight and inventory reconciliation",
+                "policies": [audit_view, audit_manage, inv_audit, report_view, report_generate],
+                "description": "Audit oversight, inventory reconciliation, and reporting",
             },
         ]
 
