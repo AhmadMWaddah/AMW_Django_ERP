@@ -107,7 +107,24 @@ db_url = os.getenv("DATABASE_URL", "")
 # Validate: must contain :// and postgres, NOT be literal "DATABASE_URL"
 if db_url and "://" in db_url and "postgres" in db_url and db_url != "DATABASE_URL":
     # Use DATABASE_URL from Render
-    DATABASES = {"default": env.db_url_config("DATABASE_URL")}
+    # Check if internal URL (dpg-xxx.render.com or dpg-xxx.internal)
+    if "internal" in db_url or ".render.com" in db_url:
+        # Can't use external URL in container, parse manually
+        from urllib.parse import urlparse
+
+        parsed = urlparse(db_url)
+        DATABASES = {
+            "default": {
+                "ENGINE": "django.db.backends.postgresql",
+                "NAME": parsed.path.lstrip("/"),
+                "USER": parsed.username,
+                "PASSWORD": parsed.password,
+                "HOST": parsed.hostname,
+                "PORT": parsed.port or 5432,
+            }
+        }
+    else:
+        DATABASES = {"default": env.db_url_config("DATABASE_URL")}
 else:
     # Use individual DB_* variables
     DATABASES = {
