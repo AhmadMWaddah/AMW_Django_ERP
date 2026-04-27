@@ -200,6 +200,7 @@ jobs:
       - name: Run Django check (production)
         env:
           DJANGO_SETTINGS_MODULE: config.settings.prod
+          CI: 'true'
         run: |
           python manage.py check --deploy
 
