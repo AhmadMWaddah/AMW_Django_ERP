@@ -15,10 +15,10 @@ from .base import *
 
 DEBUG = False
 
-# Must be explicitly set via environment variable
-ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=[])
+# Use ALLOWED_HOSTS from environment (same as base.py)
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[])
 if not ALLOWED_HOSTS:
-    raise ImproperlyConfigured("DJANGO_ALLOWED_HOSTS must be set in production")
+    raise ImproperlyConfigured("ALLOWED_HOSTS must be set in production")
 
 SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
