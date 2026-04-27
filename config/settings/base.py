@@ -102,14 +102,22 @@ WSGI_APPLICATION = "config.wsgi.application"
 # SQLite is NOT supported in production or development.
 # See dev.py and prod.py for environment-specific database settings.
 
-# Support DATABASE_URL (Render) or individual DB_* vars
-db_url = os.getenv("DATABASE_URL", "")
-# Validate: must contain :// and postgres, NOT be literal "DATABASE_URL"
-if db_url and "://" in db_url and "postgres" in db_url and db_url != "DATABASE_URL":
-    # Use DATABASE_URL from Render
-    # Check if internal URL (dpg-xxx.render.com or dpg-xxx.internal)
-    if "internal" in db_url or ".render.com" in db_url:
-        # Can't use external URL in container, parse manually
+# Database: Use DB_* vars (Render injects DATABASE_URL but prefer explicit DB_* vars)
+db_host = os.getenv("DB_HOST", "").strip()
+if db_host:
+    DATABASES = {
+        "default": {
+            "ENGINE": env("DB_ENGINE", default="django.db.backends.postgresql"),
+            "NAME": env("DB_NAME", default="amw_django_erp"),
+            "USER": env("DB_USER", default="amw_erp_user"),
+            "PASSWORD": env("DB_PASSWORD", default="password"),
+            "HOST": db_host,
+            "PORT": env("DB_PORT", default="5432"),
+        }
+    }
+else:
+    db_url = os.getenv("DATABASE_URL", "")
+    if db_url and "://" in db_url and "postgres" in db_url and db_url != "DATABASE_URL":
         from urllib.parse import urlparse
 
         parsed = urlparse(db_url)
@@ -123,20 +131,6 @@ if db_url and "://" in db_url and "postgres" in db_url and db_url != "DATABASE_U
                 "PORT": parsed.port or 5432,
             }
         }
-    else:
-        DATABASES = {"default": env.db_url_config("DATABASE_URL")}
-else:
-    # Use individual DB_* variables
-    DATABASES = {
-        "default": {
-            "ENGINE": env("DB_ENGINE", default="django.db.backends.postgresql"),
-            "NAME": env("DB_NAME", default="amw_django_erp"),
-            "USER": env("DB_USER", default="amw_erp_user"),
-            "PASSWORD": env("DB_PASSWORD", default="password"),
-            "HOST": env("DB_HOST", default="localhost"),
-            "PORT": env("DB_PORT", default="5432"),
-        }
-    }
 
 AUTH_PASSWORD_VALIDATORS = [
     {
