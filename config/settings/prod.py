@@ -54,6 +54,7 @@ DATABASES = {
 # CACHES - Optional Redis (fallback to dummy for CI)
 try:
     from . import REDIS_URL
+
     CACHES = {
         "default": {
             "BACKEND": "django.core.cache.backends.redis.RedisCache",
@@ -93,7 +94,6 @@ finally:
     LOGGING["loggers"]["django"]["level"] = "INFO"
 
 try:
-    from .celery import celery
     CELERY_TASK_ALWAYS_EAGER = False
     CELERY_TASK_EAGER_PROPAGATES = False
     CELERY_WORKER_PREFETCH_MULTIPLIER = 1
