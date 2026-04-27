@@ -198,9 +198,10 @@ jobs:
           EOF
 
       - name: Run Django check (production)
+        env:
+          DJANGO_SETTINGS_MODULE: config.settings.prod
         run: |
-          export DJANGO_SETTINGS_MODULE=config.settings.prod
-          python manage.py check --deploy --settings=config.settings.prod
+          python manage.py check --deploy
 
   # -- Job 4: Build Verification --
   build:
