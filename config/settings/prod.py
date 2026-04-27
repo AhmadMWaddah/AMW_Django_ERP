@@ -21,6 +21,8 @@ ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost", "127.0.0.1"])
 if not env("ALLOWED_HOSTS", default=None) and not env("CI", default=False):
     raise ImproperlyConfigured("ALLOWED_HOSTS must be set in production")
 
+SEED_TOKEN = env("SEED_TOKEN", default="")
+
 SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
