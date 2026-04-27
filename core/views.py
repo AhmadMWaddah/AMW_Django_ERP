@@ -91,3 +91,34 @@ def require_post_with_405(view_func):
         return view_func(request, *args, **kwargs)
 
     return wrapper
+
+
+def seed_endpoint(request):
+    """
+    Seed endpoint for initial data setup in production.
+
+    Requires SEED_TOKEN env var to match ?token= query param.
+    """
+    from django.conf import settings
+
+    provided_token = request.GET.get("token", "")
+    expected_token = getattr(settings, "SEED_TOKEN", "")
+
+    if not expected_token:
+        return JsonResponse({"error": "Seed endpoint disabled - no SEED_TOKEN configured"}, status=403)
+
+    if provided_token != expected_token:
+        return JsonResponse({"error": "Invalid token"}, status=403)
+
+    # Run the seed command
+    from core.management.commands.seed_erp import Command as SeedCommand
+    from io import StringIO
+
+    output = StringIO()
+    try:
+        cmd = SeedCommand()
+        cmd(stdout=output, stderr=StringIO(), force=True)
+        result = output.getvalue()
+        return JsonResponse({"status": "success", "output": result})
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)

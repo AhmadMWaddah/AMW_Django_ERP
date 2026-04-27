@@ -13,6 +13,7 @@ from django.contrib import admin
 from django.urls import include, path
 from django.views.generic.base import RedirectView, TemplateView
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+import core.views as core_views
 
 urlpatterns = [
     # Admin
@@ -34,6 +35,8 @@ urlpatterns = [
     path("", RedirectView.as_view(url="/accounts/dashboard/", permanent=False)),
     # Health Check (for monitoring)
     path("health/", TemplateView.as_view(template_name="health.html"), name="Health"),
+    # Seed endpoint (use token from SEED_TOKEN env var)
+    path("seed/", core_views.seed_endpoint, name="Seed"),
 ]
 
 if settings.DEBUG:
