@@ -37,12 +37,12 @@ SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
 
 DATABASES = {
     "default": {
-        "ENGINE": env("DB_ENGINE"),
+        "ENGINE": env("DB_ENGINE", default="django.db.backends.postgresql"),
         "NAME": env("DB_NAME"),
         "USER": env("DB_USER"),
         "PASSWORD": env("DB_PASSWORD"),
         "HOST": env("DB_HOST"),
-        "PORT": env("DB_PORT"),
+        "PORT": env("DB_PORT", default="5432"),
         "CONN_MAX_AGE": 600,  # Persistent connections
         "OPTIONS": {
             "connect_timeout": 10,
