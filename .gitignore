@@ -102,4 +102,7 @@ ScreenShots/
 .qwen/
 logs/
 .codex/
-.gemini/.env_amw_dj_erp
+.gemini/
+.sisyphus/
+.antigravity/
+.worktrees/

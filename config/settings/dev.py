@@ -21,7 +21,7 @@ ALLOWED_HOSTS += ["localhost", "127.0.0.1"]
 DATABASES = {
     "default": {
         "ENGINE": env("DB_ENGINE", default="django.db.backends.postgresql"),
-        "NAME": env("DB_NAME", default="amw_django_erp"),
+        "NAME": env("DB_NAME", default="amw_django_erp_db"),
         "USER": env("DB_USER", default="amw_erp_user"),
         "PASSWORD": env("DB_PASSWORD", default="amw_erp_password_dev"),
         "HOST": env("DB_HOST", default="localhost"),

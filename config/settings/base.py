@@ -29,7 +29,7 @@ if ENV_FILE.exists():
     environ.Env.read_env(ENV_FILE)
 
 SECRET_KEY = env("DJANGO_SECRET_KEY")
-DEBUG = env("DJANGO_DEBUG")
+DEBUG = env.bool("DEBUG", default=False)
 ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["localhost", "127.0.0.1"])
 
 DJANGO_APPS = [
