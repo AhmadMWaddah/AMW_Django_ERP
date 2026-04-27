@@ -106,7 +106,53 @@ It must be used together with:
 
 ## 7. Parts Breakdown
 
-### Part 1: Render Account Setup
+### Part 1: Code Fix - Celery Optional (Sync Fallback)
+
+- **Goal:** `Make reports work without Redis (sync fallback for free tier)`
+- **Owner:** `Agent`
+- **Status:** ⏳ **PENDING**
+- **Prerequisite:** `Required BEFORE deployment - without this, reports fail on Render free tier`
+
+#### Tasks
+
+1. **Task 11.1.1:** `Add CELERY_TASK_ALWAYS_EAGER setting`
+   - Output: `Setting in config/settings/base.py`
+   - Verification: `Setting defaults to True when REDIS_URL not set`
+
+2. **Task 11.1.2:** `Update reporting views to use sync when no Redis`
+   - Output: `reporting/views.py checks CELERY_TASK_ALWAYS_EAGER`
+   - Verification: `Reports run inline instead of queued when eager=True`
+
+3. **Task 11.1.3:** `Update .env.example documentation`
+   - Output: `Added CELERY_TASK_ALWAYS_EAGER to example env`
+   - Verification: `Documentation lists the new variable`
+
+#### Technical Details
+
+**Why this fix is needed:**
+- Render free tier = 1 VM only (no room for Redis + Worker)
+- Current code uses `.delay()` which requires Redis broker
+- Without this fix, clicking "Generate Report" would fail on Render
+
+**How it works:**
+```
+If CELERY_TASK_ALWAYS_EAGER=True OR Redis unavailable:
+    generate_report(job.id)  # Runs NOW in request
+Else:
+    generate_report.delay(job.id)  # Queued to Redis
+```
+
+#### Code Changes
+
+| File | Change |
+|------|--------|
+| `config/settings/base.py` | Add `CELERY_TASK_ALWAYS_EAGER` env var |
+| `reporting/views.py` | Conditional: direct call vs .delay() |
+| `.env.example` | Document the new variable |
+
+---
+
+### Part 2: Render Account Setup
 
 - **Goal:** `Create Render account and connect repository`
 - **Owner:** `Agent`
@@ -114,17 +160,17 @@ It must be used together with:
 
 #### Tasks
 
-1. **Task 11.1.1:** `Create or sign in to Render account`
+1. **Task 11.2.1:** `Create or sign in to Render account`
    - Output: `Account at render.com`
    - Verification: `Can access Render dashboard`
 
-2. **Task 11.1.2:** `Connect GitHub repository`
+2. **Task 11.2.2:** `Connect GitHub repository`
    - Output: `Repository connected in Render`
    - Verification: `Repositories list shows amw-django-erp`
 
 ---
 
-### Part 2: Web Service Configuration
+### Part 3: Web Service Configuration
 
 - **Goal:** `Configure web service to pull from Docker Hub`
 - **Owner:** `Agent`
@@ -132,25 +178,25 @@ It must be used together with:
 
 #### Tasks
 
-1. **Task 11.2.1:** `Create new Web Service on Render`
+1. **Task 11.3.1:** `Create new Web Service on Render`
    - Output: `Web service configured`
    - Verification: `Service shows in Render dashboard`
 
-2. **Task 11.2.2:** `Configure Docker Hub image`
+2. **Task 11.3.2:** `Configure Docker Hub image`
    - Output: `Image path: docker.io/{USERNAME}/amw-django-erp:latest`
    - Verification: `Render can pull image`
 
-3. **Task 11.2.3:** `Set environment variables`
-   - Output: `DB_HOST, DB_PORT, REDIS_URL, SECRET_KEY configured`
+3. **Task 11.3.3:** `Set environment variables`
+   - Output: `DB_HOST, DB_PORT, SECRET_KEY configured`
    - Verification: `Environment variables set`
 
-4. **Task 11.2.4:** `Configure health check`
+4. **Task 11.3.4:** `Configure health check`
    - Output: `Health check at /health/ or /health`
    - Verification: `Health check passes`
 
 ---
 
-### Part 3: Deployment & Verification
+### Part 4: Deployment & Verification
 
 - **Goal:** `Deploy and verify application works`
 - **Owner:** `Agent`
@@ -158,21 +204,21 @@ It must be used together with:
 
 #### Tasks
 
-1. **Task 11.3.1:** `Deploy web service`
+1. **Task 11.4.1:** `Deploy web service`
    - Output: `Deployment triggered`
    - Verification: `Service status is "Live"`
 
-2. **Task 11.3.2:** `Verify application loads`
+2. **Task 11.4.2:** `Verify application loads`
    - Output: `Can access homepage`
    - Verification: `curl {app}.onrender.com returns 200`
 
-3. **Task 11.3.3:** `Check logs in dashboard`
+3. **Task 11.4.3:** `Check logs in dashboard`
    - Output: `Logs viewable`
    - Verification: `No error logs in first minute`
 
 ---
 
-### Part 4: Documentation
+### Part 5: Documentation
 
 - **Goal:** `Document Render deployment process`
 - **Owner:** `Agent`
@@ -180,11 +226,11 @@ It must be used together with:
 
 #### Tasks
 
-1. **Task 11.4.1:** `Create RENDER.md deployment guide`
+1. **Task 11.5.1:** `Create RENDER.md deployment guide`
    - Output: `Complete guide in docs/`
    - Verification: `Guide covers all steps`
 
-2. **Task 11.4.2:** `Update README with deployment info`
+2. **Task 11.5.2:** `Update README with deployment info`
    - Output: `README mentions deployment`
    - Verification: `URL and steps documented`
 
@@ -203,6 +249,18 @@ It must be used together with:
 
 **Note:** Free tier services sleep after 15 minutes of inactivity.
 
+### Celery-Free Reports
+
+| Scenario | Celery | Reports |
+|----------|-------|---------|
+| Local Docker | Yes (Redis) | Async via `.delay()` |
+| Render Free | No Redis | **Sync (inline)** |
+
+**How it works:**
+- By default, `CELERY_TASK_ALWAYS_EAGER=true` runs reports synchronously
+- If you add a Redis service + worker, set `CELERY_TASK_ALWAYS_EAGER=false`
+- Original Celery code is preserved, just conditionally executed
+
 ### Environment Variables Required
 
 ```bash
@@ -214,14 +272,17 @@ DB_PASSWORD=[RENDER_SECRET]
 DB_HOST=[.internal-address]
 DB_PORT=5432
 
-# Redis
-REDIS_URL=redis://:[internal-address]/0
-
 # Django
 DJANGO_SECRET_KEY=[RENDER_SECRET]
 DJANGO_DEBUG=False
 DJANGO_ALLOWED_HOSTS=[app].onrender.com
+
+# Celery (OPTIONAL - set to false to enable async)
+# CELERY_TASK_ALWAYS_EAGER=true  # Run reports sync (no Redis needed)
+# REDIS_URL=redis://:[internal-address]/0  # Only if using Celery worker
 ```
+
+**Note:** REDIS_URL is NOT required on Render free tier because reports run synchronously.
 
 ### Internal Networking
 
