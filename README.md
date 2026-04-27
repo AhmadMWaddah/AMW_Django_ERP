@@ -32,6 +32,8 @@ AMW Django ERP is a comprehensive, production-ready ERP system designed for real
 | Phase 8     | Async Tasks, Reporting & Hardening           | ✅ **COMPLETE**  | `master` |
 | **Phase 9** | REST API Layer (DRF)                       | ✅ **COMPLETE**  | `master` |
 | **Phase 10** | Docker & Containerization                  | ✅ **COMPLETE**  | `master` |
+| **Phase 11** | Render Deployment (Free Tier)              | ✅ **COMPLETE**  | `master` |
+| Phase 12   | Supabase Database Migration             | 🔄 **OPTIONAL** | TBD     |
 
 **Branch Strategy:**
 - `master` - Stable production baseline (ALL Phases complete)
@@ -47,6 +49,7 @@ AMW Django ERP is a comprehensive, production-ready ERP system designed for real
 - `v8.0-phase8-complete` - Async Tasks, Reporting & Hardening
 - `v9.0-phase9-complete` - REST API Layer (DRF)
 - `v10.0-phase10-complete` - Docker & Containerization
+- `v11.0-phase11-complete` - Render Deployment (Free Tier) with PostgreSQL
 
 ---
 
@@ -497,10 +500,16 @@ MIT License - See [LICENSE](LICENSE) file
 
 ## 🎯 Next Steps
 
-All phases complete! AMW Django ERP is now production-ready.
+| Phase | Status | Description |
+|-------|--------|-------------|
+| Phase 11 | ✅ COMPLETE | Render Deployment with PostgreSQL |
+| Phase 12 | 🔄 OPTIONAL | Supabase Database Migration |
+
+**Phase 12 is optional** - Use Supabase for database when you want to migrate off Render's PostgreSQL.
 
 ---
 
-*Last Updated: 2026-04-22*
-*All Phases: ✅ COMPLETE (259 tests passing, ready for production)*
-*AMW Django ERP - Production Ready*
+*Last Updated: 2026-04-27*
+*Phases 1-11: ✅ COMPLETE (259 tests passing)*
+*Phase 12: 🔄 OPTIONAL (Supabase migration)*
+*AMW Django ERP - Production Ready & Deployed*

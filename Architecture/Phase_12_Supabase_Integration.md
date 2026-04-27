@@ -14,9 +14,9 @@ It must be used together with:
 ## 2. Phase Identity
 
 - **Phase Number:** `Phase 12`
-- **Phase Name:** `Supabase Integration`
+- **Phase Name:** `Supabase Integration` (OPTIONAL)
 - **Branch Name:** `phase-12`
-- **Status:** ⏳ **PLANNED**
+- **Status:** 🔄 **OPTIONAL**
 - **Primary Goal:** `Integrate Supabase as a managed PostgreSQL backup/external database while keeping local Docker PostgreSQL for development.`
 - **Depends On:** `Phase 11` (Render deployment must be complete first)
 - **Manager Approval Required:** `Yes`
