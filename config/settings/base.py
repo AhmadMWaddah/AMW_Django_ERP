@@ -105,9 +105,7 @@ WSGI_APPLICATION = "config.wsgi.application"
 # Support DATABASE_URL (Render) or individual DB_* vars
 if os.getenv("DATABASE_URL"):
     # Use DATABASE_URL from Render
-    DATABASES = {
-        "default": env.db_url_config("DATABASE_URL")
-    }
+    DATABASES = {"default": env.db_url_config("DATABASE_URL")}
 else:
     # Use individual DB_* variables
     DATABASES = {
