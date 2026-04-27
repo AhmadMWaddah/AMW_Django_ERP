@@ -111,13 +111,12 @@ def seed_endpoint(request):
         return JsonResponse({"error": "Invalid token"}, status=403)
 
     # Run the seed command
-    from core.management.commands.seed_erp import Command as SeedCommand
+    from django.core.management import call_command
     from io import StringIO
 
     output = StringIO()
     try:
-        cmd = SeedCommand()
-        cmd(stdout=output, stderr=StringIO(), force=True)
+        call_command("seed_erp", stdout=output, force=True)
         result = output.getvalue()
         return JsonResponse({"status": "success", "output": result})
     except Exception as e:
