@@ -103,8 +103,9 @@ WSGI_APPLICATION = "config.wsgi.application"
 # See dev.py and prod.py for environment-specific database settings.
 
 # Support DATABASE_URL (Render) or individual DB_* vars
-db_url = os.getenv("DATABASE_URL", "").strip()
-if db_url and "//" in db_url and "postgres" in db_url:
+db_url = os.getenv("DATABASE_URL", "")
+# Validate: must contain :// and postgres, NOT be literal "DATABASE_URL"
+if db_url and "://" in db_url and "postgres" in db_url and db_url != "DATABASE_URL":
     # Use DATABASE_URL from Render
     DATABASES = {"default": env.db_url_config("DATABASE_URL")}
 else:
