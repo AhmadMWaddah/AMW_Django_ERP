@@ -335,23 +335,23 @@ def _build_nav_hierarchy(engine):
         nav.append(audit_section)
 
     # Reporting section - standalone section
-    # Show for authenticated users (Phase 8 feature)
-    # Will show for any authenticated user with appropriate permissions
-    reporting_section = {
-        "title": "Reports",
-        "icon": "bar-chart",
-        "url": "",
-        "app": "reporting",
-        "children": [
-            {
-                "title": "Reports",
-                "icon": "bar-chart",
-                "url": "Reporting:list",
-                "app": "reporting",
-                "children": [],
-            },
-        ],
-    }
-    nav.append(reporting_section)
+    # Only show for users with reporting permissions (Phase 8 feature)
+    if _has_module_access(engine, "reporting"):
+        reporting_section = {
+            "title": "Reports",
+            "icon": "bar-chart",
+            "url": "",
+            "app": "reporting",
+            "children": [
+                {
+                    "title": "Reports",
+                    "icon": "bar-chart",
+                    "url": "Reporting:list",
+                    "app": "reporting",
+                    "children": [],
+                },
+            ],
+        }
+        nav.append(reporting_section)
 
     return nav
