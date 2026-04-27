@@ -199,6 +199,7 @@ jobs:
 
       - name: Run Django check (production)
         run: |
+          export DJANGO_SETTINGS_MODULE=config.settings.prod
           python manage.py check --deploy --settings=config.settings.prod
 
   # -- Job 4: Build Verification --
