@@ -111,8 +111,9 @@ def seed_endpoint(request):
         return JsonResponse({"error": "Invalid token"}, status=403)
 
     # Run the seed command
-    from django.core.management import call_command
     from io import StringIO
+
+    from django.core.management import call_command
 
     output = StringIO()
     try:
