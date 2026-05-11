@@ -1,3 +1,5 @@
+![AMW Django ERP - Production ERP System](https://github.com/AhmadMWaddah/AMW_Django_ERP/blob/master/Brand/AMW_DJ_ERP_Thumbnail_01.png)
+
 # AMW Django ERP
 
 **Enterprise Resource Planning System built with Django**
