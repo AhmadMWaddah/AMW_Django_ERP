@@ -6,14 +6,6 @@
 
 ---
 
-## 🔗 Live Demo
-
-**Production URL:** https://amw-django-erp.onrender.com
-
-**GitHub:** https://github.com/AhmadMWaddah/AMW_Django_ERP
-
----
-
 ## 🎯 Project Overview
 
 AMW Django ERP is a comprehensive, production-ready ERP system designed for real business operations. Built on Django with an operations-first architecture, it covers:
