@@ -52,6 +52,7 @@ exclude = [
     "venv",
     ".env_amw_erp",
     ".env_amw_dj_erp",
+    ".amw_erp_env",
     "*.egg-info",
     ".tox",
     "build",
@@ -106,6 +107,7 @@ exclude = '''
   | dist
   | \.env_amw_erp
   | \.env_amw_dj_erp
+  | \.amw_erp_env
   | venv
 )/
 '''
@@ -123,6 +125,7 @@ omit = [
     "manage.py",
     "config/settings/*",
     ".env_amw_dj_erp/*",
+    ".amw_erp_env/*",
 ]
 
 [tool.coverage.report]
