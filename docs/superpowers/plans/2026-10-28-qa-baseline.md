@@ -721,3 +721,14 @@ Command: (summary of Tasks 4–5 gate exits)
 Exit: all 0
 Key output: pytest `259 passed, 2 skipped` (exit 0) · ruff `All checks passed!` (exit 0) · black `123 files would be left unchanged.` (exit 0) · `manage.py check` `no issues (0 silenced)` (exit 0)
 Notes: **Run-#1 failure inventory is EMPTY across all four gates.** Per plan Task 7 Step 3: if zero failures, skip Task 8 entirely and record "no failures — no fix cycles needed", then proceed to Task 9. Remaining non-gate work before final gates: Task 6 (test_suite_runner QA finding probe — default path is report-only, no code change) and Task 7 (triage table records zero failures). Open items carried forward: +31 test-count delta vs AGENTS.md 228 (Owner-facing accounting at Task 9/14); 2 pre-existing documented skips; Celery containers Restarting observation.
+
+### 2026-10-28 18:02 EEST — Task 6 Step 1: probe utils/test_suite_runner.sh venv-path finding
+Command: `bash utils/test_suite_runner.sh 2>&1 | head -10; echo "WRAPPER_EXIT=${PIPESTATUS[0]}"` ; source inspection `sed -n 18,24p utils/test_suite_runner.sh`
+Exit: 1
+Key output:
+```
+ERROR: Virtual environment not found at: /home/amw/Business/WorkSpaces/WebDevs/AMW_Django_ERP/.env_amw_dj_erp
+INFO: Run './utils/env_factory.sh create' first
+```
+Root cause confirmed in source, line 21: `VENV_PATH="$PROJECT_ROOT/.env_amw_dj_erp"` — hardcodes a venv dir that does not exist (AGENTS.md names `.env_amw_erp`; neither exists; gates resolve via `.amw_erp_env/` per recorded amendment).
+Notes: **Decision rule applied (plan Task 6 Step 2, default path):** this plan runs all gates via direct `.amw_erp_env/bin/python -m ...` commands, so the wrapper does NOT block the workflow → recorded as a reported QA finding, NO code change, NO commit. The conditional fix (line-21 fallback to system interpreter) remains available if the Owner directs it or a later task genuinely needs the wrapper. Finding stands alongside the other open items: +31 count delta, 2 pre-existing skips, Celery Restarting observation.
