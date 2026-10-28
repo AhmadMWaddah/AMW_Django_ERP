@@ -733,6 +733,37 @@ INFO: Run './utils/env_factory.sh create' first
 Root cause confirmed in source, line 21: `VENV_PATH="$PROJECT_ROOT/.env_amw_dj_erp"` — hardcodes a venv dir that does not exist (AGENTS.md names `.env_amw_erp`; neither exists; gates resolve via `.amw_erp_env/` per recorded amendment).
 Notes: **Decision rule applied (plan Task 6 Step 2, default path):** this plan runs all gates via direct `.amw_erp_env/bin/python -m ...` commands, so the wrapper does NOT block the workflow → recorded as a reported QA finding, NO code change, NO commit. The conditional fix (line-21 fallback to system interpreter) remains available if the Owner directs it or a later task genuinely needs the wrapper. Finding stands alongside the other open items: +31 count delta, 2 pre-existing skips, Celery Restarting observation.
 
+### 2026-10-28 18:20 EEST — Task 9 Step 1: final clean pytest run
+Command: `.amw_erp_env/bin/python -m pytest 2>&1 | tee /tmp/opencode/qa-pytest-final.txt | tail -5; echo "PYTEST_EXIT=${PIPESTATUS[0]}"`
+Exit: 0
+Key output: `======================= 259 passed, 2 skipped in 29.76s ========================` / `PYTEST_EXIT=0`
+Raw evidence: `/tmp/opencode/qa-pytest-final.txt`. Final count N = 259 passed, 2 skipped (261 collected).
+
+### 2026-10-28 18:21 EEST — Task 9 Step 2: immediate re-run (flake proof)
+Command: `.amw_erp_env/bin/python -m pytest 2>&1 | tee /tmp/opencode/qa-pytest-final-rerun.txt | tail -3; echo "PYTEST_EXIT=${PIPESTATUS[0]}"`
+Exit: 0
+Key output: `======================= 259 passed, 2 skipped in 30.55s ========================` / `PYTEST_EXIT=0`
+Raw evidence: `/tmp/opencode/qa-pytest-final-rerun.txt`. SAME count as Step 1 (259 passed / 2 skipped) → **no flakes, no order-dependence detected.**
+
+### 2026-10-28 18:24 EEST — Task 9 Step 3: delta accounting (Owner-facing)
+Command: forensic commands: `.amw_erp_env/bin/python -m pytest --collect-only` node-tree extraction at HEAD and at `7b6bc7c` (the commit that wrote AGENTS.md's 228 claim, 2026-04-22); `git log -- <test files>`; `git show 88c8133 -- inventory/api_tests.py`
+Exit: 0
+Key output / accounting:
+- **Final count = 259 passed + 2 skipped = 261 collected; AGENTS.md claim = 228; delta = +33 collected (+31 if compared against passed-only).**
+- **Decomposition of the +33 (fully accounted, no unexplained drift):**
+  1. **+24 pre-existing staleness:** at `7b6bc7c` (2026-04-22, the commit that introduced the 228 claim) the suite ALREADY collected 252 tests (231 `<Function>` + 21 `<TestCaseFunction>`, measured by checking out `7b6bc7c` and running `--collect-only` with the same venv interpreter). The 228 claim was therefore already 24 short when written. No commit after that date touched any test file except `inventory/api_tests.py` (verified: `git log --since=2026-04-22 -- '*tests*.py'` empty; last test-file dates: purchasing 2026-04-20, reporting 2026-04-20, inventory/sales 2026-04-16, security 2026-04-04, accounts/audit 2026-03-30).
+  2. **+9 named change:** commit `88c8133` ("Fix: Phase 9 improvements", 2026-04-22) added exactly 9 tests to `inventory/api_tests.py` (verified two ways: node-tree diff between `7b6bc7c` and HEAD shows exactly these 9 added Functions; `git show 88c8133` shows exactly 9 `+    def test_` lines): `test_category_ordering_asc`, `test_category_ordering_desc`, `test_product_ordering_by_sku`, `test_product_ordering_by_name`, `test_pagination_default_10`, `test_list_empty_products`, `test_list_empty_categories`, `test_product_invalid_category`, `test_product_search_no_results`. 252 + 9 = 261 ✓.
+- Arithmetic check: 228 (stale claim) + 24 (staleness) + 9 (88c8133) = 261 collected = 259 passed + 2 skipped ✓.
+- **Owner-facing conclusion:** the 228 figure in AGENTS.md was inaccurate at the time it was written (undercounted by 24) and a further 9 tests were added the same day by Phase 9 follow-up work. This plan made ZERO test-count changes (Task 8 skipped — zero failures). AGENTS.md was NOT edited (plan forbids it without a verified count; the verified count is now 261 collected / 259 passed / 2 skipped — Owner may update AGENTS.md at their discretion).
+- The 2 skipped remain the pre-existing documented skips (`accounts/tests.py:145,153`, Django test client recursion bug reason) — surfaced, not altered.
+
+### 2026-10-28 18:26 EEST — Task 9 (orchestrator-extended): final ruff / black / manage.py check runs (Task 10 Steps 1–3 executed early per orchestrator instruction)
+Command: `.amw_erp_env/bin/python -m ruff check . 2>&1 | tee /tmp/opencode/qa-ruff-final.txt | tail -3; echo "RUFF_EXIT=${PIPESTATUS[0]}"` / `.amw_erp_env/bin/python -m black --check . 2>&1 | tee /tmp/opencode/qa-black-final.txt | tail -3; echo "BLACK_EXIT=${PIPESTATUS[0]}"` / `.amw_erp_env/bin/python manage.py check 2>&1 | tee /tmp/opencode/qa-check-final.txt; echo "CHECK_EXIT=${PIPESTATUS[0]}"`
+Exit: 0 / 0 / 0
+Key output: `All checks passed!` / `All done! ✨ 🍰 ✨` + `123 files would be left unchanged.` / `System check identified no issues (0 silenced.)`
+Raw evidence: `/tmp/opencode/qa-ruff-final.txt`, `/tmp/opencode/qa-black-final.txt`, `/tmp/opencode/qa-check-final.txt`.
+Notes: All four gates GREEN on final runs. Remaining for Task 10: Step 4 venv-never-linted confirmation + this log's finalization.
+
 ### 2026-10-28 18:06 EEST — Task 7: failure triage across all four gates (run #1)
 Command: (no new commands — triage of Tasks 4–5 inventory)
 Exit: n/a
