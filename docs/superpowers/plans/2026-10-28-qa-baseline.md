@@ -682,3 +682,18 @@ Key output:
 ?? SAST-SCA_Report_AMW_Django_ERP_2026-04-28.docx
 ```
 Notes: EXACTLY the two expected lines — matches spec §7.8 end-state contract. SAST docx stays untracked; nothing else in the tree (the `.amw_erp_env/` venv is hidden via `.git/info/exclude`, recorded earlier). Task 3 produces no commit by design.
+
+### 2026-10-28 17:52 EEST — Task 4 Step 1: pytest baseline run #1 (gate run #1, part 1)
+Command: `.amw_erp_env/bin/python -m pytest 2>&1 | tee /tmp/opencode/qa-pytest-run1.txt | tail -40; echo "PYTEST_EXIT=${PIPESTATUS[0]}"`
+Exit: 0
+Key output: `======================= 259 passed, 2 skipped in 31.33s ========================` / `PYTEST_EXIT=0`
+Raw evidence file: `/tmp/opencode/qa-pytest-run1.txt` (259 `PASSED` lines confirmed by grep; zero `FAILED`/`ERROR` lines).
+
+### 2026-10-28 17:52 EEST — Task 4 Step 2: count record, delta, and skip inventory
+Command: `grep -c "PASSED" /tmp/opencode/qa-pytest-run1.txt`; `grep -E "^(FAILED|ERROR)" /tmp/opencode/qa-pytest-run1.txt`; single-test re-run of each skipped node with `-rs`
+Exit: 0
+Key output / findings:
+- **Actual count = 259 passed, 2 skipped; AGENTS.md claim = 228; delta = +31.** Delta accounting is deferred to Task 9 Step 3 per plan (must map to named test changes or be escalated). NOTE: run #1 is GREEN — if it stays green through Task 9, the +31 delta cannot come from Task 8 fixes (none needed); it predates this plan (tests added after AGENTS.md's 228 count was written) and will need explicit Owner-facing accounting at Task 9/14.
+- **Pre-existing skips surfaced (plan Task 8 rule 4):** `accounts/tests.py::TestAuthenticationFlow::test_login_invalid_credentials` (accounts/tests.py:145) and `accounts/tests.py::TestAuthenticationFlow::test_login_missing_fields` (accounts/tests.py:153), both `@pytest.mark.skip(reason="Django test client recursion bug with template context copying")`. Verified pre-existing with documented reason; NOT touched in this task (no fixes in Task 4 scope).
+- **Version delta vs Task 1 record (explicit):** Task 1 recorded the GLOBAL interpreter toolchain (pytest 7.4.3, pytest-django 4.5.2, Django 6.0.7). Gates now run in `.amw_erp_env/` per the recorded amendment: **Django 4.2.30, pytest 9.2.0, pytest-django 4.14.0, ruff 0.17.3, black 26.10.1**. The venv matches requirements.txt pins (Django `>=4.2,<5.0`); the global env's Django 6.0.7 remains a recorded environment finding.
+- Failure inventory: EMPTY — zero failures, zero errors across the suite on run #1.
