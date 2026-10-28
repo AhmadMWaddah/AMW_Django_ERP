@@ -764,6 +764,21 @@ Key output: `All checks passed!` / `All done! ✨ 🍰 ✨` + `123 files would b
 Raw evidence: `/tmp/opencode/qa-ruff-final.txt`, `/tmp/opencode/qa-black-final.txt`, `/tmp/opencode/qa-check-final.txt`.
 Notes: All four gates GREEN on final runs. Remaining for Task 10: Step 4 venv-never-linted confirmation + this log's finalization.
 
+### 2026-10-28 18:31 EEST — Task 10 Step 4: confirm the venv was never linted
+Command: `grep -c "env_amw" /tmp/opencode/qa-ruff-final.txt /tmp/opencode/qa-black-final.txt 2>/dev/null` ; `grep -c "amw_erp_env" /tmp/opencode/qa-ruff-final.txt /tmp/opencode/qa-black-final.txt /tmp/opencode/qa-check-final.txt 2>/dev/null` ; `ls -d .env_amw_erp .env_amw_dj_erp 2>&1` ; `grep -n "amw_erp_env" pyproject.toml`
+Exit: grep exits 1 (= zero matches, which is the PASS condition here); `ls` exits nonzero (dirs absent — expected)
+Key output:
+- `env_amw` matches in final lint evidence files: **0** in `qa-ruff-final.txt`, **0** in `qa-black-final.txt`
+- `amw_erp_env` matches in all three final evidence files: **0 / 0 / 0** — no lint or check output references any venv path
+- `.env_amw_erp` / `.env_amw_dj_erp`: still absent (never created)
+- `.amw_erp_env` present (the authorized venv, in use) and excluded from tooling: pyproject lines 55 (`[tool.ruff] exclude`), 110 (`[tool.black]` regex), 128 (`[tool.coverage.run] omit`); hidden from git via `.git/info/exclude` (recorded at Task 2)
+Notes: **"NEVER lint the virtual environment" rule VERIFIED held** across all final gate runs — no venv path appears in any lint/check output, and no venv directory was created beyond the amendment-authorized `.amw_erp_env/`. **Task 10 COMPLETE** (Steps 1–3 executed early in the Task 9 entry above; Step 4 here).
+
+### 2026-10-28 18:31 EEST — Environment observation for Owner: concurrent AGENTS.md edits during Task 9
+Command: (observation, no command)
+Key output: During Task 9 execution, `AGENTS.md` was externally modified twice: the "**CRITICAL: Never lint virtual environment**" section was first REMOVED, then later RESTORED (implementer received both diffs as system updates). No plan action was taken; the plan does not touch AGENTS.md.
+Notes: Flagged for Owner awareness — this suggests a concurrent session or external tool editing AGENTS.md while this plan executes. The restored content matches the original section (venv `.env_amw_erp/`, pyproject exclusion). No conflict with this plan's work; noted for the final report.
+
 ### 2026-10-28 18:06 EEST — Task 7: failure triage across all four gates (run #1)
 Command: (no new commands — triage of Tasks 4–5 inventory)
 Exit: n/a
