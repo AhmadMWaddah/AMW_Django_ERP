@@ -697,3 +697,27 @@ Key output / findings:
 - **Pre-existing skips surfaced (plan Task 8 rule 4):** `accounts/tests.py::TestAuthenticationFlow::test_login_invalid_credentials` (accounts/tests.py:145) and `accounts/tests.py::TestAuthenticationFlow::test_login_missing_fields` (accounts/tests.py:153), both `@pytest.mark.skip(reason="Django test client recursion bug with template context copying")`. Verified pre-existing with documented reason; NOT touched in this task (no fixes in Task 4 scope).
 - **Version delta vs Task 1 record (explicit):** Task 1 recorded the GLOBAL interpreter toolchain (pytest 7.4.3, pytest-django 4.5.2, Django 6.0.7). Gates now run in `.amw_erp_env/` per the recorded amendment: **Django 4.2.30, pytest 9.2.0, pytest-django 4.14.0, ruff 0.17.3, black 26.10.1**. The venv matches requirements.txt pins (Django `>=4.2,<5.0`); the global env's Django 6.0.7 remains a recorded environment finding.
 - Failure inventory: EMPTY — zero failures, zero errors across the suite on run #1.
+
+### 2026-10-28 17:56 EEST — Task 5 Step 1: ruff gate run #1
+Command: `.amw_erp_env/bin/python -m ruff check . 2>&1 | tee /tmp/opencode/qa-ruff-run1.txt | tail -30; echo "RUFF_EXIT=${PIPESTATUS[0]}"`
+Exit: 0
+Key output: `All checks passed!` / `RUFF_EXIT=0`
+Notes: Zero findings. Raw evidence: `/tmp/opencode/qa-ruff-run1.txt`. Interpreter: `.amw_erp_env` ruff 0.17.3 (recorded in Task 4 entry).
+
+### 2026-10-28 17:56 EEST — Task 5 Step 2: black gate run #1
+Command: `.amw_erp_env/bin/python -m black --check . 2>&1 | tee /tmp/opencode/qa-black-run1.txt | tail -30; echo "BLACK_EXIT=${PIPESTATUS[0]}"`
+Exit: 0
+Key output: `All done! ✨ 🍰 ✨` / `123 files would be left unchanged.` / `BLACK_EXIT=0`
+Notes: Zero files would be reformatted. Raw evidence: `/tmp/opencode/qa-black-run1.txt`. Interpreter: `.amw_erp_env` black 26.10.1.
+
+### 2026-10-28 17:57 EEST — Task 5 Step 3: Django system check gate run #1
+Command: `.amw_erp_env/bin/python manage.py check 2>&1 | tee /tmp/opencode/qa-check-run1.txt; echo "CHECK_EXIT=${PIPESTATUS[0]}"`
+Exit: 0
+Key output: `System check identified no issues (0 silenced).` / `CHECK_EXIT=0`
+Notes: `DJANGO_SETTINGS_MODULE=config.settings.dev` (pyproject pytest config default; manage.py default). Raw evidence: `/tmp/opencode/qa-check-run1.txt`.
+
+### 2026-10-28 17:57 EEST — Task 5 Step 4: run-#1 failure inventory COMPLETE — all four gates green
+Command: (summary of Tasks 4–5 gate exits)
+Exit: all 0
+Key output: pytest `259 passed, 2 skipped` (exit 0) · ruff `All checks passed!` (exit 0) · black `123 files would be left unchanged.` (exit 0) · `manage.py check` `no issues (0 silenced)` (exit 0)
+Notes: **Run-#1 failure inventory is EMPTY across all four gates.** Per plan Task 7 Step 3: if zero failures, skip Task 8 entirely and record "no failures — no fix cycles needed", then proceed to Task 9. Remaining non-gate work before final gates: Task 6 (test_suite_runner QA finding probe — default path is report-only, no code change) and Task 7 (triage table records zero failures). Open items carried forward: +31 test-count delta vs AGENTS.md 228 (Owner-facing accounting at Task 9/14); 2 pre-existing documented skips; Celery containers Restarting observation.
