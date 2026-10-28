@@ -815,3 +815,53 @@ Key output:
 - `git rev-parse` local vs origin: `9b21a04739f17d9e4c6c2c68e5fd5ca880389672` / `9b21a04739f17d9e4c6c2c68e5fd5ca880389672` — **IDENTICAL**
 - `git status -sb`: `## Fix-QA-Baseline...origin/Fix-QA-Baseline` — no `[ahead N]`, no `[behind N]`
 Notes: **AC1 satisfied** — branch on origin, local not ahead. Pushed HEAD hash recorded: `9b21a04739f17d9e4c6c2c68e5fd5ca880389672`. Minor observation: the host clock read 17:48 EEST here after earlier entries read 18:31 EEST — apparent backward clock adjustment (likely NTP); timestamps remain per-entry as observed.
+
+### 2026-10-28 17:55 EEST — Task 13 Step 1: final working-tree state
+Command: `git status --porcelain`
+Exit: 0
+Key output:
+```
+ M .gitignore
+?? SAST-SCA_Report_AMW_Django_ERP_2026-04-28.docx
+```
+Notes: EXACTLY the two expected lines, nothing more — matches spec §7.8 end-state contract (`.gitignore` carries only the `Mock Agent.md` addition with mode restored to 100644; SAST docx untracked). No stray ruff `--fix` edits, no test artifacts, no `htmlcov/`. No cleanup needed.
+
+### 2026-10-28 17:55 EEST — Task 13 Step 2: acceptance-criteria sweep (spec §7, items 1–8)
+Command: per plan Task 13 Step 2 block (ls-remote + status; tail of final pytest evidence files; ruff + black; manage.py check; git log titles; log inspection; porcelain)
+Exit: all 0
+Key output / per-criterion verdict:
+- **AC1 (branch on origin, local not ahead): SATISFIED** — `git ls-remote` returns `a8a7919bc0862e52279ed957227ed688ca9d587a  refs/heads/Fix-QA-Baseline`; `git status -sb` shows `## Fix-QA-Baseline...origin/Fix-QA-Baseline` with no `[ahead]`/`[behind]`. (Pushed HEAD advanced from `9b21a04` to `a8a7919` by the orchestrator's Task 12 log commit; parity holds at the current HEAD.)
+- **AC2 (pytest green, count recorded, delta accounted): SATISFIED** — `qa-pytest-final.txt` ends `259 passed, 2 skipped in 29.76s`, exit 0; delta accounting in the Task 9 Step 3 entry (+33 = 24 staleness + 9 named tests from `88c8133`; zero changes by this plan).
+- **AC3 (no flakes): SATISFIED** — `qa-pytest-final-rerun.txt` ends `259 passed, 2 skipped in 30.55s`, exit 0, identical count.
+- **AC4 (lint clean, venv excluded by pyproject): SATISFIED** — ruff `All checks passed!` exit 0; black exit 0 (`123 files would be left unchanged`); pyproject excludes verified for `.env_amw_erp`/`.env_amw_dj_erp` (Task 1 Step 2) and extended with `.amw_erp_env` (commit `625e891`); venv-never-linted confirmed (Task 10 Step 4).
+- **AC5 (manage.py check clean): SATISFIED** — `System check identified no issues (0 silenced).`, exit 0, settings `config.settings.dev`.
+- **AC6 (commit convention): SATISFIED** — `git log --format='%s' origin/master..Fix-QA-Baseline`: every title carries a legal prefix (`Docs:` ×13, `Fix:` ×1), all under 72 chars; one concern per commit (the single `Fix:` commit is the venv-exclusion concern).
+- **AC7 (evidence captured): SATISFIED** — Verification Log committed through Task 11 in `9b21a04` (`Docs: Record QA baseline evidence`); Task 12/13 entries appended after and will land in the Task 14 Docs commit — the log as a complete evidence record exists and is being maintained in the committed plan file.
+- **AC8 (working-tree end state): SATISFIED** — Step 1 output above, exactly the two expected lines.
+Notes: **8 of 8 acceptance criteria SATISFIED.** No NOT-SATISFIED items. Open (non-AC) findings for the Owner remain as consolidated in the Task 11 summary entry.
+
+### 2026-10-28 18:00 EEST — Task 14: FINAL STATUS REPORT to Owner
+Command: (report block — no commands; all figures reference logged evidence)
+Key content:
+
+**QA BASELINE — FINAL STATUS (branch `Fix-QA-Baseline`)**
+
+- **Per-gate final results (all GREEN, interpreter `.amw_erp_env/bin/python`, Django 4.2.30 per requirements.txt):**
+  - pytest: `259 passed, 2 skipped` (261 collected), exit 0 — twice (final run + immediate re-run, identical count → no flakes)
+  - ruff 0.17.3: `All checks passed!`, exit 0
+  - black 26.10.1: `123 files would be left unchanged.`, exit 0
+  - `manage.py check` (`config.settings.dev`): `System check identified no issues (0 silenced).`, exit 0
+- **Test count vs AGENTS.md:** final verified count = **261 collected / 259 passed / 2 skipped**. AGENTS.md's 228 claim is superseded by this verified figure; AGENTS.md itself was NOT edited (plan rule). Delta accounting: +33 = 24 (claim stale at write time) + 9 (commit `88c8133`, `inventory/api_tests.py`). This plan changed zero test counts.
+- **Fix cycles used: 0 of 5** — run #1 was green across all four gates; Task 8 skipped per plan (empty triage table).
+- **Commits created by this plan:** `625e891` (`Fix: exclude .amw_erp_env venv from lint config`) + evidence-log Docs commits (`9b21a04`, `a8a7919`, and this final report commit). All titles legally prefixed, one concern per commit.
+- **Pushed HEAD:** `a8a7919bc0862e52279ed957227ed688ca9d587a` (origin parity verified at Task 12; re-verified after this commit lands).
+- **Open findings for Owner (non-blocking):**
+  1. `utils/test_suite_runner.sh:21` hardcodes nonexistent venv `.env_amw_dj_erp` (AGENTS.md names `.env_amw_erp`; neither exists) — wrapper exits 1; report-only, conditional fix documented in plan Task 6.
+  2. Celery containers `amw_erp_celery_beat` / `amw_erp_celery_worker` stuck in `Restarting` after infra start — not needed by any gate; Owner follow-up suggested.
+  3. AGENTS.md 228 test claim superseded by verified 261/259/2 — Owner may update AGENTS.md at discretion (plan did not).
+  4. AGENTS.md was externally edited twice during execution (venv-lint section removed then restored) — possible concurrent session; no plan action taken.
+  5. 2 pre-existing documented skips in `accounts/tests.py:145,153` (Django test client recursion bug) — surfaced, not altered; Owner may want them root-caused separately.
+  6. Docker daemon was inactive/service-disabled at start; Owner started it via sudo. Consider `sudo systemctl enable docker` for persistence.
+- **Merge boundary (explicit):** merge to `master` and tagging are NOT part of this plan. Per `Constitution/Orchestrator_Law.md` Stage 8 they require human Owner approval and happen only after the Owner reviews this report.
+- **Acceptance criteria:** 8 of 8 SATISFIED (Task 13 entry).
+- **Working-tree end state:** exactly ` M .gitignore` (Mock Agent.md line only, mode 100644) + untracked SAST docx — preserved per spec §7.8.
