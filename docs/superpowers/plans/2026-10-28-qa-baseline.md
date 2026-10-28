@@ -658,3 +658,27 @@ Command: `.amw_erp_env/bin/python` inline script: `django.setup()`; `connection.
 Exit: 0
 Key output: `TARGET: localhost 5433 amw_django_erp amw_erp_user` → `('PostgreSQL 15.17 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit', 'amw_django_erp', 'amw_erp_user')`
 Notes: This is the authoritative connectivity proof (the plan's nominal `manage.py check --database default` was shown above to be a false-pass-capable lazy check). Re-ran the nominal command too for the record: `.amw_erp_env/bin/python manage.py check --database default` → `System check identified no issues (0 silenced).`, `DB_CHECK_EXIT=0` — now backed by a proven live connection. Task 2 COMPLETE: services up, DB reachable with correct database/user per `.env`.
+
+### 2026-10-28 17:41 EEST — Task 3 Step 1: reset .gitignore file mode
+Command: `chmod 644 .gitignore` (pre-state: `stat -c '%a %n'` → `775 .gitignore`; `git ls-files -s .gitignore` → `100644 a7beb1f...` — index already 100644, worktree was 775)
+Exit: 0
+Key output: post-chmod `stat` → `644`; `git diff .gitignore` shows ONLY the content hunk:
+```
+@@ -106,3 +106,4 @@ logs/
+ .sisyphus/
+ .antigravity/
+ .worktrees/
++Mock Agent.md
+```
+NO `old mode`/`new mode` lines present.
+Notes: Mode restored to 100644 effective state; content untouched. The `Mock Agent.md` line remains an uncommitted working-tree modification per spec §7.8.
+
+### 2026-10-28 17:41 EEST — Task 3 Step 2: verify preserved working-tree state
+Command: `git status --porcelain`
+Exit: 0
+Key output:
+```
+ M .gitignore
+?? SAST-SCA_Report_AMW_Django_ERP_2026-04-28.docx
+```
+Notes: EXACTLY the two expected lines — matches spec §7.8 end-state contract. SAST docx stays untracked; nothing else in the tree (the `.amw_erp_env/` venv is hidden via `.git/info/exclude`, recorded earlier). Task 3 produces no commit by design.
