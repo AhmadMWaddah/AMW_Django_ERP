@@ -732,3 +732,14 @@ INFO: Run './utils/env_factory.sh create' first
 ```
 Root cause confirmed in source, line 21: `VENV_PATH="$PROJECT_ROOT/.env_amw_dj_erp"` — hardcodes a venv dir that does not exist (AGENTS.md names `.env_amw_erp`; neither exists; gates resolve via `.amw_erp_env/` per recorded amendment).
 Notes: **Decision rule applied (plan Task 6 Step 2, default path):** this plan runs all gates via direct `.amw_erp_env/bin/python -m ...` commands, so the wrapper does NOT block the workflow → recorded as a reported QA finding, NO code change, NO commit. The conditional fix (line-21 fallback to system interpreter) remains available if the Owner directs it or a later task genuinely needs the wrapper. Finding stands alongside the other open items: +31 count delta, 2 pre-existing skips, Celery Restarting observation.
+
+### 2026-10-28 18:06 EEST — Task 7: failure triage across all four gates (run #1)
+Command: (no new commands — triage of Tasks 4–5 inventory)
+Exit: n/a
+Key output: Triage table:
+
+| Gate | Failing item | Classification | Diagnosis |
+|---|---|---|---|
+| (empty) | — | — | — |
+
+Notes: **Zero failures across all four gates on run #1** (pytest 259 passed / 2 skipped, exit 0; ruff clean, exit 0; black 123 files unchanged, exit 0; `manage.py check` clean, exit 0). There is nothing to classify as `environment` / `code-wrong` / `test-wrong`. **Conclusion: no failures — no fix cycles needed.** Per plan Task 7 Step 3, **Task 8 is SKIPPED entirely** (justification: Task 8 executes "once per area from the Task 7 area list"; the area list is empty, so zero iterations exist to run — this is the plan-prescribed path, not a deviation). Full-cycle counter used: 0 of max 5. Proceed directly to Task 9 (final pytest clean run + flake re-run). Open items carried to Task 9/14: +31 test-count delta vs AGENTS.md 228 (requires Owner-facing accounting since no Task 8 commits exist to explain it); 2 pre-existing documented skips in `accounts/tests.py` (lines 145, 153); `test_suite_runner.sh` venv-path finding (report-only); Celery containers Restarting observation.
