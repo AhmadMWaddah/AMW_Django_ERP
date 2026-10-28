@@ -594,4 +594,25 @@ Commit: none unless the final status block was appended to the log — in that c
 > Appended during execution. Entry format:
 > `### <date time> — <gate/step>` / `Command: <exact>` / `Exit: <code>` / `Key output: <lines>` / `Notes: <diagnosis, count, decision>`
 
-(No entries yet — execution has not started.)
+### 2026-10-28 17:14 EEST — Task 1 Step 1: interpreter/toolchain probe
+Command: `which python3 && python3 --version` / `python3 -m pytest --version` / `python3 -m ruff --version` / `python3 -m black --version` / `python3 -c "import django; print(django.__version__)"` / `python3 -c "import pytest_django; print(pytest_django.__version__)"` / `ls -d .env_amw_erp .env_amw_dj_erp 2>&1` / `head -1 /home/amw/.local/bin/pytest`
+Exit: 0 (all probes)
+Key output:
+- `python3` → `/usr/bin/python3`, `Python 3.12.3`
+- `pytest 7.4.3`
+- `ruff 0.15.11`
+- `python -m black, 26.3.1 (compiled: yes)` — `Python (CPython) 3.12.3`
+- `django 6.0.7`
+- `pytest_django 4.5.2`
+- `ls: cannot access '.env_amw_erp': No such file or directory` / `ls: cannot access '.env_amw_dj_erp': No such file or directory`
+- pytest shebang: `#!/usr/bin/python3`
+Notes: All tooling imports cleanly under the global interpreter. Both venv dirs absent. Decision: **Working interpreter = `/usr/bin/python3` (Python 3.12.3), all gates run via `python3 -m ...`.** Environment finding: Django 6.0.7 installed vs AGENTS.md claim of Django 4.2 LTS (requirements.txt pins `Django>=4.2,<5.0`). Recorded, no action unless a gate fails on it (Task 8 rules). Owner amendment honored: no virtualenv created; global interpreter used AS-IS.
+
+### 2026-10-28 17:14 EEST — Task 1 Step 2: pyproject venv-exclude verification
+Command: `grep -n "env_amw" pyproject.toml`
+Exit: 0
+Key output:
+- Line 53: `".env_amw_erp",` / Line 54: `".env_amw_dj_erp",` — inside `[tool.ruff] exclude = [...]` (confirmed by reading lines 45–60: exclude list starts at line 48)
+- Line 107: `| \.env_amw_erp` / Line 108: `| \.env_amw_dj_erp` — inside `[tool.black]` exclude regex (confirmed by reading lines 100–112)
+- Line 125: `".env_amw_dj_erp/*",` (additional exclude entry)
+Notes: Spec §7.4 precondition "venv excluded by pyproject config" VERIFIED (not assumed). Combined with Step 1 (`ls` shows both venv dirs absent), the "never lint a venv" rule holds structurally.
